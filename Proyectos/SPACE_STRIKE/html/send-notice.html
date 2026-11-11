@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPACE STRIKE — Enviar notificación</title>
+<style>
+body{margin:0;font-family:system-ui,sans-serif;background:#030407;color:#dcecff;padding:16px;max-width:520px;margin:0 auto}
+h1{font-size:16px;letter-spacing:2px}
+label{display:block;font-size:11px;opacity:0.7;margin:10px 0 4px}
+input,textarea,select,button{width:100%;box-sizing:border-box;font:inherit;padding:10px;border-radius:6px;border:1px solid rgba(90,170,255,0.3);background:#0a1520;color:#e8f4ff}
+textarea{min-height:100px;resize:vertical}
+button{font-weight:800;letter-spacing:1px;cursor:pointer;margin-top:12px;background:#123050;border-color:rgba(120,200,255,0.5)}
+button:disabled{opacity:0.5}
+pre{font-size:11px;background:#060a10;padding:10px;border-radius:8px;white-space:pre-wrap}
+.hint{font-size:11px;opacity:0.65;line-height:1.4}
+a{color:#7eb6ff}
+.item{border:1px solid rgba(80,140,200,0.25);border-radius:6px;padding:8px;margin:6px 0;font-size:12px}
+</style>
+</head>
+<body>
+<h1>ENVIAR NOTIFICACIÓN</h1>
+<p class="hint" id="who">Solo admins. Los jugadores con permisos del navegador verán el aviso.</p>
+<label>Tipo</label>
+<select id="type">
+  <option value="news">Noticia</option>
+  <option value="update">Actualización</option>
+  <option value="event">Evento</option>
+  <option value="code">Código / recompensa</option>
+  <option value="alert">Aviso importante</option>
+</select>
+<label>Título</label>
+<input id="title" maxlength="80" placeholder="Ej: Evento de fin de semana">
+<label>Mensaje</label>
+<textarea id="body" maxlength="500" placeholder="Texto que verán los jugadores…"></textarea>
+<button type="button" id="send">PUBLICAR AVISO</button>
+<pre id="out"></pre>
+<h2 style="font-size:13px;letter-spacing:1px;margin-top:20px">Últimos avisos</h2>
+<div id="list"></div>
+<p><a href="../index.html">← Menú</a> · <a href="admin-codes.html">Super Admin</a></p>
+<div style="opacity:0.4;font-size:10px;margin-top:12px">V3.3.6</div>
+<script src="../javascript/auth.js"></script>
+<script src="../javascript/premium-codes.js"></script>
+<script src="../javascript/managers/admin-control.js"></script>
+<script src="../javascript/managers/push-announcements.js"></script>
+<script>
+(function(){
+  function refreshWho(){
+    var ok = (window.SpaceStrikeAdmin && window.SpaceStrikeAdmin.isAdmin && window.SpaceStrikeAdmin.isAdmin())
+      || (window.SpaceStrikeCodes && window.SpaceStrikeCodes.isAdmin && window.SpaceStrikeCodes.isAdmin());
+    document.getElementById("who").textContent = ok
+      ? "Sesión admin OK. Al publicar, los jugadores lo reciben."
+      : "No eres admin o no hay sesión Google.";
+    document.getElementById("send").disabled = !ok;
+  }
+  function loadList(){
+    if(!window.SpaceStrikePush) return;
+    window.SpaceStrikePush.listRecent(12).then(function(res){
+      var box = document.getElementById("list");
+      if(!res.ok){ box.textContent = res.error || "Sin datos"; return; }
+      box.innerHTML = (res.items||[]).map(function(it){
+        return '<div class="item"><b>'+ (it.title||"") +'</b> <span style="opacity:.5">['+ (it.type||"") +']</span><br>'+ (it.body||"") +'</div>';
+      }).join("") || "<div class='hint'>Nada aún</div>";
+    });
+  }
+  document.getElementById("send").onclick = function(){
+    var title = document.getElementById("title").value;
+    var body = document.getElementById("body").value;
+    var type = document.getElementById("type").value;
+    document.getElementById("out").textContent = "Enviando…";
+    window.SpaceStrikePush.publish(title, body, type).then(function(res){
+      document.getElementById("out").textContent = JSON.stringify(res, null, 2);
+      if(res.ok){ document.getElementById("title").value=""; document.getElementById("body").value=""; loadList(); }
+    });
+  };
+  setTimeout(refreshWho, 800);
+  setTimeout(refreshWho, 2500);
+  setTimeout(loadList, 1200);
+})();
+</script>
+</body>
+</html>

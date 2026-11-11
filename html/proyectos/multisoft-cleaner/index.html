@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MultiSoftCleaner | MultiSoftCreations</title>
+  <link rel="stylesheet" href="../../../css/styles.css">
+  <link rel="stylesheet" href="../../../css/projects.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .warn { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.35); border-radius: 12px; padding: 1rem 1.25rem; color: #fbbf24; font-size: 0.95rem; margin: 1rem 0 1.5rem; }
+    .steps { color: var(--text-muted); font-size: 0.95rem; padding-left: 1.25rem; list-style: decimal; margin-bottom: 1.5rem; }
+    .steps li { margin-bottom: 0.5rem; }
+    .steps code { background: rgba(255,255,255,0.06); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.88em; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <button type="button" class="back-btn" data-back data-back-fallback="../../proyectos.html" aria-label="Volver">
+        <span class="back-arrow" aria-hidden="true">←</span>
+      </button>
+
+      <a href="../../../index.html" class="logo">
+        <img src="../../../assets/img/logo.png" alt="MultiSoftCreations" class="logo-img" width="42" height="42">
+        <span class="logo-text">MultiSoftCreations</span>
+      </a>
+      <nav class="main-nav"><ul>
+        <li><a href="../../../index.html">Inicio</a></li>
+        <li><a href="../../proyectos.html">Proyectos</a></li>
+        <li><a href="../../contacto.html">Contacto</a></li>
+      </ul></nav>
+    </div>
+  </header>
+  <main>
+    <section class="section project-detail-hero">
+      <div class="container">
+        <p class="hero-label">Utilidades · Demostración · v2.1.1</p>
+        <h1 class="page-title">MultiSoftCleaner</h1>
+        <p class="page-intro">Herramienta de limpieza y mantenimiento para escritorio. Versión demo en desarrollo activo.</p>
+        <div class="project-detail-meta">
+          <span class="badge badge-category">Utilidades</span>
+          <span class="badge badge-status demo">Demostración</span>
+        </div>
+        <p style="margin-top:1rem">
+          <span class="btn btn-secondary" style="opacity:0.7;cursor:not-allowed;pointer-events:none">Fuera de servicio</span>
+        </p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container project-detail-body">
+        <div>
+          <div class="warn">
+            <strong>Aviso importante.</strong> Esta es una demo incompleta. El escaneo y la detección de duplicados suelen funcionar bien.
+            Las funciones de limpieza aún se están corrigiendo: el programa puede ir lento y, en algunos casos, borrar archivos importantes.
+            <strong>Haz copia de seguridad</strong> antes de usarlo. El autor no se responsabiliza de pérdida de datos ni daños derivados del uso de esta versión.
+          </div>
+          <h2 class="section-title" style="font-size:1.35rem">Descripción</h2>
+          <p style="color:var(--text-muted);margin-bottom:1rem">
+            MultiSoftCleaner es una utilidad de escritorio en Python orientada a escaneo, duplicados y limpieza.
+            Se publica como demo gratuita para pruebas y feedback, no como producto terminado.
+          </p>
+          <div class="warn" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.35);color:#f87171">
+            <strong>Fuera de servicio.</strong> Este proyecto quedó temporalmente suspendido mientras MultiSoftCreations se unifica en su sitio oficial.
+            El repositorio personal ya no está enlazado desde aquí.
+          </div>
+          <h3 style="margin-bottom:0.5rem">Tecnologías</h3>
+          <div class="project-tech"><span class="tech-tag">Python</span></div>
+        </div>
+        <aside class="project-sidebar">
+          <h3>Enlaces</h3>
+          <p style="margin-bottom:1rem;font-size:0.9rem;color:var(--text-muted)">No disponibles por ahora.</p>
+          <h3>Estado</h3>
+          <p style="font-size:0.9rem;color:#f87171">Fuera de servicio</p>
+          <h3 style="margin-top:1.25rem">Marca</h3>
+          <p style="font-size:0.9rem;color:var(--text-muted)">MultiSoftCreations</p>
+        </aside>
+      </div>
+    </section>
+  
+    <section class="section">
+      <div class="container" style="max-width:800px">
+        <div id="comments-root" data-project-id="multisoft-cleaner"></div>
+      </div>
+    </section>
+
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-copy">© <span id="year"></span> Ricardo Torres · MultiSoftCreations</p>
+    </div>
+  </footer>
+  <script src="../../../javascript/main.js"></script>
+  <script type="module" src="../../../javascript/comments.js"></script>
+</body>
+</html>

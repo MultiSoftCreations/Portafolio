@@ -1,0 +1,81 @@
+/* ============================================================
+   Projects catalog specific styles
+   ============================================================ */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.filter-btn {
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: color var(--transition), background var(--transition), border-color var(--transition);
+}
+
+.filter-btn:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.filter-btn.active {
+  color: #fff;
+  background: var(--crimson);
+  border-color: var(--crimson);
+}
+
+/* Detail page helpers (for future project detail pages) */
+.project-detail-hero {
+  padding: 3rem 0 2rem;
+}
+
+.project-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.project-detail-body {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .project-detail-body {
+    grid-template-columns: 1fr 320px;
+  }
+}
+
+.project-sidebar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  height: fit-content;
+}
+
+.project-sidebar h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-bottom: 0.75rem;
+}
+
+.project-sidebar ul {
+  margin-bottom: 1.5rem;
+}
+
+.project-sidebar li {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  padding: 0.25rem 0;
+}

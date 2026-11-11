@@ -1,0 +1,112 @@
+/* SPACE STRIKE — Credits */
+
+.credits-page {
+    position: relative;
+    z-index: 2;
+    min-height: 100%;
+    padding: 24px 18px 48px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.credits-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.credits-header h1 {
+    font-size: 1.6rem;
+    letter-spacing: 0.28em;
+    color: var(--ss-text, #e8eefc);
+    text-shadow: 0 0 24px var(--ss-primary-glow, rgba(61, 180, 255, 0.4));
+}
+
+.credits-header p {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--ss-text-dim, rgba(200, 220, 255, 0.55));
+}
+
+.credit-block {
+    background: var(--ss-bg-panel, rgba(8, 14, 28, 0.92));
+    border: 1px solid var(--ss-border, rgba(100, 160, 255, 0.22));
+    border-radius: var(--ss-radius, 12px);
+    padding: 18px 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--ss-shadow-panel, 0 8px 32px rgba(0, 0, 0, 0.4));
+    animation: ss-fade-in 0.45s var(--ss-ease, ease) both;
+}
+
+.credit-block:nth-child(2) { animation-delay: 0.05s; }
+.credit-block:nth-child(3) { animation-delay: 0.1s; }
+.credit-block:nth-child(4) { animation-delay: 0.15s; }
+.credit-block:nth-child(5) { animation-delay: 0.2s; }
+
+.credit-role {
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ss-primary, #3db4ff);
+    margin-bottom: 8px;
+}
+
+.credit-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ss-text, #e8eefc);
+}
+
+.credit-detail {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--ss-text-dim, rgba(200, 220, 255, 0.6));
+}
+
+.credit-block.co {
+    border-color: rgba(139, 124, 255, 0.35);
+}
+
+.credit-block.co .credit-role {
+    color: var(--ss-secondary, #8b7cff);
+}
+
+.credit-block.collab {
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.credit-block.collab .credit-role {
+    color: #5eb0ff;
+}
+
+.credit-block.studio {
+    border-color: rgba(251, 191, 36, 0.3);
+    text-align: center;
+}
+
+.credit-block.studio .credit-role {
+    color: var(--ss-premium, #fbbf24);
+}
+
+.credits-back {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    border-radius: var(--ss-radius, 12px);
+    border: 1px solid var(--ss-border-strong, rgba(100, 180, 255, 0.4));
+    background: linear-gradient(180deg, rgba(20, 40, 70, 0.55), rgba(8, 14, 28, 0.85));
+    color: var(--ss-text, #e8eefc);
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+}
+
+.credits-foot {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--ss-text-muted, rgba(160, 185, 220, 0.4));
+}

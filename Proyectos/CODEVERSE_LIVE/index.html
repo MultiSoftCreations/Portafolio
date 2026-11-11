@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CODEVERSE — Plataforma para aprender programación desde cero. Cursos, entorno de desarrollo integrado y comunidad. Un producto de MultiSoftCreations." />
+  <meta name="theme-color" content="#0a0a0f" />
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <title>CODEVERSE — Aprender · Programar · Comprender · Compartir</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo">
+        <img src="assets/img/codeverse-logo.png" alt="CODEVERSE" class="logo__img" />
+        <span class="logo__text">CODEVERSE</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav__link active">Inicio</a>
+        <a href="academy.html" class="nav__link">Academia</a>
+        <a href="live.html" class="nav__link">LIVE</a>
+        <a href="community.html" class="nav__link">Comunidad</a>
+        <a href="dashboard.html" class="nav__link">Dashboard</a>
+        <a href="#cta" class="nav__link nav__link--cta">Empezar</a>
+      </nav>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <p class="hero__eyebrow">Plataforma educativa de programación</p>
+        <h1 class="hero__title">
+          Aprende a programar<br />
+          <span class="gradient-text">entendiendo de verdad</span>
+        </h1>
+        <p class="hero__subtitle">
+          CODEVERSE conecta cursos, un entorno de desarrollo real y una comunidad.
+          Escribe código, observa qué hace, guarda proyectos y mejora con ayuda contextual.
+        </p>
+        <div class="hero__actions">
+          <a href="academy.html" class="btn btn--primary">Ir a Academia</a>
+          <a href="live.html" class="btn btn--ghost">Abrir LIVE</a>
+        </div>
+        <p class="hero__note">Primera versión · HTML · CSS · JavaScript · Python</p>
+      </div>
+      <div class="hero__visual">
+        <div class="code-window">
+          <div class="code-window__bar">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="code-window__title">main.py</span>
+          </div>
+          <pre class="code-window__body"><code><span class="token keyword">def</span> <span class="token function">saludar</span>(nombre):
+    <span class="token keyword">print</span>(<span class="token string">f"Hola, {nombre}"</span>)
+    <span class="token keyword">return</span> <span class="token string">"listo"</span>
+
+<span class="token comment"># Ejecuta y observa cada paso</span>
+resultado = saludar(<span class="token string">"CODEVERSE"</span>)
+<span class="token keyword">print</span>(resultado)</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="pilares">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Tres pilares conectados</h2>
+        <p class="section__subtitle">No es solo un curso. No es solo un editor. Es el ciclo completo de aprendizaje.</p>
+      </div>
+      <div class="pillars">
+        <article class="pillar">
+          <div class="pillar__icon">01</div>
+          <h3 class="pillar__title">Academia</h3>
+          <p class="pillar__text">Cursos cortos, ejercicios guiados y rutas claras. Empieza con HTML y Python. Cada lección te lleva a escribir y ejecutar código real.</p>
+        </article>
+        <article class="pillar">
+          <div class="pillar__icon">02</div>
+          <h3 class="pillar__title">CODEVERSE LIVE</h3>
+          <p class="pillar__text">Editor profesional con ejecución completa, visualización paso a paso, variables, consola y proyectos guardados. Todo en el navegador.</p>
+        </article>
+        <article class="pillar">
+          <div class="pillar__icon">03</div>
+          <h3 class="pillar__title">Comunidad</h3>
+          <p class="pillar__text">Pregunta, responde y encuentra explicaciones alternativas. Aprende también de otros estudiantes y mentores.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="live">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">CODEVERSE LIVE</h2>
+        <p class="section__subtitle">Un entorno de desarrollo pensado para aprender, no solo para escribir código.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature"><h4>Editor profesional</h4><p>Resaltado de sintaxis, pestañas, numeración de líneas y diagnósticos en tiempo real.</p></div>
+        <div class="feature"><h4>Ejecución real</h4><p>HTML, CSS, JavaScript y Python se ejecutan de verdad. No simulaciones vacías.</p></div>
+        <div class="feature"><h4>Paso a paso</h4><p>Observa variables, condiciones, ciclos y el flujo del programa mientras se ejecuta.</p></div>
+        <div class="feature"><h4>Proyectos propios</h4><p>Guarda, versiona y retoma tus proyectos. Privados o públicos cuando quieras compartirlos.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="academia">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Academia</h2>
+        <p class="section__subtitle">Aprende haciendo. Cada concepto se prueba en el editor.</p>
+      </div>
+      <div class="langs">
+        <div class="lang-card"><span class="lang-card__tag">Prioritario</span><h3>HTML + CSS</h3><p>Estructura, estilos y la base de cualquier proyecto web.</p></div>
+        <div class="lang-card"><span class="lang-card__tag">Prioritario</span><h3>JavaScript</h3><p>Interactividad, lógica y manipulación del DOM.</p></div>
+        <div class="lang-card"><span class="lang-card__tag">Prioritario</span><h3>Python</h3><p>Pensamiento lógico, algoritmos y automatización desde cero.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="comunidad">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Comunidad</h2>
+        <p class="section__subtitle">Las dudas se resuelven mejor cuando hay varias formas de explicarlas.</p>
+      </div>
+      <div class="community-points">
+        <div class="point"><strong>Preguntas con código</strong><span>Incluye fragmentos y contexto real del error.</span></div>
+        <div class="point"><strong>Explicaciones alternativas</strong><span>Una misma duda puede tener varias respuestas válidas.</span></div>
+        <div class="point"><strong>Progreso visible</strong><span>Cursos, ejercicios y proyectos quedan registrados.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cta" id="cta">
+    <div class="container cta__inner">
+      <h2 class="cta__title">Construyendo la primera versión útil</h2>
+      <p class="cta__text">CODEVERSE se lanza por etapas. Primero un núcleo sólido y seguro: editor, ejecución y aprendizaje real. Luego comunidad y tutoría adaptativa.</p>
+      <div class="cta__actions">
+        <a href="live.html" class="btn btn--primary">Probar LIVE</a>
+        <a href="academy.html" class="btn btn--ghost">Ver Academia</a>
+      </div>
+      <p class="cta__note">Versión de trabajo · Roadmap público en desarrollo</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand-block">
+          <div class="footer__product">
+            <img src="assets/img/codeverse-logo.png" alt="CODEVERSE" class="footer__logo-product" />
+            <div><strong>CODEVERSE</strong><span>Aprender · Programar · Comprender · Compartir</span></div>
+          </div>
+          <div class="footer__brand">
+            <img src="assets/img/msc-logo.jpg" alt="MultiSoftCreations" class="footer__logo-brand" />
+            <div><strong>MultiSoftCreations</strong><span>Software · Solutions · Innovation</span></div>
+          </div>
+        </div>
+        <div class="footer__links">
+          <a href="privacidad.html">Aviso de Privacidad</a>
+          <a href="terminos.html">Términos de Uso</a>
+          <a href="terminos.html#cookies">Cookies</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">© 2026 CODEVERSE · Un producto de <strong>MultiSoftCreations</strong><br />Documento de trabajo v1.2 · Todos los derechos reservados</p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

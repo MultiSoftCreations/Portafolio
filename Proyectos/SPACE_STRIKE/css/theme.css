@@ -1,0 +1,102 @@
+/* ================================================================
+   SPACE STRIKE v3.0 — Design tokens (visual remaster foundation)
+   Single palette used across menu, HUD, shop, overlays.
+================================================================ */
+
+:root {
+    /* Neutrals / space */
+    --ss-bg: #030407;
+    --ss-bg-elevated: #0a0e18;
+    --ss-bg-panel: rgba(8, 14, 28, 0.92);
+    --ss-bg-panel-solid: #0c1220;
+
+    /* Primary — identity cyan/blue */
+    --ss-primary: #3db4ff;
+    --ss-primary-dim: #167dcc;
+    --ss-primary-glow: rgba(61, 180, 255, 0.45);
+    --ss-primary-soft: rgba(61, 180, 255, 0.12);
+
+    /* Secondary — violet energy */
+    --ss-secondary: #8b7cff;
+    --ss-secondary-glow: rgba(139, 124, 255, 0.4);
+
+    /* Energy — shots / abilities */
+    --ss-energy: #7ef0ff;
+    --ss-energy-hot: #ff9f1a;
+
+    /* Danger */
+    --ss-danger: #ff4d6d;
+    --ss-danger-glow: rgba(255, 77, 109, 0.45);
+
+    /* Success / rewards */
+    --ss-success: #3dff9a;
+    --ss-success-glow: rgba(61, 255, 154, 0.35);
+
+    /* Boss */
+    --ss-boss: #ff6b35;
+    --ss-boss-glow: rgba(255, 107, 53, 0.5);
+
+    /* Premium gold */
+    --ss-premium: #fbbf24;
+    --ss-premium-glow: rgba(251, 191, 36, 0.4);
+
+    /* Text */
+    --ss-text: #e8eefc;
+    --ss-text-dim: rgba(200, 220, 255, 0.55);
+    --ss-text-muted: rgba(160, 185, 220, 0.4);
+
+    /* Borders */
+    --ss-border: rgba(100, 160, 255, 0.22);
+    --ss-border-strong: rgba(100, 180, 255, 0.4);
+
+    /* Motion */
+    --ss-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --ss-duration-fast: 0.15s;
+    --ss-duration: 0.28s;
+    --ss-duration-slow: 0.45s;
+
+    /* Radius */
+    --ss-radius: 12px;
+    --ss-radius-sm: 8px;
+    --ss-radius-lg: 16px;
+
+    /* Shadows */
+    --ss-shadow-panel: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--ss-border);
+    --ss-glow-primary: 0 0 20px var(--ss-primary-glow);
+}
+
+/* Shared utility classes for remaster UI */
+.ss-panel {
+    background: var(--ss-bg-panel);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius);
+    box-shadow: var(--ss-shadow-panel);
+    color: var(--ss-text);
+}
+
+.ss-btn-press {
+    transition:
+        transform var(--ss-duration-fast) var(--ss-ease),
+        box-shadow var(--ss-duration) var(--ss-ease),
+        border-color var(--ss-duration) var(--ss-ease),
+        background var(--ss-duration) var(--ss-ease);
+}
+
+.ss-btn-press:active {
+    transform: scale(0.97);
+}
+
+@keyframes ss-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.ss-enter {
+    animation: ss-fade-in var(--ss-duration-slow) var(--ss-ease) both;
+}

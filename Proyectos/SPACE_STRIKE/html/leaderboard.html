@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030407">
+    <title>SPACE STRIKE — RANKING</title>
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/leaderboard.css">
+    <style>
+        .tabs { display:flex; gap:8px; width:min(420px,94vw); margin-bottom:12px; }
+        .tab {
+            flex:1; height:40px; border-radius:6px; cursor:pointer;
+            border:1px solid rgba(90,170,255,0.3);
+            background:rgba(8,16,28,0.8); color:#9cc; font-weight:700; letter-spacing:1px;
+        }
+        .tab.active { border-color:#35aaff; color:#e8f4ff; background:rgba(0,60,120,0.35); }
+        .lb-row {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:10px 12px; margin-bottom:6px;
+            border:1px solid rgba(90,170,255,0.18); border-radius:6px;
+            background:rgba(6,14,26,0.85); font-size:13px;
+        }
+        .lb-rank { width:28px; color:#35aaff; font-weight:800; }
+        .lb-name { flex:1; letter-spacing:1px; }
+        .lb-score { color:#9fd4ff; font-weight:700; font-variant-numeric:tabular-nums; }
+        .lb-wave { font-size:10px; color:rgba(140,180,220,0.55); margin-left:8px; }
+        .lb-row.premium {
+            border-color: rgba(255, 200, 80, 0.55);
+            background: linear-gradient(90deg, rgba(60,40,10,0.55), rgba(6,14,26,0.9));
+            box-shadow: 0 0 12px rgba(255, 180, 40, 0.12);
+        }
+        .lb-badge {
+            display:inline-block; margin-left:6px; padding:1px 6px;
+            font-size:9px; font-weight:900; letter-spacing:1px;
+            border-radius:3px; vertical-align:middle;
+            color:#1a1200; background:linear-gradient(90deg,#ffe08a,#ffb84d,#ffe08a);
+            box-shadow:0 0 8px rgba(255,200,80,0.45);
+        }
+        .lb-name.premium-name { color:#ffe6a8; font-weight:800; }
+        .status-msg { font-size:12px; color:rgba(160,200,240,0.65); margin:8px 0 12px; text-align:center; }
+        .empty { text-align:center; opacity:0.5; padding:24px; }
+    </style>
+</head>
+<body>
+    <div id="space"></div>
+    <main class="lb" style="position:relative;z-index:5;min-height:100%;display:flex;flex-direction:column;align-items:center;padding:20px 14px 40px;">
+        <header class="page-header" style="text-align:center;">
+            <div class="page-title" style="font-size:clamp(26px,6vw,40px);font-weight:900;letter-spacing:6px;">RANKING</div>
+            <div class="page-subtitle" style="margin-top:6px;font-size:11px;letter-spacing:3px;color:rgba(140,190,255,0.55);">GLOBAL // V3.3.6</div>
+        </header>
+        <div class="separator" style="width:min(240px,55vw);height:1px;margin:12px 0;background:linear-gradient(90deg,transparent,rgba(0,150,255,0.5),transparent);"></div>
+
+        <div class="tabs">
+            <button type="button" class="tab active" id="tabGlobal">GLOBAL (nube)</button>
+        </div>
+        <p id="offlineHint" style="display:none;width:min(420px,94vw);font-size:11px;color:#fbbf24;margin:0 0 10px;line-height:1.35;">Sin conexión: el score se guarda temporalmente y se sube solo al recuperar internet. Luego se borra el rastro local.</p>
+        <div id="statusMsg" class="status-msg">Cargando ranking global…</div>
+        <section id="list" style="width:min(420px,94vw);"></section>
+
+        <section id="adminRankingPanel" class="hidden" style="width:min(420px,94vw);margin:14px auto;padding:12px;border:1px solid rgba(255,80,80,0.45);border-radius:8px;background:rgba(40,8,8,0.85);">
+            <div style="font-size:12px;letter-spacing:2px;color:#ff8a8a;font-weight:800;margin-bottom:8px;">⚠ PANEL ADMIN · RANKING</div>
+            <p style="font-size:11px;opacity:0.8;margin:0 0 10px;line-height:1.4;">SOLO DUEÑO. Borra scores + todos los usuarios en la nube y progreso local de este dispositivo.</p>
+            <button type="button" id="adminWipeRanking" style="width:100%;height:44px;border-radius:6px;border:1px solid rgba(255,100,100,0.5);background:rgba(120,20,20,0.9);color:#ffe0e0;font-weight:800;letter-spacing:1px;cursor:pointer;">🗑 WIPE TOTAL (SOLO DUEÑO)</button>
+            <div id="adminWipeStatus" style="font-size:11px;margin-top:8px;color:#ffc9c9;"></div>
+        </section>
+
+        <section class="actions" style="width:min(360px,90vw);margin-top:16px;">
+            <button id="backButton" class="menu-button" type="button" style="width:100%;height:48px;border:1px solid rgba(90,170,255,0.28);border-radius:5px;background:linear-gradient(90deg,rgba(10,25,42,0.75),rgba(8,15,27,0.9));color:#dcecff;font-weight:700;letter-spacing:2px;cursor:pointer;">
+                &lt; VOLVER AL MENÚ
+            </button>
+        </section>
+        <div class="version" style="position:fixed;left:12px;bottom:10px;font-size:10px;letter-spacing:2px;color:rgba(120,160,200,0.4);">V3.3.6</div>
+    </main>
+    <div id="transition"></div>
+
+    <script src="../javascript/player-profile.js"></script>
+    <script src="../javascript/auth.js"></script>
+    <script src="../javascript/premium-codes.js"></script>
+    <script src="../javascript/leaderboard-global.js"></script>
+    <script src="../javascript/managers/admin-control.js"></script>
+    <script src="../javascript/fullscreen.js"></script>
+    <script>
+        document.getElementById("backButton").onclick = function () {
+            var t = document.getElementById("transition");
+            if (t) t.classList.add("active");
+            setTimeout(function () { location.href = "../index.html"; }, 400);
+        };
+
+        (function () {
+            var space = document.getElementById("space");
+            if (space) {
+                for (var i = 0; i < 50; i++) {
+                    var s = document.createElement("div");
+                    s.className = "star";
+                    s.style.cssText = "position:absolute;background:#fff;border-radius:50%;width:" + (Math.random()*2+0.4) + "px;height:" + (Math.random()*2+0.4) + "px;left:" + Math.random()*100 + "%;top:" + Math.random()*100 + "%;";
+                    space.appendChild(s);
+                }
+            }
+        })();
+
+        function fmt(n) {
+            return String(Math.floor(n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function render(rows) {
+            var list = document.getElementById("list");
+            if (!rows || !rows.length) {
+                list.innerHTML = '<div class="empty">Sin puntuaciones aún</div>';
+                return;
+            }
+            list.innerHTML = rows.map(function (r, i) {
+                var prem = !!r.premium;
+                return '<div class="lb-row' + (prem ? ' premium' : '') + '">' +
+                    '<span class="lb-rank">' + String(i + 1).padStart(2, "0") + "</span>" +
+                    '<span class="lb-name' + (prem ? ' premium-name' : '') + '">' +
+                    (r.name || "———") +
+                    (prem ? '<span class="lb-badge">★ PREMIUM</span>' : '') +
+                    "</span>" +
+                    '<span class="lb-score">' + fmt(r.score) + "</span>" +
+                    (r.wave ? '<span class="lb-wave">W' + r.wave + "</span>" : "") +
+                    "</div>";
+            }).join("");
+        }
+
+        function loadLocal() {
+            document.getElementById("statusMsg").textContent = "Ranking de este dispositivo";
+            var rows = [];
+            try {
+                if (window.SpaceStrikePlayer && window.SpaceStrikePlayer.getLeaderboard) {
+                    rows = window.SpaceStrikePlayer.getLeaderboard() || [];
+                } else {
+                    rows = JSON.parse(localStorage.getItem("spaceStrikeLeaderboard") || "[]");
+                }
+            } catch (e) { rows = []; }
+            rows = (rows || []).map(function (r) {
+                return { name: r.name, score: r.score, wave: r.wave || r.level || 1 };
+            }).sort(function (a, b) { return b.score - a.score; }).slice(0, 20);
+            render(rows);
+        }
+
+        function loadGlobal() {
+            var msg = document.getElementById("statusMsg");
+            msg.textContent = "Cargando ranking global…";
+            if (!window.SpaceStrikeGlobalLB) {
+                msg.textContent = "Módulo global no disponible";
+                render([]);
+                return;
+            }
+            function fetchAndShow(extra) {
+                window.SpaceStrikeGlobalLB.top(30).then(function (rows) {
+                    var err = window.SpaceStrikeGlobalLB.lastError && window.SpaceStrikeGlobalLB.lastError();
+                    if (!rows || !rows.length) {
+                        msg.textContent = err
+                            ? ("Error: " + err)
+                            : "Global vacío — juega Infinito (con internet se sube solo)";
+                    } else {
+                        msg.textContent = "Top global (" + rows.length + ")" + (extra ? " · " + extra : "");
+                    }
+                    render(rows);
+                });
+            }
+            /* Auto: intenta subir el mejor score local del piloto actual */
+            if (window.SpaceStrikeGlobalLB.syncLocalBest) {
+                window.SpaceStrikeGlobalLB.syncLocalBest().then(function (res) {
+                    var note = "";
+                    if (res && res.ok) {
+                        if (res.action === "created") note = "Récord subido (nuevo)";
+                        else if (res.action === "updated") note = "Récord actualizado";
+                        else if (res.action === "kept") note = "Ya estaba en global";
+                        else note = "Sincronizado";
+                    } else if (res && res.reason === "name") {
+                        note = "Registra piloto en el menú";
+                    } else if (res && res.reason === "score") {
+                        note = "";
+                    } else if (res && (res.error || res.reason)) {
+                        note = String(res.error || res.reason);
+                    }
+                    fetchAndShow(note);
+                }).catch(function () { fetchAndShow(""); });
+            } else {
+                fetchAndShow("");
+            }
+        }
+
+        var syncBtn = null; /* local ranking eliminado */
+        if (syncBtn) {
+            syncBtn.onclick = function () {
+                var msg = document.getElementById("statusMsg");
+                msg.textContent = "Subiendo récord local…";
+                if (!window.SpaceStrikeGlobalLB || !window.SpaceStrikeGlobalLB.syncLocalBest) {
+                    msg.textContent = "Módulo no disponible";
+                    return;
+                }
+                window.SpaceStrikeGlobalLB.syncLocalBest().then(function (res) {
+                    if (res && res.ok) {
+                        msg.textContent = "OK · score " + (res.score || "") + " · " + (res.action || "listo");
+                        loadGlobal();
+                    } else {
+                        msg.textContent = "No se pudo: " + ((res && (res.error || res.reason)) || "error");
+                    }
+                });
+            };
+        }
+
+        document.getElementById("tabGlobal").onclick = function () {
+            loadGlobal();
+        };
+
+        try {
+            var oh = document.getElementById("offlineHint");
+            if (oh) oh.style.display = (navigator.onLine === false) ? "block" : "none";
+            window.addEventListener("online", function () {
+                if (oh) oh.style.display = "none";
+                if (window.SpaceStrikeGlobalLB && window.SpaceStrikeGlobalLB.syncLocalBest) {
+                    window.SpaceStrikeGlobalLB.syncLocalBest().then(function () {
+                        try {
+                            if (window.SpaceStrikePlayer && window.SpaceStrikePlayer.clearLocalRankingTraces) {
+                                window.SpaceStrikePlayer.clearLocalRankingTraces();
+                            }
+                        } catch (e) {}
+                        loadGlobal();
+                    });
+                } else {
+                    loadGlobal();
+                }
+            });
+            window.addEventListener("offline", function () {
+                if (oh) oh.style.display = "block";
+            });
+            if (navigator.onLine !== false && window.SpaceStrikePlayer && window.SpaceStrikePlayer.clearLocalRankingTraces) {
+                window.SpaceStrikePlayer.clearLocalRankingTraces();
+            }
+        } catch (eNet) {}
+
+        loadGlobal();
+    </script>
+    <script src="../javascript/core/game-state.js"></script>
+    <script src="../javascript/core/player-data.js"></script>
+    <script src="../javascript/core/save-manager.js"></script>
+    <script src="../javascript/systems/particles.js"></script>
+    <script src="../javascript/systems/audio.js"></script>
+
+    <script src="../javascript/managers/shop-manager.js"></script>
+
+    <script src="../javascript/managers/ad-manager.js"></script>
+
+    <script>
+    (function () {
+        function showAdmin() {
+            var panel = document.getElementById("adminRankingPanel");
+            if (!panel) return;
+            var ok = false;
+            try {
+                if (window.SpaceStrikeAdmin && window.SpaceStrikeAdmin.isOwner) {
+                    ok = !!window.SpaceStrikeAdmin.isOwner();
+                } else if (window.SpaceStrikeCodes && window.SpaceStrikeCodes.isAdmin) {
+                    ok = false; /* ranking wipe panel: owner only */
+                }
+            } catch (e) {}
+            if (ok) panel.classList.remove("hidden");
+            else panel.classList.add("hidden");
+        }
+        setTimeout(showAdmin, 800);
+        setTimeout(showAdmin, 2000);
+        var btn = document.getElementById("adminWipeRanking");
+        var st = document.getElementById("adminWipeStatus");
+        if (btn) {
+            btn.addEventListener("click", function () {
+                if (!confirm("¿WIPE TOTAL?\nSe borrarán ranking Y todos los usuarios.\nSolo el dueño. NO se puede deshacer.")) return;
+                if (!confirm("Confirma de nuevo: borrar ranking completo y high scores de usuarios.")) return;
+                st.textContent = "Borrando… espera…";
+                btn.disabled = true;
+                var api = window.SpaceStrikeGlobalLB;
+                var fn = (window.SpaceStrikeAdmin && window.SpaceStrikeAdmin.totalWipe)
+                    || (api && (api.wipeRankingAndScores || api.resetGlobalRanking));
+                if (!fn) {
+                    st.textContent = "API no disponible";
+                    btn.disabled = false;
+                    return;
+                }
+                var ctx = window.SpaceStrikeAdmin && window.SpaceStrikeAdmin.totalWipe ? window.SpaceStrikeAdmin : api;
+                Promise.resolve(fn.call(ctx, {})).then(function (res) {
+                    btn.disabled = false;
+                    if (res && res.ok) {
+                        st.textContent = res.message || ("Listo. Borrados: " + (res.deleted || 0));
+                        try {
+                            if (typeof loadBoard === "function") loadBoard();
+                            else location.reload();
+                        } catch (e) { location.reload(); }
+                    } else {
+                        st.textContent = "Error: " + ((res && res.error) || "falló");
+                    }
+                }).catch(function (err) {
+                    btn.disabled = false;
+                    st.textContent = "Error: " + err;
+                });
+            });
+        }
+    })();
+    </script>
+
+</body>
+</html>

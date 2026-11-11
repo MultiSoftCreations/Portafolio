@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#030407">
+<title>SPACE STRIKE — SUPER ADMIN</title>
+<style>
+body{margin:0;font-family:system-ui,sans-serif;background:#030407;color:#dcecff;padding:16px;max-width:520px;margin:0 auto}
+h1{font-size:18px;letter-spacing:2px}
+h2{font-size:13px;letter-spacing:1px;color:#8ab4ff;margin:18px 0 8px}
+input,button{font:inherit;padding:10px 12px;margin:4px 0;border-radius:6px;border:1px solid rgba(90,170,255,0.3);background:#0a1520;color:#e8f4ff;width:100%;box-sizing:border-box}
+button{cursor:pointer;font-weight:700;letter-spacing:1px}
+button.danger{border-color:rgba(255,80,80,0.5);background:#3a1010;color:#ffd0d0}
+button.owner{border-color:rgba(255,200,80,0.5);background:#2a2010;color:#ffe8b0}
+pre{background:#060a10;padding:10px;border-radius:8px;white-space:pre-wrap;word-break:break-all;font-size:12px;max-height:200px;overflow:auto}
+.hidden{display:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;margin-left:6px}
+.badge.owner{background:#5a4010;color:#ffd88a}
+.badge.admin{background:#103050;color:#9cf}
+.badge.denied{background:#401010;color:#f99}
+.admin-row{display:flex;gap:8px;align-items:center;margin:6px 0;font-size:13px}
+.admin-row button{width:auto;padding:6px 10px;font-size:11px}
+a{color:#7eb6ff}
+.hint{font-size:11px;opacity:0.65;line-height:1.4}
+</style>
+</head>
+<body>
+<h1>SUPER ADMIN <span id="roleBadge" class="badge denied">…</span></h1>
+<p class="hint">Inicia sesión con Google en el menú del juego. Solo el <b>dueño</b> puede wipe total y gestionar admins.</p>
+<p id="who" class="hint"></p>
+<div id="gateMsg" class="hint">Comprobando sesión…</div>
+<div id="panelCodes" class="hidden">
+  <h2>Códigos premium (admins)</h2>
+  <input id="count" type="number" value="5" min="1" max="30">
+  <button type="button" id="gen">GENERAR CÓDIGOS</button>
+  <pre id="out"></pre>
+</div>
+<div id="panelAdmins" class="hidden">
+  <h2>Gestionar admins (solo dueño)</h2>
+  <p class="hint">Agrega o quita correos. El dueño no se puede quitar.</p>
+  <div id="adminList"></div>
+  <input id="newAdminEmail" type="email" placeholder="correo@gmail.com">
+  <button type="button" id="addAdminBtn" class="owner">＋ AGREGAR ADMIN</button>
+  <pre id="adminOut"></pre>
+</div>
+<div id="panelWipe" class="hidden">
+  <h2>⚠ WIPE TOTAL (solo dueño)</h2>
+  <p class="hint">Borra <b>scores</b> + <b>users</b> en la nube y limpia localStorage de este dispositivo. Irreversible.</p>
+  <label class="hint"><input type="checkbox" id="wipeCodesToo"> También borrar códigos premium/recompensa</label>
+  <button type="button" id="totalWipeBtn" class="danger">🗑 WIPE TOTAL DE TODO EL PROGRESO</button>
+  <pre id="wipeOut"></pre>
+</div>
+
+<div id="panelSchedule" class="hidden">
+  <h2>Reinicio programado (solo dueño)</h2>
+  <p class="hint">El juego procesa el job solo cuando alguien tenga la página abierta después de la fecha, o en cuanto cargue. Para exactitud al minuto, deja una pestaña abierta o entra cerca de la hora.</p>
+  <label class="hint">Fecha y hora local</label>
+  <input id="jobWhen" type="datetime-local">
+  <label class="hint">Alcance</label>
+  <select id="jobScope">
+    <option value="all">Todos (wipe total users+scores)</option>
+    <option value="ranking">Solo ranking (scores)</option>
+    <option value="user">Un jugador (por email de Google)</option>
+  </select>
+  <input id="jobEmail" type="email" placeholder="email del jugador (si alcance = un jugador)">
+  <input id="jobNote" type="text" placeholder="Nota opcional">
+  <button type="button" id="scheduleResetBtn" class="owner">PROGRAMAR REINICIO</button>
+  <button type="button" id="refreshJobsBtn">Ver programados</button>
+  <pre id="jobsOut"></pre>
+</div>
+
+<p style="margin-top:24px"><a href="../index.html">← Volver al menú</a></p>
+
+<div style="opacity:0.4;font-size:10px;margin-top:12px">V3.3.6</div>
+<script src="../javascript/auth.js"></script>
+<script src="../javascript/premium-codes.js"></script>
+<script src="../javascript/leaderboard-global.js"></script>
+<script src="../javascript/managers/admin-control.js"></script>
+<script src="../javascript/managers/scheduled-jobs.js"></script>
+<script src="../javascript/managers/push-announcements.js"></script>
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function refreshRole() {
+    var A = window.SpaceStrikeAdmin;
+    var email = "";
+    try {
+      var u = window.SpaceStrikeAuth && window.SpaceStrikeAuth.user && window.SpaceStrikeAuth.user();
+      email = (u && u.email) || "";
+    } catch (e) {}
+    $("who").textContent = email ? ("Sesión: " + email) : "Sin sesión Google — entra desde el menú";
+    var badge = $("roleBadge");
+    if (A && A.isOwner && A.isOwner()) {
+      badge.textContent = "DUEÑO";
+      badge.className = "badge owner";
+      $("gateMsg").classList.add("hidden");
+      $("panelCodes").classList.remove("hidden");
+      $("panelAdmins").classList.remove("hidden");
+      $("panelWipe").classList.remove("hidden");
+      $("panelSchedule").classList.remove("hidden");
+      renderAdminList();
+    } else if (A && A.isAdmin && A.isAdmin()) {
+      badge.textContent = "ADMIN";
+      badge.className = "badge admin";
+      $("gateMsg").textContent = "Eres admin: códigos sí. Wipe total y admins solo el dueño.";
+      $("panelCodes").classList.remove("hidden");
+      $("panelAdmins").classList.add("hidden");
+      $("panelWipe").classList.add("hidden");
+    } else {
+      badge.textContent = "SIN ACCESO";
+      badge.className = "badge denied";
+      $("gateMsg").textContent = "No eres admin.";
+      $("panelCodes").classList.add("hidden");
+      $("panelAdmins").classList.add("hidden");
+      $("panelWipe").classList.add("hidden");
+    }
+  }
+  function renderAdminList() {
+    var A = window.SpaceStrikeAdmin;
+    var box = $("adminList");
+    if (!A || !box) return;
+    var list = A.getAdmins ? A.getAdmins() : [];
+    box.innerHTML = "";
+    list.forEach(function (em) {
+      var row = document.createElement("div");
+      row.className = "admin-row";
+      var isOwner = em === (A.OWNER_EMAIL || "");
+      row.innerHTML = "<span>" + em + (isOwner ? " ★" : "") + "</span>";
+      if (!isOwner) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = "Quitar";
+        b.className = "danger";
+        b.onclick = function () {
+          if (!confirm("¿Quitar admin " + em + "?")) return;
+          A.removeAdmin(em).then(function (res) {
+            $("adminOut").textContent = JSON.stringify(res, null, 2);
+            renderAdminList();
+          });
+        };
+        row.appendChild(b);
+      }
+      box.appendChild(row);
+    });
+  }
+  $("gen").onclick = function () {
+    var n = Number($("count").value) || 5;
+    $("out").textContent = "Generando…";
+    if (!window.SpaceStrikeCodes || !window.SpaceStrikeCodes.generate) {
+      $("out").textContent = "API códigos no lista";
+      return;
+    }
+    window.SpaceStrikeCodes.generate(n, "SS").then(function (res) {
+      if (res.ok) $("out").textContent = (res.codes || []).join("\n");
+      else $("out").textContent = "Error: " + res.error;
+    });
+  };
+  $("addAdminBtn").onclick = function () {
+    var em = $("newAdminEmail").value;
+    var A = window.SpaceStrikeAdmin;
+    if (!A) return;
+    A.addAdmin(em).then(function (res) {
+      $("adminOut").textContent = JSON.stringify(res, null, 2);
+      if (res.ok) { $("newAdminEmail").value = ""; renderAdminList(); }
+    });
+  };
+  $("totalWipeBtn").onclick = function () {
+    var A = window.SpaceStrikeAdmin;
+    if (!A || !A.isOwner || !A.isOwner()) {
+      $("wipeOut").textContent = "Solo el dueño";
+      return;
+    }
+    if (!confirm("¿WIPE TOTAL?\nSe borrarán TODOS los usuarios y el ranking.\nNO se puede deshacer.")) return;
+    if (!confirm("Segunda confirmación.")) return;
+    if (!confirm("ÚLTIMA: progreso de TODOS se elimina.")) return;
+    var wipeCodes = $("wipeCodesToo").checked;
+    $("wipeOut").textContent = "Ejecutando…";
+    $("totalWipeBtn").disabled = true;
+    A.totalWipe({ wipeCodes: wipeCodes }).then(function (res) {
+      $("totalWipeBtn").disabled = false;
+      $("wipeOut").textContent = JSON.stringify(res, null, 2);
+    });
+  };
+  
+  if ($("scheduleResetBtn")) {
+    $("scheduleResetBtn").onclick = function () {
+      var A = window.SpaceStrikeJobs;
+      if (!A) { $("jobsOut").textContent = "API jobs no lista"; return; }
+      var whenEl = $("jobWhen");
+      var runAt = whenEl && whenEl.value ? new Date(whenEl.value).getTime() : 0;
+      var scope = $("jobScope").value;
+      A.scheduleReset({
+        runAt: runAt,
+        scope: scope,
+        targetEmail: $("jobEmail").value,
+        note: $("jobNote").value
+      }).then(function (res) {
+        $("jobsOut").textContent = JSON.stringify(res, null, 2);
+      });
+    };
+  }
+  if ($("refreshJobsBtn")) {
+    $("refreshJobsBtn").onclick = function () {
+      var A = window.SpaceStrikeJobs;
+      if (!A) return;
+      A.listJobs(true).then(function (res) {
+        $("jobsOut").textContent = JSON.stringify(res, null, 2);
+      });
+    };
+  }
+  function boot() {
+
+    var A = window.SpaceStrikeAdmin;
+    if (A && A.init) A.init().then(refreshRole);
+    else refreshRole();
+    setTimeout(refreshRole, 1200);
+    setTimeout(refreshRole, 3000);
+  }
+  boot();
+})();
+</script>
+<script src="../javascript/managers/ad-manager.js"></script>
+</body>
+</html>

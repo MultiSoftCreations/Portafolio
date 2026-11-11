@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CODEVERSE LIVE — Editor y entorno de ejecución en el navegador." />
+  <meta name="theme-color" content="#0a0a0f" />
+  <title>LIVE — CODEVERSE</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/live.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body class="live-page">
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo">
+        <img src="assets/img/codeverse-logo.png" alt="CODEVERSE" class="logo__img" />
+        <span class="logo__text">CODEVERSE</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav__link">Inicio</a>
+        <a href="academy.html" class="nav__link">Academia</a>
+        <a href="live.html" class="nav__link active">LIVE</a>
+        <a href="community.html" class="nav__link">Comunidad</a>
+        <a href="dashboard.html" class="nav__link">Dashboard</a>
+      </nav>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="live-main">
+    <div class="live-toolbar">
+      <div class="live-toolbar__left">
+        <span class="live-toolbar__brand">LIVE</span>
+        <span class="live-toolbar__sep"></span>
+        <div class="live-tabs" role="tablist">
+          <button class="live-tab active" data-tab="html" role="tab">HTML</button>
+          <button class="live-tab" data-tab="css" role="tab">CSS</button>
+          <button class="live-tab" data-tab="js" role="tab">JavaScript</button>
+        </div>
+      </div>
+      <div class="live-toolbar__right">
+        <span class="live-status" id="live-status">Cargando editor…</span>
+        <button class="btn btn--sm btn--ghost" id="btn-clear-console" title="Limpiar consola">Limpiar</button>
+        <button class="btn btn--sm btn--primary" id="btn-run" title="Ejecutar (Ctrl+Enter)" disabled>▶ Ejecutar</button>
+      </div>
+    </div>
+
+    <div class="live-workspace">
+      <section class="live-panel live-panel--editor" aria-label="Editor">
+        <div id="editor-host" class="editor-host">
+          <div id="editor-loading" style="padding:24px;color:#a0a0b0;font-family:system-ui;font-size:14px;">
+            Cargando CodeMirror…
+          </div>
+        </div>
+      </section>
+
+      <section class="live-panel live-panel--right">
+        <div class="preview-wrap">
+          <div class="panel-label">Vista previa</div>
+          <iframe
+            id="preview-frame"
+            class="preview-frame"
+            sandbox="allow-scripts"
+            title="Vista previa del código"
+          ></iframe>
+        </div>
+        <div class="console-wrap">
+          <div class="panel-label">Consola</div>
+          <div id="console-output" class="console-output" aria-live="polite"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/main.js"></script>
+  <script type="module">
+    const loading = document.getElementById('editor-loading');
+    const statusEl = document.getElementById('live-status');
+    const btnRun = document.getElementById('btn-run');
+
+    function showError(msg) {
+      if (loading) {
+        loading.innerHTML = '<strong style="color:#f87171">Error al cargar el editor</strong><br><br>' +
+          msg + '<br><br><span style="color:#6b6b7b;font-size:13px">Abre la consola del navegador (F12) para más detalles. Necesitas internet para cargar CodeMirror.</span>';
+      }
+      if (statusEl) statusEl.textContent = 'Error';
+    }
+
+    try {
+      const { EditorView, basicSetup } = await import('https://esm.sh/codemirror@6.0.1');
+      const { html } = await import('https://esm.sh/@codemirror/lang-html@6.4.9');
+      const { css } = await import('https://esm.sh/@codemirror/lang-css@6.3.1');
+      const { javascript } = await import('https://esm.sh/@codemirror/lang-javascript@6.2.2');
+
+      window.CodeMirror = { EditorView, basicSetup, html, css, javascript };
+
+      if (loading) loading.remove();
+      if (statusEl) statusEl.textContent = 'Listo';
+      if (btnRun) btnRun.disabled = false;
+
+      const script = document.createElement('script');
+      script.src = 'js/live.js';
+      script.onerror = () => showError('No se pudo cargar js/live.js');
+      document.body.appendChild(script);
+    } catch (err) {
+      console.error(err);
+      showError(String(err.message || err));
+    }
+  </script>
+</body>
+</html>

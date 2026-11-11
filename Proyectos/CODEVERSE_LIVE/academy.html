@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Academia CODEVERSE — Cursos y ejercicios de programación." />
+  <meta name="theme-color" content="#0a0a0f" />
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <title>Academia — CODEVERSE</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo">
+        <img src="assets/img/codeverse-logo.png" alt="CODEVERSE" class="logo__img" />
+        <span class="logo__text">CODEVERSE</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav__link">Inicio</a>
+        <a href="academy.html" class="nav__link active">Academia</a>
+        <a href="live.html" class="nav__link">LIVE</a>
+        <a href="community.html" class="nav__link">Comunidad</a>
+        <a href="dashboard.html" class="nav__link">Dashboard</a>
+        <a href="live.html" class="nav__link nav__link--cta">Abrir LIVE</a>
+      </nav>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <div class="page__header">
+        <p class="page__eyebrow">Academia</p>
+        <h1 class="page__title">Aprende haciendo</h1>
+        <p class="page__desc">
+          Cursos divididos en módulos, lecciones y actividades cortas.
+          Cada ejercicio se puede abrir directamente en CODEVERSE LIVE.
+        </p>
+      </div>
+
+      <div class="cards-grid">
+        <article class="card">
+          <span class="lang-card__tag">Ruta prioritaria</span>
+          <h3>HTML + CSS</h3>
+          <p>Estructura de páginas, selectores, cascada, layout y diseño responsivo. Base de cualquier proyecto web.</p>
+          <p class="meta">Estado: en preparación · Próximamente</p>
+        </article>
+        <article class="card">
+          <span class="lang-card__tag">Ruta prioritaria</span>
+          <h3>JavaScript</h3>
+          <p>Variables, funciones, DOM, eventos y lógica. Interactividad real en el navegador.</p>
+          <p class="meta">Estado: en preparación · Próximamente</p>
+        </article>
+        <article class="card">
+          <span class="lang-card__tag">Ruta prioritaria</span>
+          <h3>Python</h3>
+          <p>Pensamiento lógico, estructuras de control, funciones y ejercicios prácticos desde cero.</p>
+          <p class="meta">Estado: en preparación · Próximamente</p>
+        </article>
+      </div>
+
+      <div class="placeholder-card" style="margin-top: 40px;">
+        <span class="status">En construcción</span>
+        <h3>Contenido de cursos en desarrollo</h3>
+        <p>
+          Según el roadmap, la Academia inicial (HTML y Python) es la etapa 2.
+          Aquí aparecerán los módulos, lecciones y ejercicios vinculados a LIVE.
+        </p>
+        <a href="live.html" class="btn btn--primary btn--sm">Ir a LIVE mientras tanto</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand-block">
+          <div class="footer__product">
+            <img src="assets/img/codeverse-logo.png" alt="CODEVERSE" class="footer__logo-product" />
+            <div><strong>CODEVERSE</strong><span>Aprender · Programar · Comprender · Compartir</span></div>
+          </div>
+          <div class="footer__brand">
+            <img src="assets/img/msc-logo.jpg" alt="MultiSoftCreations" class="footer__logo-brand" />
+            <div><strong>MultiSoftCreations</strong><span>Software · Solutions · Innovation</span></div>
+          </div>
+        </div>
+        <div class="footer__links">
+          <a href="privacidad.html">Aviso de Privacidad</a>
+          <a href="terminos.html">Términos de Uso</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">© 2026 CODEVERSE · Un producto de <strong>MultiSoftCreations</strong></p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+SPACE STRIKE 2.4.0 — Google Login + avisos al celular + códigos
+================================================================
+
+A) FIREBASE — Login Google
+1. console.firebase.google.com → proyecto space-strike-2b542
+2. Build → Authentication → Get started
+3. Sign-in method → Google → Enable → Save
+4. Authentication → Settings → Authorized domains
+   Añade: spacestrike.netlify.app
+
+B) FIRESTORE — reglas (pestaña Rules → Publicar)
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /scores/{id} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(['name','score','wave','date']);
+      allow update: if request.resource.data.score is number
+        && request.resource.data.score > resource.data.score;
+      allow delete: if false;
+    }
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    match /premiumCodes/{code} {
+      allow read: if true;
+      allow create: if true;  // o solo tu admin
+      allow update: if resource.data.used == false
+        && request.resource.data.used == true;
+      allow delete: if false;
+    }
+  }
+}
+
+C) AVISOS AL CELULAR (ntfy — gratis)
+1. Instala la app "ntfy" (Play Store / App Store)
+2. Suscríbete al topic: spacestrike-premium-ricardo
+   (o cambia NTFY_TOPIC en javascript/premium.js)
+3. Cuando alguien toque YA PAGUÉ te llega notificación
+
+D) GENERAR CÓDIGOS
+- Opción 1: html/admin-codes.html (contraseña: multisoftdev — cámbiala)
+- Opción 2: Firebase → Firestore → colección premiumCodes
+  Documento ID = el código (ej. SS-AB12CD34)
+  Campos: used: false, createdAt: (número)
+
+E) FLUJO JUGADOR
+1. ENTRAR CON GOOGLE (menú)
+2. PREMIUM → COMPRAR ($49 MP)
+3. YA PAGUÉ → te llega aviso al celular
+4. Tú generas código y se lo envías (WhatsApp/Discord)
+5. Canjea código → Premium en la nube (no paga 2 veces en otro celular)

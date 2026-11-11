@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta
+        name="theme-color"
+        content="#030407"
+    >
+
+    <meta
+        name="description"
+        content="Space Strike - Deep Space Combat System"
+    >
+
+    <title>SPACE STRIKE — MISIÓN</title>
+
+
+    <!-- =========================================================
+         CSS DEL JUEGO
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../css/game.css"
+    >
+
+    <script src="../javascript/preloader.js"></script>
+</head>
+
+
+<body class="ss-loading" class="ss-loading">
+
+    <!-- =========================================================
+         CONTENEDOR PRINCIPAL DEL JUEGO
+    ========================================================== -->
+
+    <main id="game">
+
+        <!-- =====================================================
+             CANVAS
+        ====================================================== -->
+
+        <canvas
+            id="gameCanvas"
+            aria-label="Área de juego de Space Strike"
+        ></canvas>
+
+
+        <!-- =====================================================
+             INTERFAZ SUPERIOR
+        ====================================================== -->
+
+        <section
+            id="gameHUD"
+            aria-label="Información de la partida"
+        >
+
+            <!-- PUNTUACIÓN -->
+
+            <div class="hud-block hud-score">
+
+                <span class="hud-label">
+                    SCORE
+                </span>
+
+                <span
+                    id="score"
+                    class="hud-value"
+                >
+                    0000
+                </span>
+
+            </div>
+
+
+            <!-- NIVEL -->
+
+            <div class="hud-block hud-level">
+
+                <span class="hud-label">
+                    LEVEL
+                </span>
+
+                <span
+                    id="level"
+                    class="hud-value"
+                >
+                    01
+                </span>
+
+            </div>
+
+
+            <!-- OBJETIVO -->
+
+            <div class="hud-block hud-target">
+
+                <span class="hud-label">
+                    TARGET
+                </span>
+
+                <span
+                    id="target"
+                    class="hud-value"
+                >
+                    1000
+                </span>
+
+            </div>
+
+
+            <!-- VIDAS -->
+
+            <div class="hud-block hud-lives">
+
+                <span class="hud-label">
+                    HULL
+                </span>
+
+                <div
+                    id="lives"
+                    class="lives-container"
+                    aria-label="Vidas restantes"
+                >
+
+                    <span class="life active"></span>
+                    <span class="life active"></span>
+                    <span class="life active"></span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BARRA DE PROGRESO DEL NIVEL
+        ====================================================== -->
+
+        <section
+            id="levelProgress"
+            aria-label="Progreso del nivel"
+        >
+
+            <div class="progress-track">
+
+                <div
+                    id="progressBar"
+                    class="progress-bar"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             INDICADOR DE ESTADO
+        ====================================================== -->
+
+        <div
+            id="systemStatus"
+            class="system-status"
+        >
+
+            SYSTEM ONLINE
+
+        </div>
+
+
+        <div
+            id="fpsCounter"
+            class="fps-counter"
+            aria-label="Fotogramas por segundo"
+        >
+            60 FPS
+        </div>
+
+        <div
+            id="comboDisplay"
+            class="combo-display hidden"
+            aria-live="polite"
+        >
+            COMBO 0
+        </div>
+
+        <div id="abilityBar" class="ability-bar" aria-label="Habilidades">
+            <button type="button" id="ability-emp" class="ability-btn ready" data-ability="emp">
+                <span class="ability-key">1</span>
+                <span class="ability-name">EMP</span>
+                <span class="ability-cd"></span>
+            </button>
+            <button type="button" id="ability-overdrive" class="ability-btn ready" data-ability="overdrive">
+                <span class="ability-key">2</span>
+                <span class="ability-name">OVER</span>
+                <span class="ability-cd"></span>
+            </button>
+            <button type="button" id="ability-nova" class="ability-btn ready" data-ability="nova">
+                <span class="ability-key">3</span>
+                <span class="ability-name">NOVA</span>
+                <span class="ability-cd"></span>
+            </button>
+        </div>
+
+
+        <!-- =====================================================
+             CONTROLES TÁCTILES
+        ====================================================== -->
+
+        <section
+            id="mobileControls"
+            aria-label="Controles táctiles"
+        >
+
+            <!-- JOYSTICK -->
+
+            <div
+                id="joystick"
+                class="joystick"
+            >
+
+                <div
+                    id="joystickStick"
+                    class="joystick-stick"
+                ></div>
+
+            </div>
+
+
+            <!-- BOTÓN DE DISPARO -->
+
+            <button
+                id="fireButton"
+                class="fire-button"
+                type="button"
+                aria-label="Disparar"
+            >
+
+                <span>
+                    FIRE
+                </span>
+
+            </button>
+
+        </section>
+
+
+        <!-- =====================================================
+             PAUSA
+        ====================================================== -->
+
+        <button
+            id="pauseButton"
+            class="pause-button"
+            type="button"
+            aria-label="Pausar juego"
+        >
+
+            <span class="pause-icon">
+                II
+            </span>
+
+        </button>
+
+
+        <!-- =====================================================
+             PANTALLA DE PAUSA
+        ====================================================== -->
+
+        <section
+            id="pauseScreen"
+            class="overlay-screen hidden"
+        >
+
+            <div class="overlay-panel">
+
+                <div class="overlay-title">
+                    SYSTEM PAUSED
+                </div>
+
+                <div class="overlay-subtitle">
+                    MISSION TEMPORARILY SUSPENDED
+                </div>
+
+
+                <div class="overlay-buttons">
+
+                    <button
+                        id="resumeButton"
+                        class="game-button primary"
+                        type="button"
+                    >
+                        CONTINUAR
+                    </button>
+
+
+                    <button
+                        id="pauseMenuButton"
+                        class="game-button"
+                        type="button"
+                    >
+                        MENÚ PRINCIPAL
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PANTALLA DE NIVEL COMPLETADO
+        ====================================================== -->
+
+        <section
+            id="levelCompleteScreen"
+            class="overlay-screen hidden"
+        >
+
+            <div class="overlay-panel">
+
+                <div class="overlay-title">
+                    LEVEL COMPLETE
+                </div>
+
+                <div
+                    id="completedLevel"
+                    class="overlay-level"
+                >
+                    LEVEL 01
+                </div>
+
+                <div class="overlay-subtitle">
+                    TARGET DESTROYED
+                </div>
+
+                <div
+                    id="levelCompleteScore"
+                    class="overlay-score"
+                >
+                    0000
+                </div>
+
+                <div class="overlay-label">
+                    CURRENT SCORE
+                </div>
+
+                <div
+                    id="levelCompleteStars"
+                    class="overlay-stars"
+                >
+                    ★★★
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PANTALLA DE GAME OVER
+        ====================================================== -->
+
+        <section
+            id="gameOverScreen"
+            class="overlay-screen hidden"
+        >
+
+            <div class="overlay-panel">
+
+                <div class="game-over-title">
+                    MISSION FAILED
+                </div>
+
+                <div class="overlay-subtitle">
+                    SHIP DESTROYED
+                </div>
+
+                <div class="mission-stats" id="missionStats">
+                    <div class="stat-row"><span>PUNTUACIÓN</span><span id="statScore">0</span></div>
+                    <div class="stat-row"><span>ENEMIGOS</span><span id="statKills">0</span></div>
+                    <div class="stat-row"><span>PRECISIÓN</span><span id="statAccuracy">0%</span></div>
+                    <div class="stat-row"><span>COMBO MÁX</span><span id="statCombo">x0</span></div>
+                    <div class="stat-row"><span>DAÑO RECIBIDO</span><span id="statDamage">0</span></div>
+                    <div class="stat-row"><span>TIEMPO</span><span id="statTime">00:00</span></div>
+                </div>
+
+                <div class="final-stats">
+
+                    <div class="stat">
+
+                        <span class="stat-label">
+                            SCORE
+                        </span>
+
+                        <span
+                            id="finalScore"
+                            class="stat-value"
+                        >
+                            0000
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <span class="stat-label">
+                            LEVEL
+                        </span>
+
+                        <span
+                            id="finalLevel"
+                            class="stat-value"
+                        >
+                            01
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <span class="stat-label">
+                            BEST
+                        </span>
+
+                        <span
+                            id="bestScore"
+                            class="stat-value"
+                        >
+                            0000
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="overlay-buttons">
+
+                    <button
+                        id="restartButton"
+                        class="game-button primary"
+                        type="button"
+                    >
+                        REINTENTAR
+                    </button>
+
+
+                    <button
+                        id="gameOverMenuButton"
+                        class="game-button"
+                        type="button"
+                    >
+                        MENÚ PRINCIPAL
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PANTALLA DE CARGA / INICIO DE MISIÓN
+        ====================================================== -->
+
+        <section
+            id="missionStartScreen"
+            class="overlay-screen"
+        >
+
+            <div class="mission-start-panel">
+
+                <div class="mission-label">
+                    MISSION INITIALIZATION
+                </div>
+
+                <div
+                    id="missionLevel"
+                    class="mission-level"
+                >
+                    LEVEL 01
+                </div>
+
+                <div class="mission-line"></div>
+
+                <div class="mission-status">
+                    SYSTEMS ONLINE
+                </div>
+
+                <div class="mission-status">
+                    WEAPONS ONLINE
+                </div>
+
+                <div class="mission-status">
+                    HULL STABLE
+                </div>
+
+                <div
+                    id="continueInfo"
+                    class="mission-status continue-info hidden"
+                >
+                    PROGRESO DETECTADO
+                </div>
+
+                <div class="mission-start-buttons">
+
+                    <button
+                        id="continueButton"
+                        class="game-button primary launch-button hidden"
+                        type="button"
+                    >
+                        CONTINUAR
+                    </button>
+
+                    <button
+                        id="launchButton"
+                        class="game-button primary launch-button"
+                        type="button"
+                    >
+                        NUEVA MISIÓN
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         JAVASCRIPT DEL JUEGO
+    ========================================================== -->
+
+        <script src="../javascript/core/game-state.js"></script>
+    <script src="../javascript/core/player-data.js"></script>
+    <script src="../javascript/core/save-manager.js"></script>
+    
+    <script src="../javascript/data/enemies-data.js"></script>
+    <script src="../javascript/managers/progression.js"></script>
+    <script src="../javascript/systems/boss-ui.js"></script>
+    <script src="../javascript/systems/particles.js"></script>
+    <script src="../javascript/systems/combo.js"></script>
+    <script src="../javascript/systems/audio.js"></script>
+    <script src="../javascript/systems/animation-manager.js"></script>
+
+    <script src="../javascript/managers/shop-manager.js"></script>
+
+<script src="../javascript/levels.js"></script>
+    <script src="../javascript/upgrades.js"></script>
+    <script src="../javascript/ships.js"></script>
+    <script src="../javascript/skins.js"></script>
+    <script src="../javascript/premium.js"></script>
+    <script src="../javascript/controls.js"></script>
+    <script src="../javascript/auth.js"></script>
+    <script src="../javascript/player-profile.js"></script>
+    <script src="../javascript/abilities.js"></script>
+    <script src="../javascript/achievements.js"></script>
+    <script src="../javascript/rank.js"></script>
+    <script src="../javascript/events.js"></script>
+    <script src="../javascript/leaderboard-global.js"></script>
+    <script src="../javascript/graphics.js"></script>
+    <script src="../javascript/game.js" defer></script>
+
+    <script src="../javascript/fullscreen.js"></script>
+<div id="gameVersionTag" style="position:fixed;left:8px;bottom:6px;z-index:50;font-size:9px;letter-spacing:1px;color:rgba(120,160,200,0.35);pointer-events:none;">V3.3.8</div>
+</body>
+
+</html>

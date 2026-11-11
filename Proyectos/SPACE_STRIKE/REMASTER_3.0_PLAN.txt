@@ -1,0 +1,31 @@
+SPACE STRIKE — Roadmap remaster 3.0 + parche 2.5.0
+==================================================
+
+PARCHE 2.5.0 (este ZIP)
+- EMP congela enemigos 1.2s (antes 2.5s); no congela al jugador
+- Cooldowns habilidades más bajos
+- Bonus créditos: 8% por nivel (antes 15%)
+- Gráficos: AUTO / BAJO / MEDIO / ALTO (Configuración)
+- Detección automática de potencia del dispositivo
+- Evolución visual de nave por oleada/nivel (glow)
+- Dificultad infinito un poco más exigente
+
+FEEDBACK INCORPORADO
+- "Nada difícil" → más presión de spawn
+- "15% mucho" → 8%
+- "Cooldown deja congelado" → EMP más corto y claro
+- Controles en celulares débiles → tier low reduce partículas/enemigos
+
+REMASTER 3.0 (siguiente gran versión)
+1. Sprites de naves (los 4 diseños enviados) con evolución por tramos
+2. Animaciones y VFX mejorados
+3. Controles rediseñados (hitbox, deadzone, opcional stick virtual)
+4. Balance profundo por sector
+5. UI remaster (menú, mapa, HUD)
+6. PWA offline instalable
+7. Más jefes / patrones
+
+ARTE DE NAVES
+Los 4 diseños (interceptor / asalto / tanque / elite) se mapearán a
+etapas 1–4 de evolución y a los modelos de tienda cuando tengamos
+los PNG recortados por nave.

@@ -1,0 +1,852 @@
+/* =================================================================
+SPACE STRIKE
+INDEX / MAIN MENU
+Version: 0.1.0
+================================================================= */
+
+/* =================================================================
+    RESET
+================================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+/* =================================================================
+    DOCUMENT
+================================================================= */
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: var(--ss-bg, #030407);
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--ss-text, #e8eefc);
+}
+
+/* =================================================================
+    BODY
+================================================================= */
+
+body {
+    position: relative;
+
+    min-width: 280px;
+    min-height: 400px;
+}
+
+/* =================================================================
+    SPACE BACKGROUND
+================================================================= */
+
+#space {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: 
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(20, 35, 65, 0.35),
+            transparent 45%
+        ),
+        
+        radial-gradient(
+            circle at 20% 80%,
+            rgba(0, 80, 140, 0.10),
+            transparent 35%
+        ),
+        
+        #030407;
+
+    z-index: 0;
+}
+
+/* =================================================================
+    STARS
+================================================================= */
+
+.star {
+    position: absolute;
+
+    background: #ffffff;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    animation: 
+        twinkle
+        infinite
+        alternate;
+}
+
+@keyframes twinkle {
+    
+    from {
+        opacity: 0.15;
+
+        transform: 
+            scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: 
+            scale(1.3);
+    }
+
+}
+
+/* =================================================================
+    CENTRAL AMBIENT LIGHT
+================================================================= */
+
+.ambient {
+    position: fixed;
+
+    width: 650px;
+    height: 650px;
+
+    left: 50%;
+    top: 48%;
+
+    transform: 
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: 
+        radial-gradient(
+            circle,
+
+            rgba(0, 140, 255, 0.10),
+
+            rgba(0, 70, 160, 0.04) 35%,
+
+            transparent 70%
+
+        );
+
+    filter: blur(25px);
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+/* =================================================================
+    MAIN MENU
+================================================================= */
+
+.menu {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    min-height: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 16px 64px;
+    box-sizing: border-box;
+}
+
+/* =================================================================
+    LOGO
+================================================================= */
+
+.logo {
+    text-align: center;
+
+    margin-bottom: 12px;
+
+    animation: 
+        logoAppear
+        1s
+        ease-out;
+}
+
+.logo-main {
+    font-size: 
+        clamp(
+            48px,
+            8vw,
+            92px
+        );
+
+    font-weight: 900;
+
+    letter-spacing: 10px;
+
+    color: #ffffff;
+
+    line-height: 1;
+
+    text-shadow: 
+        
+        0 0 8px
+        rgba(255, 255, 255, 0.45),
+        
+        0 0 25px
+        rgba(0, 150, 255, 0.35);
+}
+
+.logo-sub {
+    margin-top: 12px;
+
+    font-size: 
+        clamp(
+            10px,
+            1.5vw,
+            15px
+        );
+
+    letter-spacing: 7px;
+
+    color: 
+        rgba(140, 200, 255, 0.8);
+
+    text-transform: uppercase;
+}
+
+@keyframes logoAppear {
+    
+    from {
+
+        opacity: 0;
+
+        transform: 
+            translateY(-30px)
+            scale(0.95);
+
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+}
+
+/* =================================================================
+    SEPARATOR
+================================================================= */
+
+.separator {
+
+    width: 
+        min(
+            420px,
+            75vw
+        );
+
+    height: 1px;
+
+    margin: 28px 0;
+
+    background: 
+        linear-gradient(
+            90deg,
+
+            transparent,
+
+            rgba(0, 150, 255, 0.8),
+
+            transparent
+        );
+
+    box-shadow: 
+    
+    0 0 10px
+    rgba(0, 150, 255, 0.4);
+}
+
+/* =================================================================
+    BUTTON CONTAINER
+================================================================= */
+
+.buttons {
+
+    width: 
+        min(
+            360px,
+            90vw
+        );
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    animation: 
+        buttonsAppear
+        1s
+        ease-out
+        0.25s
+        
+        both;
+}
+
+@keyframes buttonsAppear {
+    
+    from {
+
+        opacity: 0;
+
+        transform: 
+            translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: 
+            translateY(0);
+
+    }
+}
+
+/* =================================================================
+    MENU BUTTON 
+================================================================= */
+
+.menu-button {
+    /* remaster tokens */
+
+    position: relative;
+
+    width: 100%;
+
+    height: 58px;
+
+    border: 
+    
+        1px solid
+        rgba(90, 170, 255, 0.28);
+
+    border-radius: 5px;
+
+    background: 
+        linear-gradient(
+            90deg,
+
+            rgba(10, 25, 42, 0.75),
+
+            rgba(8, 15, 27, 0.9)
+        );
+
+    color: 
+        #dcecff;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition: 
+        
+        transform 0.2s ease,
+        
+        border-color 0.2s ease;
+
+        background: 0.2s ease;
+}
+
+/* =================================================================
+    LEFT ENERGY BAR
+================================================================= */
+
+.menu-button::before {
+    
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 3px;
+    height: 100%;
+
+    background: 
+        #168cff;
+
+    box-shadow: 
+    
+        0 0 12px
+        rgba(0, 140, 255, 0.5);
+
+    transition: 
+        
+        width 0.2s ease;
+}
+
+/* =================================================================
+    LIGTH SWEEK
+================================================================= */
+
+.menu-button::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: -120%;
+
+    width: 80%;
+    height: 100%;
+
+    background: 
+        linear-gradient(
+            90deg,
+
+            transparent,
+
+            rgba(255, 255, 255, 0.07),
+
+            transparent
+        );
+
+    transform: 
+        skewX(-20deg);
+
+    transition: 
+        left 0.5s ease;
+}
+
+/* =================================================================
+    BUTTON HOVER
+================================================================= */
+
+.menu-button:hover {
+
+    transform: 
+        translateX(5px);
+
+    border-color: 
+        rgba(0, 150, 255, 0.75);
+
+    box-shadow: 
+        
+        0 0 20px
+        rgba(0, 120, 255, 0.12),
+        
+        inset 0 0 20px
+        rgba(0, 120, 255, 0.05);
+
+    background: 
+        
+        linear-gradient(
+            90deg,
+
+            rgba(10, 35, 60, 0.9),
+
+            rgba(8, 18, 32, 0.95)
+        );
+}
+
+.menu-button:hover::before {
+
+    width: 5px;
+}
+
+.menu-button:hover::after {
+
+    left: 140%;
+}
+
+/* =================================================================
+    BUTTON PRESS
+================================================================= */
+
+.menu-button:active {
+
+    transform: 
+        translateX(3px)
+        scale(0.98);
+}
+
+/* =================================================================
+    BUTTON ICON
+================================================================= */
+
+.button-icon {
+
+    display: inline-block;
+    
+    width: 28px;
+
+    color: 
+        #168cff;
+
+    font-size: 17px;
+}
+
+/* =================================================================
+    PLAY BUTTON
+================================================================= */
+
+.play-button {
+
+    height: 66px;
+
+    border-color: 
+        rgba(0, 160, 255, 0.55);
+
+    background: 
+        linear-gradient(
+            90deg,
+
+            rgba(0, 70, 130, 0.30),
+
+            rgba(5, 20, 38, 0.95)
+        );
+
+    box-shadow: 
+        
+        0 0 25px
+        rgba(0, 120, 255, 0.08);
+}
+
+.play-button .button-icon {
+
+    color: 
+        #4db2ff;
+}
+
+/* =================================================================
+    BOTTOM SYSTEM MESSAGE
+================================================================= */
+
+.bottom-info {
+
+    position: absolute;
+
+    bottom: 25px;
+    left: 0;
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    color: 
+        rgba(150, 180, 210, 0.45);
+
+    font-size: 10px;
+
+    letter-spacing: 3px;
+
+    animation: 
+        
+        fadeIn
+        1.5s
+        ease-out
+        0.8s
+        
+        both;
+}
+
+/* =================================================================
+    VERSION
+================================================================= */
+
+.version {
+    position: fixed;
+    left: 12px;
+    bottom: 10px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(120, 160, 200, 0.4);
+    z-index: 10;
+}
+
+/* =================================================================
+    GENERAL FADE IN
+================================================================= */
+
+@keyframes fadeIn {
+    
+    from {
+
+        opacity: 0;
+    }
+
+    to {
+
+        opacity: 1;
+    }
+}
+
+/* =================================================================
+    SCREEN TRANSITION
+================================================================= */
+
+#transition {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: 
+        #000000;
+
+    z-index: 100;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: 
+        opacity 0.5s ease;
+}
+
+#transition:active {
+
+    opacity: 1;
+
+    pointer-events: all;
+}
+
+/* =================================================================
+    MOBILE
+================================================================= */
+
+@media (max-width: 600px) {
+
+    .logo-main {
+
+        letter-spacing: 6px;
+    }
+
+    .logo-sub {
+
+        letter-spacing: 4px;
+    }
+
+    .menu-button {
+    /* remaster tokens */
+        
+        height: 55px;
+
+        font-size: 13px;
+    }
+
+    .play-button {
+
+        height: 62px;
+    }
+
+    .bottom-info {
+        font-size: 8px;
+
+        letter-spacing: 2px;
+    }
+
+    .version {
+
+        right: 10px;
+
+        bottom: 10px;
+    }
+}
+
+/* =================================================================
+    VERY SMALL SCREENS
+================================================================= */
+
+@media (max-height: 600px) {
+    
+    .logo {
+
+        margin-bottom: 5px;
+    }
+
+    .logo-main {
+
+        font-size: 42px;
+    }
+
+    .logo-sub {
+
+        margin-top: 7px;
+    }
+
+    .separator {
+
+        margin: 15px 0;
+    }
+
+    .buttons {
+
+        gap: 8px;
+    }
+
+    .menu-button {
+    /* remaster tokens */
+
+        height: 48px;
+    }
+
+    .play-button {
+        
+        height: 52px;
+    }
+}
+
+.brand {
+    display: none; /* logo moved to watermark */
+}
+.brand-logo-watermark {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    z-index: 50;
+    width: min(72px, 18vw);
+    height: auto;
+    opacity: 0.28;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px rgba(0, 255, 120, 0.15));
+}
+
+.pilot-label {
+    margin-top: 8px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(120, 220, 180, 0.75);
+    text-align: center;
+}
+.notice-banner {
+    width: min(360px, 92vw);
+    margin: 0 auto 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(0, 200, 120, 0.35);
+    border-radius: 6px;
+    background: rgba(0, 40, 30, 0.55);
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(200, 255, 230, 0.9);
+    cursor: pointer;
+}
+.notice-banner strong { color: #7ef0c8; display:block; margin-bottom: 4px; letter-spacing: 1px; }
+.notice-banner.hidden { display: none; }
+.register-overlay {
+    position: fixed; inset: 0; z-index: 80;
+    background: rgba(0,0,0,0.82);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+}
+.register-overlay.hidden { display: none; }
+.register-card {
+    width: min(360px, 94vw);
+    padding: 22px 18px;
+    border: 1px solid rgba(90,170,255,0.35);
+    border-radius: 8px;
+    background: rgba(8,16,28,0.95);
+}
+.register-title { font-size: 16px; font-weight: 800; letter-spacing: 3px; margin-bottom: 8px; }
+.register-desc { font-size: 12px; color: rgba(180,205,240,0.7); margin-bottom: 12px; line-height: 1.4; }
+.register-card input {
+    width: 100%; height: 44px; margin-bottom: 8px;
+    border: 1px solid rgba(90,170,255,0.35); border-radius: 4px;
+    background: rgba(5,12,22,0.9); color: #e8f4ff;
+    padding: 0 12px; font-size: 15px; letter-spacing: 1px;
+}
+.register-error { min-height: 18px; font-size: 12px; color: #ff8a9a; margin-bottom: 8px; }
+
+
+.fs-toggle-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 90;
+    padding: 6px 10px;
+    border: 1px solid rgba(90,170,255,0.35);
+    border-radius: 5px;
+    background: rgba(6,14,28,0.88);
+    color: #b8d8f8;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    pointer-events: auto;
+}
+.fs-toggle-btn.fs-on {
+    border-color: rgba(80,220,160,0.5);
+    color: #9fecc8;
+}
+
+
+/* ===== v3.0 remaster tokens (index) ===== */
+.menu-button {
+    border-color: var(--ss-border-strong, rgba(100, 180, 255, 0.4));
+    color: var(--ss-text, #e8eefc);
+    background: linear-gradient(180deg, rgba(20, 40, 70, 0.55), rgba(8, 14, 28, 0.85));
+    transition:
+        transform var(--ss-duration-fast, 0.15s) var(--ss-ease, ease),
+        box-shadow var(--ss-duration, 0.28s) var(--ss-ease, ease),
+        border-color var(--ss-duration, 0.28s) ease,
+        background var(--ss-duration, 0.28s) ease;
+}
+.menu-button:active {
+    transform: scale(0.975);
+}
+.menu-button.play-button {
+    border-color: var(--ss-primary, #3db4ff);
+    box-shadow: 0 0 18px var(--ss-primary-glow, rgba(61, 180, 255, 0.35));
+}
+.logo-main {
+    text-shadow: 0 0 28px var(--ss-primary-glow, rgba(61, 180, 255, 0.5));
+}
+.notice-banner {
+    border-color: var(--ss-border, rgba(100, 160, 255, 0.22));
+    background: var(--ss-bg-panel, rgba(8, 14, 28, 0.92));
+    animation: ss-fade-in 0.4s var(--ss-ease, ease) both;
+}
+.menu {
+    animation: ss-fade-in 0.5s var(--ss-ease, ease) both;
+}
+
+
+/* remaster transition */
+#transition {
+    transition: opacity 0.4s var(--ss-ease, ease);
+}
+#transition.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.rank-badge {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--ss-premium, #fbbf24);
+    text-shadow: 0 0 12px var(--ss-premium-glow, rgba(251, 191, 36, 0.35));
+}

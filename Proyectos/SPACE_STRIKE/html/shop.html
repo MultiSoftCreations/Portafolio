@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030407">
+    <title>SPACE STRIKE — TIENDA</title>
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/shop.css">
+    <style>
+        .shop-section-title {
+            width: min(420px, 94vw);
+            margin: 14px auto 8px;
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: #ffd56a;
+            font-weight: 800;
+        }
+        .shop-section-title.upgrades { color: #7ec8ff; }
+        .ship-card.equipped {
+            border-color: rgba(255, 200, 80, 0.55);
+            box-shadow: 0 0 14px rgba(255, 180, 40, 0.2);
+        }
+        .ship-swatch {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            margin: 8px 0 4px;
+        }
+        .shop-section-title.special {
+            color: #c4b5ff;
+            margin-top: 22px;
+        }
+        .special-hint {
+            width: min(420px, 94vw);
+            margin: 0 auto 10px;
+            font-size: 11px;
+            color: rgba(180, 160, 255, 0.55);
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+        .ship-card.special-ship {
+            border-color: rgba(140, 120, 255, 0.45);
+        }
+        .ship-card.special-ship.equipped {
+            border-color: rgba(180, 140, 255, 0.7);
+            box-shadow: 0 0 14px rgba(140, 100, 255, 0.25);
+        }
+    </style>
+    <script src="../javascript/preloader.js"></script>
+</head>
+<body data-shop-mode="adventure">
+    <div id="space"></div>
+    <div class="ambient"></div>
+
+    <main class="shop">
+        <header class="page-header">
+            <div class="page-title">TIENDA</div>
+            <div class="page-subtitle">ARMORY // MEJORAS AVENTURA</div>
+            <div class="coins-bar">
+                <span class="coins-label">CRÉDITOS</span>
+                <span id="coinsValue" class="coins-value">0</span>
+            </div>
+        </header>
+
+        <div class="separator"></div>
+
+        <div class="shop-section-title upgrades">MEJORAS</div>
+        <section id="shopList" class="shop-list"></section>
+
+        <p style="text-align:center;margin:12px;"><a href="hangar.html" style="color:#c4b5ff;letter-spacing:2px;font-size:12px;">◈ VER NAVES Y SKINS</a></p>
+        <section class="actions">
+            <button id="backButton" class="menu-button" type="button">
+                <span class="button-icon">&lt;</span> VOLVER AL MENÚ
+            </button>
+        </section>
+        <div class="version">V3.3.9</div>
+    <p style="text-align:center;font-size:12px;opacity:0.7;margin:12px;letter-spacing:1px;">TIENDA · SOLO MODO AVENTURA<br>En Infinito eliges mejoras con tarjetas entre oleadas.</p>
+</main>
+
+    <div id="transition"></div>
+        <script src="../javascript/core/game-state.js"></script>
+    <script src="../javascript/core/player-data.js"></script>
+    <script src="../javascript/core/save-manager.js"></script>
+    <script src="../javascript/systems/particles.js"></script>
+    <script src="../javascript/systems/audio.js"></script>
+
+    <script src="../javascript/managers/shop-manager.js"></script>
+
+<script src="../javascript/upgrades.js"></script>
+    <script src="../javascript/ships.js"></script>
+    <script src="../javascript/skins.js"></script>
+    <script src="../javascript/premium.js"></script>
+    <script src="../javascript/shop.js"></script>
+    <script src="../javascript/fullscreen.js"></script>
+    <script src="../javascript/managers/ad-manager.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "projects": [
+    "html/proyectos/codeverse/project.json",
+    "html/proyectos/jarvis-vortex/project.json",
+    "html/proyectos/space-strike/project.json",
+    "html/proyectos/multisoft-cleaner/project.json",
+    "html/proyectos/multisoft-netguard/project.json"
+  ]
+}

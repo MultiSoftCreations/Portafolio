@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portafolio de Ricardo Torres — Creador de MultiSoftCreations. Desarrollo de software, aplicaciones y prototipos.">
+  <meta name="author" content="Ricardo Torres">
+  <title>Ricardo Torres | MultiSoftCreations</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <img src="assets/img/logo.png" alt="MultiSoftCreations" class="logo-img" width="42" height="42">
+        <span class="logo-text">MultiSoftCreations</span>
+      </a>
+      <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul>
+          <li><a href="index.html" class="active">Inicio</a></li>
+          <li><a href="#sobre-mi">Sobre mí</a></li>
+          <li><a href="html/proyectos.html">Proyectos</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="html/contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="container hero-content">
+        <p class="hero-label">Desarrollador & Creador</p>
+        <h1>Ricardo Torres</h1>
+        <p class="hero-brand">Creador de <strong>MultiSoftCreations</strong></p>
+        <p class="hero-motto">«Si puedes imaginarlo, puedes programarlo».</p>
+        <div class="hero-actions">
+          <a href="html/proyectos.html" class="btn btn-primary">Explorar proyectos</a>
+          <a href="html/contacto.html" class="btn btn-secondary">Contactar</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" id="sobre-mi">
+      <div class="container">
+        <h2 class="section-title">Sobre mí</h2>
+        <div class="about-grid">
+          <div class="about-text">
+            <p>
+              Soy Ricardo Torres, tengo 19 años y vivo en la Ciudad de México.
+              Nací en Huamantla, Tlaxcala, y crecí entre el Estado de México y la capital.
+              Desde los 15 años programo por cuenta propia: empecé con C++ (una calculadora
+              y una base de datos local con archivos de texto) y, con el tiempo, pasé a
+              páginas web y proyectos más amplios.
+            </p>
+            <p>
+              Dejé la preparatoria en el CETIS 167 porque el ritmo y el contenido no
+              coincidían con lo que necesitaba aprender. Prefiero construir proyectos reales
+              y estudiar por mi cuenta —con cursos, documentación y práctica— a repetir
+              teoría que ya domino. Actualmente profundizo en Python y refuerzo
+              HTML, CSS y JavaScript.
+            </p>
+            <p>
+              Bajo la marca <strong>MultiSoftCreations</strong> —creaciones de software multiusos—
+              desarrollo herramientas, prototipos y experiencias digitales. Para mí el nombre
+              representa algo más: multiplicar el valor del software con creatividad e innovación,
+              no solo sistemas potentes, sino soluciones que se puedan reinventar.
+              Me interesan la web, los videojuegos, la automatización y la inteligencia artificial.
+              No invento resultados: muestro lo que existe, en el estado en que está, y sigo construyendo.
+            </p>
+          </div>
+          <div class="about-highlights">
+            <div class="highlight-card">
+              <span class="highlight-icon">01</span>
+              <h3>Proyectos reales</h3>
+              <p>Cada pieza del portafolio tiene un estado honesto y tecnologías documentadas.</p>
+            </div>
+            <div class="highlight-card">
+              <span class="highlight-icon">02</span>
+              <h3>Aprendizaje práctico</h3>
+              <p>Cuatro años creando por curiosidad y necesidad, no solo por teoría de aula.</p>
+            </div>
+            <div class="highlight-card">
+              <span class="highlight-icon">03</span>
+              <h3>Comunicación clara</h3>
+              <p>Explico qué se puede entregar, qué está en desarrollo y qué aún no está listo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section projects-preview" id="proyectos">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Proyectos destacados</h2>
+          <a href="html/proyectos.html" class="link-arrow">Ver todos →</a>
+        </div>
+        <div id="featured-projects" class="projects-grid">
+          <p class="loading-msg">Cargando proyectos…</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section services" id="servicios">
+      <div class="container">
+        <h2 class="section-title">Servicios</h2>
+        <p class="section-intro">Servicios que puedo ofrecer de forma fiable según mi experiencia actual.</p>
+        <div class="services-grid" id="services-list"></div>
+      </div>
+    </section>
+
+    <section class="section cta">
+      <div class="container cta-inner">
+        <h2>¿Tienes un proyecto en mente?</h2>
+        <p>Cuéntame qué necesitas. Respondo por WhatsApp o correo.</p>
+        <div class="cta-actions">
+          <a href="https://wa.me/525624944382?text=Hola%2C%20Ricardo.%20Vi%20tu%20portafolio%20y%20me%20interesa%20solicitar%20informaci%C3%B3n%20sobre%20tus%20servicios%20de%20desarrollo." class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <a href="html/contacto.html" class="btn btn-secondary">Más formas de contacto</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="assets/img/logo.png" alt="MultiSoftCreations" class="logo-img logo-img-sm" width="32" height="32" >
+        <span>MultiSoftCreations</span>
+      </div>
+      <nav class="footer-nav">
+        <a href="html/privacidad.html">Aviso de privacidad</a>
+        <a href="html/terminos.html">Términos y condiciones</a>
+        <a href="html/contacto.html">Contacto</a>
+      </nav>
+      <p class="footer-copy">© <span id="year"></span> Ricardo Torres · MultiSoftCreations</p>
+    </div>
+  </footer>
+
+  <script src="javascript/main.js"></script>
+  <script src="javascript/projects.js"></script>
+</body>
+</html>

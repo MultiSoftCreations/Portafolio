@@ -1,0 +1,32 @@
+SPACE STRIKE — FCM (notificaciones con app cerrada) + reinicios programados
+================================================================================
+
+1) WEB PUSH CERTIFICATE (VAPID)
+   Firebase Console → Project settings → Cloud Messaging → Web Push certificates
+   → Generate key pair → copia la clave pública
+   En index.html (o antes de los scripts):
+   window.SPACE_STRIKE_VAPID_KEY = "TU_CLAVE_PUBLICA";
+
+2) SERVER KEY (para enviar push)
+   Firebase Console → Project settings → Cloud Messaging → Cloud Messaging API (Legacy)
+   → Server key
+   En Netlify → Site settings → Environment variables:
+   FCM_SERVER_KEY = (tu server key)
+
+3) HOSTING
+   - Si el juego está en Netlify: la función /.netlify/functions/send-fcm funciona sola.
+   - Si está en GitHub Pages: publica también en Netlify (solo functions) o un proxy y pon:
+     window.SPACE_STRIKE_FCM_URL = "https://tu-app.netlify.app/.netlify/functions/send-fcm";
+
+4) FIRESTORE RULES
+   Publica HTML/firestore.rules (incluye fcmTokens, scheduledJobs, announcements).
+
+5) REINICIOS PROGRAMADOS
+   Super Admin → panel "Reinicio programado"
+   Scope: all | ranking | user (email Google)
+   Se ejecuta cuando alguien abre el juego DESPUÉS de la hora (cualquier jugador/admin).
+   No es un cron del servidor; para máxima puntualidad deja una pestaña abierta cerca de la hora.
+
+6) NUBE PRIMERO
+   El progreso se sincroniza con Firestore. localStorage es caché/espejo.
+   spaceStrikeOfflineBackup solo si no hay red; se borra al sincronizar online.

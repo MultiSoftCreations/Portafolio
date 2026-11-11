@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function email() {
+      return signedIn() ? request.auth.token.email : '';
+    }
+
+    function isOwner() {
+      return signedIn()
+        && email() == 'ricardotorresgalvez005@gmail.com';
+    }
+
+    function adminList() {
+      return exists(/databases/$(database)/documents/config/admins)
+        ? get(/databases/$(database)/documents/config/admins).data.emails
+        : ['ricardotorresgalvez005@gmail.com', 'yocepliliamurguia@gmail.com'];
+    }
+
+    function isAdmin() {
+      return isOwner()
+        || (signedIn() && email() in adminList());
+    }
+
+    /* Owner-managed admin list */
+    match /config/admins {
+      allow read: if signedIn();
+      allow write: if isOwner();
+    }
+
+    /* Global ranking */
+    match /scores/{scoreId} {
+      allow read: if true;
+      allow create, update: if signedIn();
+      allow delete: if isOwner();
+    }
+
+    /* Player cloud progress */
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create, update: if signedIn() && (request.auth.uid == userId || isOwner());
+      allow delete: if isOwner();
+    }
+
+    /* Premium one-time codes */
+    match /premiumCodes/{codeId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* Special reward / ship codes */
+    match /rewardCodes/{codeId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* Broadcast announcements (news, events, limited codes) */
+    match /announcements/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* Catch-all deny */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

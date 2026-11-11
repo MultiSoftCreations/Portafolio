@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis Vortex | MultiSoftCreations</title>
+  <link rel="stylesheet" href="../../../css/styles.css">
+  <link rel="stylesheet" href="../../../css/projects.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .gallery { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin: 1.5rem 0; }
+    .gallery figure { margin: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .gallery img { width: 100%; height: auto; display: block; }
+    .gallery figcaption { font-size: 0.8rem; color: var(--text-dim); padding: 0.5rem 0.75rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <button type="button" class="back-btn" data-back data-back-fallback="../../proyectos.html" aria-label="Volver">
+        <span class="back-arrow" aria-hidden="true">←</span>
+      </button>
+
+      <a href="../../../index.html" class="logo">
+        <img src="../../../assets/img/logo.png" alt="MultiSoftCreations" class="logo-img" width="42" height="42">
+        <span class="logo-text">MultiSoftCreations</span>
+      </a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="../../../index.html">Inicio</a></li>
+          <li><a href="../../proyectos.html">Proyectos</a></li>
+          <li><a href="../../contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section project-detail-hero">
+      <div class="container">
+        <p class="hero-label">IA · Demostración · v2.0</p>
+        <h1 class="page-title">Jarvis Vortex</h1>
+        <p class="page-intro">Asistente personal de inteligencia artificial con memoria persistente y acceso seguro.</p>
+        <div class="project-detail-meta">
+          <span class="badge badge-category">IA</span>
+          <span class="badge badge-status early_access">Acceso restringido</span>
+        </div>
+        <p style="margin-top:1rem">
+          <a href="https://jarvis-vortex-public.onrender.com/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Abrir (acceso restringido)</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container project-detail-body">
+        <div>
+          <h2 class="section-title" style="font-size:1.35rem">Descripción</h2>
+          <div class="warn" style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.35);border-radius:12px;padding:1rem 1.25rem;color:#fbbf24;font-size:0.95rem;margin:1rem 0 1.5rem">
+            <strong>Acceso restringido.</strong> Esta demo usa por ahora configuración del desarrollador.
+            Más adelante cada usuario podrá poner sus propios tokens y habrá una versión de pago.
+          </div>
+
+          <p style="color:var(--text-muted);margin-bottom:1rem">
+            Jarvis Vortex es un asistente conversacional desarrollado por Ricardo Torres bajo MultiSoftCreations.
+            Incluye inicio de sesión con Google, memoria persistente entre sesiones, panel de control
+            (reactores y estado del sistema) y lectura de archivos adjuntos para responder con contexto.
+          </p>
+          <p style="color:var(--text-muted);margin-bottom:1.5rem">
+            La demo pública está alojada en Render; la primera carga puede tardar unos segundos mientras el servicio despierta.
+          </p>
+
+          <h3 style="margin-bottom:0.75rem">Capturas</h3>
+          <div class="gallery">
+            <figure>
+              <img src="img/portada.jpg" alt="Pantalla de acceso Jarvis Vortex" loading="lazy">
+              <figcaption>Acceso seguro con Google</figcaption>
+            </figure>
+            <figure>
+              <img src="img/chat.jpg" alt="Chat de Jarvis" loading="lazy">
+              <figcaption>Interfaz de conversación</figcaption>
+            </figure>
+            <figure>
+              <img src="img/respuesta.jpg" alt="Jarvis leyendo un archivo" loading="lazy">
+              <figcaption>Análisis de archivo adjunto</figcaption>
+            </figure>
+            <figure>
+              <img src="img/panel.jpg" alt="Panel de control" loading="lazy">
+              <figcaption>Panel de control y reactores</figcaption>
+            </figure>
+          </div>
+
+          <h3 style="margin:1.5rem 0 0.5rem">Tecnologías</h3>
+          <div class="project-tech">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">JavaScript</span>
+          </div>
+        </div>
+        <aside class="project-sidebar">
+          <h3>Enlaces</h3>
+          <p style="margin-bottom:1rem">
+            <a href="https://jarvis-vortex-public.onrender.com/" class="btn btn-primary" style="width:100%" target="_blank" rel="noopener noreferrer">Abrir (acceso restringido)</a>
+          </p>
+          <h3>Marca</h3>
+          <p style="font-size:0.9rem;color:var(--text-muted)">MultiSoftCreations</p>
+          <h3 style="margin-top:1.25rem">Autor</h3>
+          <p style="font-size:0.9rem;color:var(--text-muted)">Ricardo Torres</p>
+          <h3 style="margin-top:1.25rem">Versión</h3>
+          <p style="font-size:0.9rem;color:var(--text-muted)">2.0.0</p>
+        </aside>
+      </div>
+    </section>
+  
+    <section class="section">
+      <div class="container" style="max-width:800px">
+        <div id="comments-root" data-project-id="jarvis-vortex"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-copy">© <span id="year"></span> Ricardo Torres · MultiSoftCreations</p>
+    </div>
+  </footer>
+  <script src="../../../javascript/main.js"></script>
+  <script type="module" src="../../../javascript/comments.js"></script>
+</body>
+</html>

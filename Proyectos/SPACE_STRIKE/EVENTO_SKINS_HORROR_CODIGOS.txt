@@ -1,0 +1,37 @@
+# SKINS HORROR PACK — códigos de un uso (coleccion rewardCodes)
+# reward: skin_<id>   usesLeft: 1   active: true
+#
+# IDs de skin:
+# horror_jason, horror_chucky, horror_freddy, horror_rpd_drone, horror_rpd,
+# horror_jason_mil, horror_jason_02, horror_freddy_hat, horror_freddy_claw,
+# horror_delta, horror_freddy_heavy, horror_freddy_delta
+#
+SKIN-JASON-A1
+SKIN-JASON-B2
+SKIN-CHUCKY-C3
+SKIN-CHUCKY-D4
+SKIN-FREDDY-E5
+SKIN-FREDDY-F6
+SKIN-RPD-G7
+SKIN-RPD-H8
+SKIN-DELTA-I9
+SKIN-HEAVY-J0
+SKIN-MIL-K1
+SKIN-CLAW-L2
+
+# Ejemplo documento Firestore (ID = código):
+# { "reward": "skin_horror_jason", "usesLeft": 1, "active": true }
+#
+# Mapeo sugerido código → reward:
+# SKIN-JASON-A1 → skin_horror_jason
+# SKIN-JASON-B2 → skin_horror_jason_02
+# SKIN-CHUCKY-C3 → skin_horror_chucky
+# SKIN-CHUCKY-D4 → skin_horror_chucky
+# SKIN-FREDDY-E5 → skin_horror_freddy
+# SKIN-FREDDY-F6 → skin_horror_freddy_hat
+# SKIN-RPD-G7 → skin_horror_rpd
+# SKIN-RPD-H8 → skin_horror_rpd_drone
+# SKIN-DELTA-I9 → skin_horror_delta
+# SKIN-HEAVY-J0 → skin_horror_freddy_heavy
+# SKIN-MIL-K1 → skin_horror_jason_mil
+# SKIN-CLAW-L2 → skin_horror_freddy_claw

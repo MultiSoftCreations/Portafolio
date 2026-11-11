@@ -1,0 +1,65 @@
+Pegar TODO en Firestore → Reglas → Publicar:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in ['ricardotorresgalvez005@gmail.com', 'yocepliliamurguiacuriel@gmail.com'];
+    }
+
+    match /scores/{id} {
+      allow read: if true;
+      allow create: if isAdmin()
+        || (request.resource.data.keys().hasAll(['name', 'score', 'wave', 'date'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 7
+          && request.resource.data.name.size() <= 12
+          && request.resource.data.score is number
+          && request.resource.data.score >= 0
+          && request.resource.data.score <= 50000000
+          && request.resource.data.wave is number);
+      // Jugadores normales solo pueden mejorar su score o aplicar el badge premium.
+      // Los administradores pueden corregir o eliminar cualquier entrada.
+      allow update: if isAdmin()
+        || ((request.resource.data.score is number
+          && request.resource.data.score > resource.data.score)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['premium', 'name', 'date']))
+        || (request.resource.data.premium == true));
+      allow delete: if isAdmin();
+    }
+
+    match /users/{uid} {
+      // El jugador solo puede tocar su propio documento; los admins pueden recuperar/corregir/eliminar cualquier usuario.
+      allow read, write: if isAdmin()
+        || (request.auth != null && request.auth.uid == uid);
+    }
+
+    match /premiumCodes/{code} {
+      allow read: if true;
+      // Solo admin genera códigos.
+      allow create: if isAdmin();
+      allow update: if isAdmin()
+        || (resource.data.used == false
+          && request.resource.data.used == true);
+      allow delete: if isAdmin();
+    }
+
+    match /rewardCodes/{code} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin()
+        || (resource.data.usesLeft is number
+          && request.resource.data.usesLeft is number
+          && request.resource.data.usesLeft == resource.data.usesLeft - 1
+          && request.resource.data.usesLeft >= 0);
+      allow delete: if isAdmin()
+        || (resource.data.usesLeft is number
+          && resource.data.usesLeft <= 1);
+    }
+  }
+}
+
+NOTA: el panel admin de SPACE STRIKE puede editar/borrar datos de juego en users/{uid} y scores/{pilotId}.
+La eliminación desde el panel NO elimina la cuenta de Google/Firebase Authentication; solo elimina los datos del juego y su entrada del ranking.

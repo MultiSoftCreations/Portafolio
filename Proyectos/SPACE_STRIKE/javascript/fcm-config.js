@@ -1,0 +1,2 @@
+/* auto */
+window.SPACE_STRIKE_VAPID_KEY = "BDJp_JVLC1-r1yqd-1u04kW4AFYuJ3NjMpwYapEg5Ww85PIYaRLxfF0gux3DCzCzffmkD41ieu-FsSC3PSLe9JY";

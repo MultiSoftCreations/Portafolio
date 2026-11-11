@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030407">
+    <title>SPACE STRIKE — CÓMO JUGAR</title>
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/howtoplay.css">
+</head>
+<body>
+    <div id="space"></div>
+    <div class="ambient"></div>
+    <main class="howtoplay">
+        <header class="page-header">
+            <div class="page-title">CÓMO JUGAR</div>
+            <div class="page-subtitle">MANUAL DE PILOTO // V3.3.6</div>
+        </header>
+        <div class="separator"></div>
+        <section class="content" class="content-scroll">
+            <article class="card">
+                <h3>OBJETIVO</h3>
+                <p>Destruye naves enemigas, sobrevive y suma puntos. En <strong>Aventura</strong> completa 40 sectores con estrellas. En <strong>Infinito</strong> aguanta oleadas y sube en el ranking.</p>
+            </article>
+            <article class="card">
+                <h3>CONTROLES</h3>
+                <p><strong>PC:</strong> WASD o flechas para mover · Espacio / clic para disparar.<br>
+                <strong>Móvil:</strong> joystick + FIRE (tamaño y posición en Configuración).</p>
+            </article>
+            <article class="card">
+                <h3>ENEMIGOS (5 TIPOS)</h3>
+                <p>• <strong>Basic</strong> — débil, 1 disparo<br>
+                • <strong>Fast</strong> — rápido<br>
+                • <strong>Shooter</strong> — dispara de vuelta<br>
+                • <strong>Tank</strong> — mucho casco, lento<br>
+                • <strong>Elite</strong> — peligroso y resistente<br>
+                • <strong>Jefe</strong> — cada 50 oleadas en Infinito</p>
+            </article>
+            <article class="card">
+                <h3>MODOS</h3>
+                <p><strong>Infinito:</strong> sin pausas de nivel, monedas por oleada, jefes cada 50.<br>
+                <strong>Aventura:</strong> 40 sectores en mapa, tiempo límite, estrellas y créditos.</p>
+            </article>
+            <article class="card">
+                <h3>HABILIDADES (2.0)</h3>
+                <p><strong>1 EMP</strong> congela enemigos · <strong>2 OVERDRIVE</strong> más velocidad/cadencia · <strong>3 NOVA</strong> explosión de área. Cooldown en cada una.</p>
+            </article>
+            <article class="card">
+                <h3>TIENDA</h3>
+                <p>Gasta créditos en cadencia, escudos, cañones dobles, ráfaga, perforación, potencia, ayudante, propulsión y más.</p>
+            </article>
+            <article class="card">
+                <h3>PILOTO Y RANKING</h3>
+                <p>Registra un nombre (7–12 caracteres). El ranking local guarda las mejores puntuaciones de infinito en este dispositivo.</p>
+            </article>
+            <article class="card">
+                <h3>MULTISOFT CREATIONS</h3>
+                <p>SPACE STRIKE es un proyecto de Multisoft Creations. Software · Solutions · Innovation.</p>
+            </article>
+        </section>
+        <section class="actions" style="width:min(360px,90vw);margin:8px auto;">
+            <button id="backButton" class="menu-button" type="button"><span class="button-icon">&lt;</span> VOLVER AL MENÚ</button>
+        </section>
+        <div class="version">V3.3.6</div>
+    </main>
+    <div id="transition"></div>
+    <script>
+        document.getElementById("backButton").onclick = function () {
+            var t = document.getElementById("transition");
+            t.classList.add("active");
+            setTimeout(function () { location.href = "../index.html"; }, 400);
+        };
+        (function () {
+            var space = document.getElementById("space");
+            for (var i = 0; i < 70; i++) {
+                var s = document.createElement("div");
+                s.className = "star";
+                s.style.cssText = "position:absolute;background:#fff;border-radius:50%;width:"+(Math.random()*2+0.4)+"px;height:"+s.style.width+";left:"+Math.random()*100+"%;top:"+Math.random()*100+"%;";
+                space.appendChild(s);
+            }
+        })();
+    </script>
+    <script src="../javascript/fullscreen.js"></script>
+    <script src="../javascript/core/game-state.js"></script>
+    <script src="../javascript/core/player-data.js"></script>
+    <script src="../javascript/core/save-manager.js"></script>
+    <script src="../javascript/systems/particles.js"></script>
+    <script src="../javascript/systems/audio.js"></script>
+
+    <script src="../javascript/managers/shop-manager.js"></script>
+
+    <script src="../javascript/managers/ad-manager.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Proyectos de Ricardo Torres y MultiSoftCreations.">
+  <title>Proyectos | Ricardo Torres · MultiSoftCreations</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/projects.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <button type="button" class="back-btn" data-back data-back-fallback="../index.html" aria-label="Volver">
+        <span class="back-arrow" aria-hidden="true">←</span>
+      </button>
+
+      <a href="../index.html" class="logo">
+        <img src="../assets/img/logo.png" alt="MultiSoftCreations" class="logo-img" width="42" height="42">
+        <span class="logo-text">MultiSoftCreations</span>
+      </a>
+      <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="../index.html#sobre-mi">Sobre mí</a></li>
+          <li><a href="proyectos.html" class="active">Proyectos</a></li>
+          <li><a href="../index.html#servicios">Servicios</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section page-hero">
+      <div class="container">
+        <h1 class="page-title">Proyectos</h1>
+        <p class="page-intro">Trabajo real con estados honestos. Cada tarjeta se genera automáticamente desde archivos JSON.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="filters" id="project-filters">
+          <button class="filter-btn active" data-filter="all">Todos</button>
+          <button class="filter-btn" data-filter="Videojuegos">Videojuegos</button>
+          <button class="filter-btn" data-filter="Utilidades">Utilidades</button>
+          <button class="filter-btn" data-filter="IA">IA</button>
+          <button class="filter-btn" data-filter="Herramientas">Herramientas</button>
+          <button class="filter-btn" data-filter="Educación">Educación</button>
+        </div>
+
+        <div id="projects-catalog" class="projects-grid">
+          <p class="loading-msg">Cargando proyectos…</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="../assets/img/logo.png" alt="MultiSoftCreations" class="logo-img logo-img-sm" width="32" height="32">
+        <span>MultiSoftCreations</span>
+      </div>
+      <nav class="footer-nav">
+        <a href="privacidad.html">Aviso de privacidad</a>
+        <a href="terminos.html">Términos y condiciones</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <p class="footer-copy">© <span id="year"></span> Ricardo Torres · MultiSoftCreations</p>
+    </div>
+  </footer>
+
+  <script src="../javascript/main.js"></script>
+  <script src="../javascript/projects.js"></script>
+</body>
+</html>

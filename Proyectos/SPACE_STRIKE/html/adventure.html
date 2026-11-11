@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030407">
+    <title>SPACE STRIKE — AVENTURA</title>
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/adventure.css">
+    <script src="../javascript/preloader.js"></script>
+</head>
+<body>
+    <div id="space"></div>
+    <div class="ambient"></div>
+
+    <main class="adventure">
+        <header class="page-header">
+            <div class="page-title">MODO AVENTURA</div>
+            <div class="page-subtitle">STAR MAP // 500 SECTORS</div>
+        </header>
+
+        <div class="separator"></div>
+
+        <section class="map-wrap">
+            <div id="starMap" class="star-map" aria-label="Mapa de sectores">
+                <div id="mapInner" class="map-inner">
+                    <svg class="map-paths" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+                </div>
+            </div>
+        </section>
+
+        <section class="map-legend">
+            <span>★ ESTRELLAS POR SECTOR</span>
+            <span>DESBLOQUEA EL SIGUIENTE CON ≥ 1★</span>
+        </section>
+
+        <section class="actions">
+            <button id="backButton" class="menu-button" type="button">
+                <span class="button-icon">&lt;</span> VOLVER AL MENÚ
+            </button>
+        </section>
+
+        <div class="version">V3.3.6</div>
+    </main>
+
+    <div id="transition"></div>
+
+        <script src="../javascript/core/game-state.js"></script>
+    <script src="../javascript/core/player-data.js"></script>
+    <script src="../javascript/core/save-manager.js"></script>
+    <script src="../javascript/systems/particles.js"></script>
+    <script src="../javascript/systems/audio.js"></script>
+
+    <script src="../javascript/managers/shop-manager.js"></script>
+
+<script src="../javascript/levels.js"></script>
+    <script>
+        const spaceBackground = document.getElementById("space");
+        const transitionScreen = document.getElementById("transition");
+        const starMap = document.getElementById("starMap");
+        const backButton = document.getElementById("backButton");
+
+        function createStars() {
+            if (!spaceBackground) return;
+            spaceBackground.innerHTML = "";
+            const amount = Math.min(160, Math.max(40, Math.floor((window.innerWidth * window.innerHeight) / 7000)));
+            for (let i = 0; i < amount; i++) {
+                const star = document.createElement("div");
+                star.className = "star";
+                const size = Math.random() < 0.15 ? Math.random() * 2.5 + 1 : Math.random() * 1.6 + 0.5;
+                star.style.width = size + "px";
+                star.style.height = size + "px";
+                star.style.left = (Math.random() * 100) + "%";
+                star.style.top = (Math.random() * 100) + "%";
+                star.style.animationDuration = (Math.random() * 3 + 1.5) + "s";
+                star.style.animationDelay = (Math.random() * 3) + "s";
+                spaceBackground.appendChild(star);
+            }
+        }
+
+        function navigateTo(page) {
+            if (!transitionScreen || transitionScreen.classList.contains("active")) return;
+            transitionScreen.classList.add("active");
+            setTimeout(function () { location.href = page; }, 450);
+        }
+
+        function starsText(n) {
+            n = Math.max(0, Math.min(3, n));
+            return "★".repeat(n) + "☆".repeat(3 - n);
+        }
+
+        function buildMap() {
+            const levels = window.SpaceStrikeLevels.ADVENTURE_LEVELS;
+            const progress = window.SpaceStrikeLevels.loadAdventureProgress();
+            const mapInner = document.getElementById("mapInner") || starMap;
+            const svg = mapInner.querySelector(".map-paths");
+            const cols = 5;
+            const rowH = 96;
+            const rows = Math.ceil(levels.length / cols);
+            const padTop = 48;
+            const padBottom = 80;
+            mapInner.style.height = (rows * rowH + padTop + padBottom) + "px";
+            mapInner.style.position = "relative";
+            mapInner.style.width = "100%";
+
+            mapInner.querySelectorAll(".planet, .nebula, .map-node").forEach(function (el) { el.remove(); });
+
+            /* Positions: level 1 at BOTTOM, higher ids toward TOP (scroll up to advance) */
+            function posForIndex(i) {
+                var rowFromStart = Math.floor(i / cols);
+                var col = i % cols;
+                /* snake: alternate direction each row */
+                if (rowFromStart % 2 === 1) col = cols - 1 - col;
+                var rowFromBottom = rows - 1 - rowFromStart;
+                var xPct = 10 + col * 20;
+                var yPx = padTop + rowFromBottom * rowH + rowH * 0.35;
+                var yPct = (yPx / (rows * rowH + padTop + padBottom)) * 100;
+                return { xPct: xPct, yPx: yPx, yPct: yPct };
+            }
+
+            var pathPts = [];
+            var focusNode = null;
+            var lastUnlockedId = 1;
+
+            levels.forEach(function (lvl, i) {
+                var pos = posForIndex(i);
+                pathPts.push(pos.xPct + " " + pos.yPct);
+
+                var stars = Number((progress.levels || {})[String(lvl.id)] || 0);
+                var unlocked = window.SpaceStrikeLevels.isUnlocked
+                    ? window.SpaceStrikeLevels.isUnlocked(lvl.id, progress)
+                    : (lvl.id === 1 || stars > 0);
+                if (unlocked) lastUnlockedId = lvl.id;
+
+                var node = document.createElement("button");
+                node.type = "button";
+                node.className = "map-node" + (unlocked ? "" : " locked") + (stars > 0 ? " cleared" : "");
+                node.style.left = pos.xPct + "%";
+                node.style.top = pos.yPx + "px";
+                node.style.transform = "translate(-50%, -50%)";
+                node.dataset.levelId = String(lvl.id);
+                node.innerHTML =
+                    '<span class="node-id">' + String(lvl.id).padStart(2, "0") + "</span>" +
+                    '<span class="node-name">' + lvl.name + "</span>" +
+                    '<span class="node-stars">' + (unlocked ? starsText(stars) : "🔒") + "</span>";
+
+                if (unlocked) {
+                    node.addEventListener("click", function () {
+                        navigateTo("game.html?mode=adventure&level=" + lvl.id);
+                    });
+                    focusNode = node;
+                }
+                mapInner.appendChild(node);
+            });
+
+            var pathD = pathPts.length ? ("M " + pathPts.join(" L ")) : "";
+            if (svg) {
+                svg.setAttribute("viewBox", "0 0 100 100");
+                svg.innerHTML = '<path d="' + pathD + '" fill="none" stroke="rgba(80,190,255,0.35)" stroke-width="0.35" stroke-linecap="round"/>';
+            }
+
+            /* Scroll to last unlocked (near bottom of progress) */
+            setTimeout(function () {
+                var target = mapInner.querySelector('.map-node[data-level-id="' + lastUnlockedId + '"]') || focusNode;
+                if (target && starMap) {
+                    var top = Math.max(0, target.offsetTop - starMap.clientHeight * 0.55);
+                    starMap.scrollTop = top;
+                } else if (starMap) {
+                    starMap.scrollTop = starMap.scrollHeight;
+                }
+            }, 80);
+        }
+
+        backButton.addEventListener("click", function () {
+            navigateTo("../index.html");
+        });
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") navigateTo("../index.html");
+        });
+
+        createStars();
+        buildMap();
+        
+        window.addEventListener("resize", function () {
+            clearTimeout(window.__st);
+            window.__st = setTimeout(createStars, 200);
+        });
+    </script>
+    <script src="../javascript/fullscreen.js"></script>
+    <script src="../javascript/managers/ad-manager.js"></script>
+</body>
+</html>

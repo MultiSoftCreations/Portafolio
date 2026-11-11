@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030407">
+    <title>SPACE STRIKE — NAVES</title>
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/shop.css">
+    <script src="../javascript/preloader.js"></script>
+    <style>
+        .hangar { width: min(440px, 96vw); margin: 0 auto; padding-bottom: 40px; }
+        .page-title { letter-spacing: 4px; }
+        .preview-wrap {
+            width: 100%;
+            max-width: 320px;
+            margin: 12px auto 16px;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            border: 1px solid rgba(140, 120, 255, 0.35);
+            background: radial-gradient(ellipse at 50% 60%, rgba(40, 30, 80, 0.5), rgba(3, 4, 7, 0.95));
+            position: relative;
+            overflow: hidden;
+        }
+        #shipPreview {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .preview-label {
+            text-align: center;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: rgba(200, 190, 255, 0.7);
+            margin-bottom: 4px;
+        }
+        .preview-name {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #e8e4ff;
+            margin-bottom: 8px;
+        }
+        .section-h {
+            width: 100%;
+            margin: 18px 0 8px;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #a78bfa;
+            font-weight: 800;
+        }
+        .section-h.skins { color: #fb7185; }
+        .ship-row, .skin-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(100, 90, 160, 0.35);
+            background: rgba(12, 10, 24, 0.85);
+            cursor: pointer;
+        }
+        .ship-row.selected, .ship-row.equipped {
+            border-color: rgba(255, 200, 80, 0.55);
+            box-shadow: 0 0 12px rgba(255, 180, 40, 0.15);
+        }
+        .ship-row.special { border-color: rgba(140, 120, 255, 0.45); }
+        .ship-row.locked { opacity: 0.45; }
+        .ship-thumb {
+            width: 48px; height: 48px;
+            object-fit: contain;
+            image-rendering: auto;
+        }
+        .ship-info { flex: 1; min-width: 0; }
+        .ship-info b { display: block; font-size: 12px; letter-spacing: 1px; color: #eee; }
+        .ship-info span { font-size: 10px; color: rgba(180, 170, 220, 0.65); }
+        .eq-btn {
+            height: 32px; padding: 0 12px; border-radius: 6px;
+            border: 1px solid rgba(255, 200, 100, 0.4);
+            background: #2a2410; color: #ffd56a; font-size: 10px;
+            letter-spacing: 1px; cursor: pointer; font-weight: 700;
+        }
+        .eq-btn.on { background: #5c4a10; border-color: #ffd56a; }
+        .skin-row.owned { border-color: rgba(251, 113, 133, 0.35); }
+        .skin-row.eq { border-color: rgba(251, 113, 133, 0.7); background: rgba(60, 15, 25, 0.5); }
+        .skin-row.bad { opacity: 0.4; }
+        .hint { font-size: 11px; color: rgba(180, 160, 255, 0.5); line-height: 1.4; margin: 0 0 10px; }
+        .list-box { max-height: 280px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    </style>
+</head>
+<body class="ss-loading">
+    <div id="space"></div>
+    <div class="ambient"></div>
+
+    <main class="shop hangar">
+        <header class="page-header">
+            <div class="page-title">NAVES</div>
+            <div class="page-subtitle">HANGAR // EQUIPAR Y SKINS</div>
+        </header>
+        <div class="separator"></div>
+
+        <div class="preview-label">VISTA PREVIA</div>
+        <div class="preview-name" id="previewName">—</div>
+        <div class="preview-wrap">
+            <canvas id="shipPreview" width="512" height="512"></canvas>
+        </div>
+        <p class="hint" id="previewHint">Elige una nave. Si tienes skin compatible, se muestra encima.</p>
+
+        <div class="section-h">TU FLOTA</div>
+        <div id="shipsList" class="list-box"></div>
+
+        <div class="section-h skins">SKINS</div>
+        <p class="hint">Solo skins desbloqueadas y compatibles con la nave seleccionada. Canjea códigos en Recompensas.</p>
+        <div id="skinsList" class="list-box"></div>
+        <button type="button" class="eq-btn" id="skinUnequipBtn" style="width:100%;margin-top:8px;">QUITAR SKIN</button>
+
+        <section class="actions" style="margin-top:20px;">
+            <button id="backButton" class="menu-button" type="button">
+                <span class="button-icon">&lt;</span> VOLVER AL MENÚ
+            </button>
+        </section>
+        <div class="version">V3.3.11</div>
+    </main>
+    <div id="transition"></div>
+
+    <script src="../javascript/core/game-state.js"></script>
+    <script src="../javascript/core/player-data.js"></script>
+    <script src="../javascript/core/save-manager.js"></script>
+    <script src="../javascript/ships.js"></script>
+    <script src="../javascript/skins.js"></script>
+    <script src="../javascript/premium.js"></script>
+    <script src="../javascript/auth.js"></script>
+    <script src="../javascript/fullscreen.js"></script>
+    <script>
+(function () {
+    var selectedId = null;
+    var imgCache = {};
+
+    function loadImg(src) {
+        return new Promise(function (resolve) {
+            if (!src) { resolve(null); return; }
+            if (imgCache[src] && imgCache[src].complete) {
+                resolve(imgCache[src]); return;
+            }
+            var im = new Image();
+            im.onload = function () { imgCache[src] = im; resolve(im); };
+            im.onerror = function () { resolve(null); };
+            im.src = src;
+        });
+    }
+
+    function shipSpritePath(ship) {
+        if (!ship) return null;
+        var s = ship.sprite || "";
+        if (!s && ship.texture) s = "../img/ships/" + ship.texture + ".png";
+        if (!s && ship.id) s = "../img/ships/" + ship.id + ".png";
+        if (!s) return null;
+        if (s.indexOf("http") === 0 || s.indexOf("data:") === 0) return s;
+        if (s.indexOf("../") === 0) return s;
+        if (s.indexOf("./") === 0) return s;
+        if (s.indexOf("img/") === 0) return "../" + s;
+        if (s.indexOf("/img/") === 0) return ".." + s;
+        return s;
+    }
+
+    /** Prueba varias rutas si la primera falla */
+    function shipSpriteCandidates(ship) {
+        var out = [];
+        var primary = shipSpritePath(ship);
+        if (primary) out.push(primary);
+        var id = ship && ship.id;
+        var tex = ship && ship.texture;
+        var extras = [];
+        if (id) {
+            extras.push("../img/ships/" + id + ".png");
+            extras.push("../img/texturas-especiales/" + id + ".png");
+        }
+        if (tex) extras.push("../img/ships/" + tex + ".png");
+        if (id === "destroyer") extras.push("../img/ships/t-wind.png");
+        if (id === "nebula") extras.push("../img/texturas-especiales/nave-especial.png", "../img/ships/nebula.png");
+        if (id === "rpd") extras.push("../img/texturas-especiales/rpd-leon.png", "../img/ships/rpd.png");
+        if (id === "cempasuchil") extras.push("../img/texturas-especiales/cempasuchil-eterno.png", "../img/ships/cempasuchil.png");
+        if (id === "vt03") extras.push("../img/ships/vt03/phase1.png", "../img/ships/vt03.png");
+        extras.forEach(function (u) {
+            if (out.indexOf(u) < 0) out.push(u);
+        });
+        return out;
+    }
+
+    function loadImgCandidates(urls) {
+        return new Promise(function (resolve) {
+            var i = 0;
+            function tryNext() {
+                if (i >= urls.length) { resolve(null); return; }
+                var url = urls[i++];
+                loadImg(url).then(function (im) {
+                    if (im) resolve(im);
+                    else tryNext();
+                });
+            }
+            tryNext();
+        });
+    }
+
+    function drawPreview() {
+        var canvas = document.getElementById("shipPreview");
+        if (!canvas) return;
+        var ctx = canvas.getContext("2d");
+        var w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        // stars
+        ctx.fillStyle = "#05060c";
+        ctx.fillRect(0, 0, w, h);
+        for (var i = 0; i < 40; i++) {
+            ctx.fillStyle = "rgba(255,255,255," + (0.15 + Math.random() * 0.4) + ")";
+            ctx.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5);
+        }
+
+        var S = window.SpaceStrikeShips;
+        var Sk = window.SpaceStrikeSkins;
+        if (!S || !selectedId || !S.catalog[selectedId]) {
+            ctx.fillStyle = "rgba(180,170,220,0.5)";
+            ctx.font = "16px system-ui";
+            ctx.textAlign = "center";
+            ctx.fillText("Selecciona una nave", w / 2, h / 2);
+            return;
+        }
+        var ship = S.catalog[selectedId];
+        var skinSrc = null;
+        var skinId = Sk && Sk.getEquipped && Sk.getEquipped();
+        if (skinId && Sk.catalog[skinId]) {
+            var sk = Sk.catalog[skinId];
+            if (sk.ships && sk.ships.indexOf(selectedId) >= 0) {
+                skinSrc = sk.sprite;
+                if (skinSrc && skinSrc.indexOf("../") !== 0 && skinSrc.indexOf("img/") === 0) {
+                    skinSrc = "../" + skinSrc;
+                }
+            }
+        }
+
+        Promise.all([loadImgCandidates(shipSpriteCandidates(ship)), loadImg(skinSrc)]).then(function (arr) {
+            var base = arr[0], skin = arr[1];
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = "#05060c";
+            ctx.fillRect(0, 0, w, h);
+            for (var j = 0; j < 40; j++) {
+                ctx.fillStyle = "rgba(255,255,255,0.25)";
+                ctx.fillRect((j * 47) % w, (j * 91) % h, 1.5, 1.5);
+            }
+            var img = skin || base;
+            if (!img) {
+                ctx.fillStyle = "#888";
+                ctx.font = "14px system-ui";
+                ctx.textAlign = "center";
+                ctx.fillText("Sin textura", w / 2, h / 2);
+                return;
+            }
+            var max = Math.min(w, h) * 0.72;
+            var scale = Math.min(max / img.width, max / img.height);
+            var dw = img.width * scale, dh = img.height * scale;
+            ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+        });
+
+        var nameEl = document.getElementById("previewName");
+        if (nameEl) nameEl.textContent = ship.name || selectedId;
+        var hint = document.getElementById("previewHint");
+        if (hint) {
+            if (skinId && skinSrc) hint.textContent = "Skin activa: " + (Sk.catalog[skinId].name || skinId);
+            else hint.textContent = "Textura base de la nave. Equipa una skin compatible abajo.";
+        }
+    }
+
+    function renderShips() {
+        var box = document.getElementById("shipsList");
+        var S = window.SpaceStrikeShips;
+        if (!box || !S) return;
+        var owned = (S.loadOwned && S.loadOwned()) || [];
+        var eq = (S.getEquippedId && S.getEquippedId()) || null;
+        if (!selectedId) selectedId = eq || owned[0] || "interceptor";
+        box.innerHTML = "";
+        Object.keys(S.catalog).forEach(function (id) {
+            var ship = S.catalog[id];
+            var isOwned = owned.indexOf(id) >= 0 || ship.free;
+            var row = document.createElement("div");
+            row.className = "ship-row" +
+                (id === selectedId ? " selected" : "") +
+                (id === eq ? " equipped" : "") +
+                (ship.special ? " special" : "") +
+                (!isOwned ? " locked" : "");
+            var thumb = document.createElement("img");
+            thumb.className = "ship-thumb";
+            thumb.alt = "";
+            var cands = shipSpriteCandidates(ship);
+            if (cands.length) {
+                thumb.src = cands[0];
+                thumb.onerror = (function (list, el) {
+                    var k = 1;
+                    return function () {
+                        if (k < list.length) { el.src = list[k++]; }
+                    };
+                })(cands, thumb);
+            }
+            var info = document.createElement("div");
+            info.className = "ship-info";
+            var tag = ship.special ? "ESPECIAL" : (ship.premium ? "PREMIUM" : "ESTÁNDAR");
+            info.innerHTML = "<b>" + (ship.name || id) + "</b><span>" + tag +
+                (isOwned ? "" : " · bloqueada") + (id === eq ? " · equipada" : "") + "</span>";
+            var btn = document.createElement("button");
+            btn.className = "eq-btn" + (id === eq ? " on" : "");
+            btn.textContent = !isOwned ? "🔒" : (id === eq ? "EQUIPADA" : "EQUIPAR");
+            btn.disabled = !isOwned;
+            btn.onclick = function (e) {
+                e.stopPropagation();
+                if (!isOwned) return;
+                if (S.equip) S.equip(id);
+                else if (S.setEquipped) S.setEquipped(id);
+                selectedId = id;
+                renderShips();
+                renderSkins();
+                drawPreview();
+            };
+            row.onclick = function () {
+                selectedId = id;
+                renderShips();
+                renderSkins();
+                drawPreview();
+            };
+            row.appendChild(thumb);
+            row.appendChild(info);
+            row.appendChild(btn);
+            box.appendChild(row);
+        });
+        drawPreview();
+    }
+
+    function renderSkins() {
+        var box = document.getElementById("skinsList");
+        var Sk = window.SpaceStrikeSkins;
+        if (!box || !Sk) return;
+        var eq = Sk.getEquipped && Sk.getEquipped();
+        box.innerHTML = "";
+        Object.keys(Sk.catalog).forEach(function (id) {
+            var s = Sk.catalog[id];
+            var owned = Sk.owns && Sk.owns(id);
+            var compatible = s.ships && selectedId && s.ships.indexOf(selectedId) >= 0;
+            var row = document.createElement("div");
+            row.className = "skin-row" +
+                (owned ? " owned" : "") +
+                (eq === id ? " eq" : "") +
+                (!compatible ? " bad" : "");
+            row.innerHTML = "<div class=\"ship-info\"><b style=\"color:#fda4af\">" + s.name + "</b>" +
+                "<span>" + (s.ships || []).join(", ") +
+                (!owned ? " · bloqueada" : "") +
+                (!compatible ? " · no compatible" : "") + "</span></div>";
+            var btn = document.createElement("button");
+            btn.className = "eq-btn";
+            btn.textContent = !owned ? "🔒" : (!compatible ? "—" : (eq === id ? "ACTIVA" : "USAR"));
+            btn.disabled = !owned || !compatible;
+            btn.onclick = function () {
+                var r = Sk.equip(id);
+                if (r && !r.ok) alert(r.error || "No se pudo equipar");
+                renderSkins();
+                drawPreview();
+            };
+            row.appendChild(btn);
+            box.appendChild(row);
+        });
+    }
+
+    document.getElementById("skinUnequipBtn").onclick = function () {
+        if (window.SpaceStrikeSkins && SpaceStrikeSkins.unequip) SpaceStrikeSkins.unequip();
+        renderSkins();
+        drawPreview();
+    };
+    document.getElementById("backButton").onclick = function () {
+        location.href = "../index.html";
+    };
+
+    function boot() {
+        try {
+            if (window.SpaceStrikeAuth && SpaceStrikeAuth.pullCloud) SpaceStrikeAuth.pullCloud();
+        } catch (e) {}
+        renderShips();
+        renderSkins();
+    }
+    if (window.SpaceStrikePreloader && !SpaceStrikePreloader.isReady()) {
+        SpaceStrikePreloader.waitReady().then(boot);
+    } else {
+        setTimeout(boot, 200);
+    }
+})();
+    </script>
+</body>
+</html>

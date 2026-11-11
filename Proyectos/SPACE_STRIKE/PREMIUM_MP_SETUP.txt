@@ -1,0 +1,19 @@
+SPACE STRIKE — Mercado Pago automático
+=====================================
+
+1) En Mercado Pago → Tu negocio → Credenciales → Copia el
+   Access Token de PRODUCCIÓN (APP_USR-...).
+
+2) En Netlify → Site settings → Environment variables:
+   Name:  MP_ACCESS_TOKEN
+   Value: (tu access token)
+
+   Opcional:
+   SITE_URL = https://spacestrike.netlify.app
+
+3) Redeploy el sitio (o sube este ZIP completo).
+
+4) Prueba COMPRAR PREMIUM: debe abrir Checkout de MP y al pagar
+   volver a premium.html y activar solo.
+
+Seguridad: el token NUNCA va en el HTML, solo en Netlify env.

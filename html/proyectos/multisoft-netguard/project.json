@@ -1,0 +1,22 @@
+{
+  "id": "multisoft-netguard",
+  "name": "MultiSoft NetGuard",
+  "brand": "MultiSoftCreations",
+  "category": "Herramientas",
+  "status": "development",
+  "visibility": "public",
+  "featured": false,
+  "description": "Sistema de protección de red en desarrollo (v1.0.0). Actualmente fuera de servicio mientras se unifica todo en MultiSoftCreations. No hay demo pública disponible.",
+  "image": "img/portada.webp",
+  "technologies": [
+    "Python"
+  ],
+  "links": {
+    "demo": "",
+    "repository": ""
+  },
+  "release": {
+    "type": "public",
+    "label": "Fuera de servicio"
+  }
+}

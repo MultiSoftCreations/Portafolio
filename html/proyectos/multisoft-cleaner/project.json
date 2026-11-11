@@ -1,0 +1,22 @@
+{
+  "id": "multisoft-cleaner",
+  "name": "MultiSoftCleaner",
+  "brand": "MultiSoftCreations",
+  "category": "Utilidades",
+  "status": "development",
+  "visibility": "public",
+  "featured": false,
+  "description": "Herramienta de limpieza y mantenimiento para escritorio (demo v2.1.1). Actualmente fuera de servicio mientras se unifica todo en MultiSoftCreations. El escaneo y la detección de duplicados funcionaban; las funciones de limpieza seguían en corrección.",
+  "image": "img/portada.webp",
+  "technologies": [
+    "Python"
+  ],
+  "links": {
+    "demo": "",
+    "repository": ""
+  },
+  "release": {
+    "type": "public",
+    "label": "Fuera de servicio"
+  }
+}

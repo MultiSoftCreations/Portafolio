@@ -1,0 +1,37 @@
+# Dependencias y caché
+node_modules/
+.npm/
+.cache/
+
+# Netlify (no se versiona el estado local del CLI)
+.netlify/
+.netlify/state.json
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.bak
+*.bak_*
+game.js.bak*
+
+# Secretos (nunca subir tokens reales)
+.env
+.env.*
+!.env.example
+*.pem
+credentials.json
+service-account*.json
+
+# Logs y temporales
+*.log
+tmp/
+temp/
+.temp/
+
+# Archivos de análisis / notas locales opcionales
+*_Analisis*.txt

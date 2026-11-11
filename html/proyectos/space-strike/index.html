@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space-Strike | MultiSoftCreations</title>
+  <link rel="stylesheet" href="../../../css/styles.css">
+  <link rel="stylesheet" href="../../../css/projects.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .gallery { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin: 1.5rem 0; }
+    .gallery figure { margin: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .gallery img { width: 100%; height: auto; display: block; }
+    .gallery figcaption { font-size: 0.8rem; color: var(--text-dim); padding: 0.5rem 0.75rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <button type="button" class="back-btn" data-back data-back-fallback="../../proyectos.html" aria-label="Volver">
+        <span class="back-arrow" aria-hidden="true">←</span>
+      </button>
+
+      <a href="../../../index.html" class="logo">
+        <img src="../../../assets/img/logo.png" alt="MultiSoftCreations" class="logo-img" width="42" height="42">
+        <span class="logo-text">MultiSoftCreations</span>
+      </a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="../../../index.html">Inicio</a></li>
+          <li><a href="../../proyectos.html">Proyectos</a></li>
+          <li><a href="../../contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section project-detail-hero">
+      <div class="container">
+        <p class="hero-label">Videojuegos · Acceso anticipado · v3.3.3</p>
+        <h1 class="page-title">Space-Strike</h1>
+        <p class="page-intro">Deep Space Combat System — shooter espacial en el navegador.</p>
+        <div class="project-detail-meta">
+          <span class="badge badge-category">Videojuegos</span>
+          <span class="badge badge-status early_access">Acceso anticipado</span>
+        </div>
+        <p style="margin-top:1rem">
+          <a href="../../../Proyectos/SPACE_STRIKE/index.html" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Jugar beta</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container project-detail-body">
+        <div>
+          <h2 class="section-title" style="font-size:1.35rem">Descripción</h2>
+          <p style="color:var(--text-muted);margin-bottom:1rem">
+            Space-Strike es un videojuego de combate espacial jugable en el navegador.
+            Incluye modo Infinito (oleadas y ranking) y modo Aventura (mapa de sectores con estrellas),
+            tienda de naves y mejoras, habilidades (EMP, Overdrive, Nova), registro de piloto
+            e inicio de sesión con Google.
+          </p>
+
+          <h3 style="margin:1rem 0 0.5rem">Créditos</h3>
+          <ul style="color:var(--text-muted);font-size:0.95rem;margin-bottom:1.5rem;padding-left:1.2rem;list-style:disc">
+            <li><strong style="color:var(--text)">Ricardo Torres</strong> — diseño del juego, programación, sistemas, publicación y dirección; boss Overlord.</li>
+            <li><strong style="color:var(--text)">Fantasmita</strong> — co-creación, diseño visual y texturas de naves (excepto Overlord), pruebas y feedback.</li>
+            <li><strong style="color:var(--text)">Leon016</strong> — nave especial R.P.D. Leon (diseño, habilidades y dron).</li>
+          </ul>
+
+          <h3 style="margin-bottom:0.75rem">Capturas y arte</h3>
+          <div class="gallery">
+            <figure>
+              <img src="img/portada.jpg" alt="Arte promocional Space-Strike" loading="lazy">
+              <figcaption>Arte promocional</figcaption>
+            </figure>
+            <figure>
+              <img src="img/menu.jpg" alt="Menú principal" loading="lazy">
+              <figcaption>Menú principal</figcaption>
+            </figure>
+            <figure>
+              <img src="img/aventura.jpg" alt="Modo Aventura" loading="lazy">
+              <figcaption>Mapa modo Aventura</figcaption>
+            </figure>
+            <figure>
+              <img src="img/tienda.jpg" alt="Tienda de naves" loading="lazy">
+              <figcaption>Tienda y naves</figcaption>
+            </figure>
+            <figure>
+              <img src="img/manual.jpg" alt="Manual de piloto" loading="lazy">
+              <figcaption>Manual de piloto</figcaption>
+            </figure>
+            <figure>
+              <img src="img/naves.jpg" alt="Selección de naves" loading="lazy">
+              <figcaption>Más naves</figcaption>
+            </figure>
+            <figure>
+              <img src="img/creditos.jpg" alt="Créditos" loading="lazy">
+              <figcaption>Créditos del proyecto</figcaption>
+            </figure>
+          </div>
+
+          <h3 style="margin:1.5rem 0 0.5rem">Tecnologías</h3>
+          <div class="project-tech">
+            <span class="tech-tag">HTML5</span>
+            <span class="tech-tag">CSS3</span>
+            <span class="tech-tag">JavaScript</span>
+          </div>
+        </div>
+        <aside class="project-sidebar">
+          <h3>Enlaces</h3>
+          <p style="margin-bottom:1rem">
+            <a href="../../../Proyectos/SPACE_STRIKE/index.html" class="btn btn-primary" style="width:100%" target="_blank" rel="noopener noreferrer">Jugar beta</a>
+          </p>
+          <h3>Marca</h3>
+          <p style="font-size:0.9rem;color:var(--text-muted)">MultiSoftCreations</p>
+          <h3 style="margin-top:1.25rem">Versión</h3>
+          <p style="font-size:0.9rem;color:var(--text-muted)">3.3.3 (beta)</p>
+        </aside>
+      </div>
+    </section>
+  
+    <section class="section">
+      <div class="container" style="max-width:800px">
+        <div id="comments-root" data-project-id="space-strike"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-copy">© <span id="year"></span> Ricardo Torres · MultiSoftCreations</p>
+    </div>
+  </footer>
+  <script src="../../../javascript/main.js"></script>
+  <script type="module" src="../../../javascript/comments.js"></script>
+</body>
+</html>

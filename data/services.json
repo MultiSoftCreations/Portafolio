@@ -1,0 +1,34 @@
+{
+  "services": [
+    {
+      "id": "web",
+      "name": "Desarrollo web",
+      "description": "Sitios y aplicaciones web con HTML, CSS y JavaScript. Enfoque en claridad, rendimiento y mantenimiento."
+    },
+    {
+      "id": "desktop",
+      "name": "Aplicaciones de escritorio",
+      "description": "Herramientas de escritorio orientadas a productividad y automatización de tareas."
+    },
+    {
+      "id": "automation",
+      "name": "Automatización de tareas",
+      "description": "Scripts y flujos que reducen trabajo repetitivo cuando el alcance está bien definido."
+    },
+    {
+      "id": "game-prototypes",
+      "name": "Prototipos y mecánicas de videojuegos",
+      "description": "Prototipos jugables y mecánicas para explorar ideas de juego."
+    },
+    {
+      "id": "ai-prototypes",
+      "name": "Prototipos e integraciones de asistentes de IA",
+      "description": "Experimentos y prototipos de asistentes conversacionales e integraciones con APIs de IA."
+    },
+    {
+      "id": "maintenance",
+      "name": "Mantenimiento y corrección de software",
+      "description": "Corrección de errores y mejoras en proyectos existentes cuando es viable."
+    }
+  ]
+}

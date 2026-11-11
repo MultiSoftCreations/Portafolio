@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#030407">
+    <title>SPACE STRIKE — Créditos</title>
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/credits.css">
+</head>
+<body>
+    <div id="space"></div>
+    <div class="ambient"></div>
+
+    <main class="credits-page">
+        <header class="credits-header">
+            <h1>CRÉDITOS</h1>
+            <p>SPACE STRIKE // MULTISOFT CREATIONS</p>
+        </header>
+
+        <article class="credit-block">
+            <div class="credit-role">Creador</div>
+            <div class="credit-name">Ricardo Torres</div>
+            <div class="credit-detail">
+                Diseño del juego, programación, sistemas, publicación y dirección del proyecto SPACE STRIKE.
+            </div>
+        </article>
+
+        <article class="credit-block co">
+            <div class="credit-role">Co-creadora · Diseño y pruebas</div>
+            <div class="credit-name">Fantasmita</div>
+            <div class="credit-detail">
+                Co-creación del proyecto, diseño visual de todas las naves y creación de sus texturas, excepto el BOSS OVERLORD.
+                Apoyo en pruebas de funcionamiento, feedback, publicidad y distribución controlada del juego.
+            </div>
+        </article>
+
+        <article class="credit-block collab">
+            <div class="credit-role">Colaboración · Nave R.P.D.</div>
+            <div class="credit-name">Leon016</div>
+            <div class="credit-detail">
+                Creador de la nave especial R.P.D. LEON: diseño de la unidad policial, funciones, habilidades (INMU, PENTA, CURA), dron de apoyo y concepto completo de la unidad.
+            </div>
+        </article>
+
+        <article class="credit-block studio">
+            <div class="credit-role">Diseño y desarrollo del BOSS</div>
+            <div class="credit-name">OVERLORD</div>
+            <div class="credit-detail">
+                BOSS diseñado y desarrollado por Ricardo Torres. Concepto, implementación y desarrollo de combate.
+            </div>
+        </article>
+
+        <article class="credit-block studio">
+            <div class="credit-role">Estudio</div>
+            <div class="credit-name">Multisoft Creations</div>
+            <div class="credit-detail">SPACE STRIKE — Deep Space Combat System</div>
+        </article>
+
+        <button type="button" class="credits-back ss-btn-press" id="backButton">← MENÚ PRINCIPAL</button>
+
+        <p class="credits-foot">V3.3.6 · GRACIAS POR JUGAR</p>
+    </main>
+
+    <script src="../javascript/systems/animation-manager.js"></script>
+    <script src="../javascript/fullscreen.js"></script>
+    <script>
+        (function () {
+            var space = document.getElementById("space");
+            if (space) {
+                for (var i = 0; i < 60; i++) {
+                    var s = document.createElement("div");
+                    s.className = "star";
+                    var size = Math.random() * 2 + 0.4;
+                    s.style.width = size + "px";
+                    s.style.height = size + "px";
+                    s.style.left = Math.random() * 100 + "%";
+                    s.style.top = Math.random() * 100 + "%";
+                    s.style.animationDuration = (Math.random() * 3 + 1.5) + "s";
+                    space.appendChild(s);
+                }
+            }
+            var back = document.getElementById("backButton");
+            if (back) {
+                back.addEventListener("click", function () {
+                    location.href = "../index.html";
+                });
+            }
+            if (window.SpaceStrikeAnim) {
+                window.SpaceStrikeAnim.bindPressable(".credits-back");
+            }
+        })();
+    </script>
+    <script src="../javascript/managers/ad-manager.js"></script>
+</body>
+</html>

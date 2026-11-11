@@ -1,0 +1,25 @@
+{
+  "id": "codeverse",
+  "name": "CODEVERSE",
+  "brand": "MultiSoftCreations",
+  "category": "Educación",
+  "status": "early_access",
+  "visibility": "public",
+  "featured": true,
+  "description": "Plataforma educativa de programación (Academia + LIVE + Comunidad). Primera versión con editor LIVE real, cursos y panel. Producto principal de MultiSoftCreations.",
+  "image": "",
+  "technologies": [
+    "HTML5",
+    "CSS3",
+    "JavaScript",
+    "Python"
+  ],
+  "links": {
+    "demo": "Proyectos/CODEVERSE_LIVE/index.html",
+    "repository": ""
+  },
+  "release": {
+    "type": "public",
+    "label": "Abrir CODEVERSE"
+  }
+}

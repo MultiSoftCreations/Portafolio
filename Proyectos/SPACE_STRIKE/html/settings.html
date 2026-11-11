@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030407">
+    <meta name="description" content="Space Strike - Configuración">
+    <title>SPACE STRIKE — CONFIGURACIÓN</title>
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/settings.css">
+</head>
+<body>
+
+    <div id="space"></div>
+    <div class="ambient"></div>
+
+    <main class="settings">
+
+        <header class="page-header">
+            <div class="page-title">CONFIGURACIÓN</div>
+            <div class="page-subtitle">SYSTEM PREFERENCES // PILOT OPTIONS</div>
+        </header>
+
+        <div class="separator"></div>
+
+        <section class="content">
+
+            <article class="setting-card">
+                <div class="setting-header">
+                    <span class="setting-label">SONIDO</span>
+                    <span id="soundValue" class="setting-value">ON</span>
+                </div>
+                <p class="setting-desc">Efectos de disparo, impacto y explosiones.</p>
+                <button id="soundToggle" class="toggle-button" type="button" aria-pressed="true">
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                </button>
+            </article>
+
+            <article class="setting-card">
+                <div class="setting-header">
+                    <span class="setting-label">MÚSICA</span>
+                    <span id="musicValue" class="setting-value">ON</span>
+                </div>
+                <p class="setting-desc">Ambiente de fondo durante la misión.</p>
+                <button id="musicToggle" class="toggle-button" type="button" aria-pressed="true">
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                </button>
+            </article>
+
+            <article class="setting-card">
+                <div class="setting-header">
+                    <span class="setting-label">VIBRACIÓN</span>
+                    <span id="vibrationValue" class="setting-value">ON</span>
+                </div>
+                <p class="setting-desc">Feedback háptico en dispositivos táctiles.</p>
+                <button id="vibrationToggle" class="toggle-button" type="button" aria-pressed="true">
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                </button>
+            </article>
+
+            <article class="setting-card">
+                <div class="setting-header">
+                    <span class="setting-label">DIFICULTAD</span>
+                    <span id="difficultyValue" class="setting-value">NORMAL</span>
+                </div>
+                <p class="setting-desc">Ajusta velocidad de enemigos y cadencia de aparición.</p>
+                <div class="difficulty-row">
+                    <button id="diffEasy" class="diff-button" type="button" data-diff="easy">FÁCIL</button>
+                    <button id="diffNormal" class="diff-button active" type="button" data-diff="normal">NORMAL</button>
+                    <button id="diffHard" class="diff-button" type="button" data-diff="hard">DIFÍCIL</button>
+                </div>
+            </article>
+
+
+            <article class="setting-card">
+                <div class="setting-header">
+                    <span class="setting-label">CONTROLES TÁCTILES</span>
+                </div>
+                <p class="setting-desc">Tamaño y posición del joystick y el botón FIRE (móvil).</p>
+                <label class="slider-row">Joystick tamaño <input id="joySize" type="range" min="80" max="180" step="5"><span id="joySizeVal"></span></label>
+                <label class="slider-row">Joystick izquierda <input id="joyLeft" type="range" min="4" max="40" step="1"><span id="joyLeftVal"></span></label>
+                <label class="slider-row">Joystick abajo <input id="joyBottom" type="range" min="8" max="50" step="1"><span id="joyBottomVal"></span></label>
+                <label class="slider-row">FIRE tamaño <input id="fireSize" type="range" min="70" max="160" step="5"><span id="fireSizeVal"></span></label>
+                <label class="slider-row">FIRE derecha <input id="fireRight" type="range" min="4" max="40" step="1"><span id="fireRightVal"></span></label>
+                <label class="slider-row">FIRE abajo <input id="fireBottom" type="range" min="8" max="50" step="1"><span id="fireBottomVal"></span></label>
+                <label class="slider-row">Opacidad <input id="ctrlOpacity" type="range" min="40" max="100" step="5"><span id="ctrlOpacityVal"></span></label>
+                <button id="resetControlsButton" class="menu-button" type="button">RESTAURAR CONTROLES</button>
+            </article>
+
+            <article class="setting-card">
+                <div class="setting-header">
+                    <span class="setting-label">HIGH SCORE</span>
+                    <span id="highScoreValue" class="setting-value score">0000</span>
+                </div>
+                <p class="setting-desc">Mejor puntuación guardada en este dispositivo.</p>
+                <button id="resetScoreButton" class="menu-button danger" type="button">
+                    REINICIAR RÉCORD
+                </button>
+            </article>
+
+                    <div class="setting-row">
+                <span class="setting-label">PANTALLA COMPLETA</span>
+                <button type="button" id="fullscreenSettingBtn" class="toggle-btn">ON</button>
+            </div>
+</section>
+
+        <section class="actions">
+            <button id="graphicsQuality" class="menu-button" type="button" style="width:min(360px,90vw);height:48px;margin:8px auto;display:block;">GRÁFICOS: AUTO</button>
+            <button id="backButton" class="menu-button" type="button">
+                <span class="button-icon">&lt;</span> VOLVER AL MENÚ
+            </button>
+            <button id="saveButton" class="menu-button play-button" type="button">
+                <span class="button-icon">✓</span> GUARDAR
+            </button>
+        </section>
+
+        <div class="version">V3.3.6</div>
+
+    
+            <div class="setting-row"><span class="setting-label">ANUNCIOS</span>
+            <button type="button" id="adsToggle" class="setting-toggle">ON</button></div>
+            <p style="font-size:11px;opacity:0.6;margin:4px 12px;">No se muestran en partida. Premium = sin anuncios.</p>
+</main>
+
+    <div id="transition"></div>
+
+    <script src="../javascript/controls.js"></script>
+    <script src="../javascript/graphics.js"></script>
+    <script src="../javascript/settings.js" defer></script>
+
+    <script src="../javascript/fullscreen.js"></script>
+    <script src="../javascript/core/game-state.js"></script>
+    <script src="../javascript/core/player-data.js"></script>
+    <script src="../javascript/core/save-manager.js"></script>
+    <script src="../javascript/systems/particles.js"></script>
+    <script src="../javascript/systems/audio.js"></script>
+
+    <script src="../javascript/managers/shop-manager.js"></script>
+
+</body>
+</html>

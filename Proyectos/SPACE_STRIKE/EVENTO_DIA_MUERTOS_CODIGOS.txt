@@ -1,0 +1,27 @@
+# CEMPASÚCHIL ETERNO — 10 códigos de evento (1 uso cada uno)
+# Colección Firestore: rewardCodes
+# Cada documento ID = código, campos:
+#   reward: "ship_cempasuchil"
+#   usesLeft: 1
+#   active: true
+#   createdAt: (timestamp)
+#
+# CÓDIGOS (únicos, un solo uso):
+
+MICTLAN-A7K3P9
+MICTLAN-B2M8Q4
+MICTLAN-C5N1R6
+MICTLAN-D9H4S2
+MICTLAN-E3J7T8
+MICTLAN-F6L0U1
+MICTLAN-G8P2V5
+MICTLAN-H1Q9W3
+MICTLAN-J4R5X7
+MICTLAN-K0S6Y2
+
+# También válido el código temático de un solo uso extra (opcional):
+# MICTLAN-2026  → puedes crearlo con usesLeft: 1 o más si quieres demo
+
+# En admin-codes / panel de recompensas:
+# shipId = cempasuchil
+# uses = 1
