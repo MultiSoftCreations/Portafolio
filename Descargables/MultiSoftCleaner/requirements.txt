@@ -1,0 +1,11 @@
+# ============================================
+# MultiSoftCleaner - Dependencias del cliente
+# Python 3.10 o superior recomendado
+# ============================================
+
+# Papelera del sistema (Windows; en Linux se usa Trash nativo)
+send2trash>=1.8.3
+
+# Notificaciones en Windows (opcional)
+# Si no se puede instalar, el programa sigue funcionando
+win10toast>=0.9; sys_platform == "win32"

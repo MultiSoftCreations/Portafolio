@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instalar MultiSoft NetGuard | MultiSoftCreations</title>
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/responsive.css">
+  <style>
+    main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    pre, code {
+      background: rgba(0,0,0,0.35);
+      border-radius: 8px;
+      padding: 0.15rem 0.4rem;
+      font-size: 0.9rem;
+    }
+    pre { padding: 1rem; overflow-x: auto; line-height: 1.45; }
+    h2 { margin-top: 1.75rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 1.5rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../../index.html" class="logo"><span class="logo-text">MultiSoftCreations</span></a>
+      <nav class="main-nav"><ul>
+        <li><a href="../">Descargables</a></li>
+        <li><a href="../../html/proyectos.html">Proyectos</a></li>
+      </ul></nav>
+    </div>
+  </header>
+
+  <main>
+    <p><a href="../">← Descargables</a></p>
+    <h1>MultiSoft NetGuard</h1>
+    <p>
+      Sistema de protección / monitor de red offline. Detecta puertos abiertos, procesos
+      y tráfico inusual. Compatible con <strong>Termux</strong> y Linux.
+    </p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="../MultiSoftNetGuard.zip">Descargar solo este proyecto (ZIP)</a>
+    </div>
+
+    <h2>Opción A — ZIP (recomendada)</h2>
+    <ol>
+      <li>Descarga el ZIP de arriba.</li>
+      <li>Descomprime la carpeta.</li>
+      <li>En Termux o Linux:</li>
+    </ol>
+    <pre>cd MultiSoftNetGuard
+pkg install python git   # Termux
+pip install -r requirements.txt
+python main.py</pre>
+
+    <h2>Opción B — Solo esta carpeta desde Git (sparse checkout)</h2>
+    <p>No clona todo el portafolio: solo <code>Descargables/MultiSoftNetGuard</code>.</p>
+    <pre>mkdir MultiSoftNetGuard && cd MultiSoftNetGuard
+git init
+git remote add origin https://github.com/MultiSoftCreations/Portafolio.git
+git config core.sparseCheckout true
+echo "Descargables/MultiSoftNetGuard/*" >> .git/info/sparse-checkout
+git pull origin main
+cd Descargables/MultiSoftNetGuard
+pip install -r requirements.txt
+python main.py</pre>
+
+    <h2>Actualizaciones</h2>
+    <p>
+      La app puede comprobar la versión en el repositorio de la organización
+      <code>MultiSoftCreations/MultiSoftNetGuard</code> cuando ese repo esté publicado.
+      Mientras tanto, vuelve a descargar el ZIP desde esta página.
+    </p>
+
+    <h2>Licencia</h2>
+    <p>MultiSoftCreations © 2026 — Todos los derechos reservados.</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.env
+data/config.json
+data/historial.json
+data/analisis.json
+data/informe_uso.json
+dist/
+build/
+*.spec
+*.exe
+.DS_Store

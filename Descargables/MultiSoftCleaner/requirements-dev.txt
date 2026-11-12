@@ -1,0 +1,3 @@
+# Para desarrollo y empaquetado
+-r requirements.txt
+pyinstaller>=6.3.0

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descargables | MultiSoftCreations</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <style>
+    .dl-grid { display: grid; gap: 1.25rem; margin-top: 1.5rem; }
+    @media (min-width: 700px) { .dl-grid { grid-template-columns: 1fr 1fr; } }
+    .dl-card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 1.25rem 1.4rem;
+      background: rgba(255,255,255,0.03);
+    }
+    .dl-card h2 { margin: 0 0 0.4rem; font-size: 1.2rem; }
+    .dl-card p { opacity: 0.85; margin: 0 0 1rem; }
+    .dl-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="logo">
+        <span class="logo-text">MultiSoftCreations</span>
+      </a>
+      <nav class="main-nav" aria-label="Navegación">
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="../html/proyectos.html">Proyectos</a></li>
+          <li><a href="index.html" class="active">Descargables</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding: 2rem 1rem 4rem; max-width: 900px;">
+    <h1>Descargables</h1>
+    <p>Herramientas de escritorio / terminal de MultiSoftCreations. Descarga el ZIP o sigue las instrucciones de instalación.</p>
+
+    <div class="dl-grid">
+      <article class="dl-card">
+        <h2>MultiSoft NetGuard</h2>
+        <p>Monitor de red offline: puertos, procesos y actividad inusual. Pensado para Termux y Linux.</p>
+        <div class="dl-actions">
+          <a class="btn btn-primary" href="MultiSoftNetGuard.zip">Descargar ZIP</a>
+          <a class="btn btn-secondary" href="MultiSoftNetGuard/">Instrucciones</a>
+        </div>
+      </article>
+
+      <article class="dl-card">
+        <h2>MultiSoft Cleaner</h2>
+        <p>Limpiador de disco (Free): análisis, duplicados, archivos grandes e informes. Windows / Linux.</p>
+        <div class="dl-actions">
+          <a class="btn btn-primary" href="MultiSoftCleaner.zip">Descargar ZIP</a>
+          <a class="btn btn-secondary" href="MultiSoftCleaner/">Instrucciones</a>
+        </div>
+      </article>
+    </div>
+  </main>
+</body>
+</html>
