@@ -141,15 +141,26 @@ function initComments(root, projectId) {
       ensurePerfil(user).catch(console.error);
     } else {
       formWrap.hidden = true;
-      authBox.innerHTML = `
+      let captcha = authMakeCaptcha();
+
+      function paintAuthForms(prefEmail) {
+        const emailVal = prefEmail || "";
+        const needCap = authNeedsCaptcha(emailVal);
+        authBox.innerHTML = `
         <div class="comments-auth-forms">
           <details open>
             <summary>Iniciar sesión</summary>
-            <form id="c-login" class="contact-form comment-form">
-              <label>Correo <input type="email" name="email" required autocomplete="username"></label>
+            <form id="c-login" class="contact-form comment-form" autocomplete="on">
+              <label>Correo <input type="email" name="email" required autocomplete="username" value="${emailVal.replace(/"/g, "&quot;")}"></label>
               <label>Contraseña <input type="password" name="password" required autocomplete="current-password"></label>
+              <div id="c-captcha-wrap" ${needCap ? "" : "hidden"}>
+                <label>CAPTCHA: ¿cuánto es <strong id="c-captcha-q">${captcha.question}</strong>?
+                  <input type="text" name="captcha" inputmode="numeric" autocomplete="off" ${needCap ? "required" : ""}>
+                </label>
+              </div>
               <p class="form-status error" id="c-login-err" hidden></p>
-              <button type="submit" class="btn btn-secondary btn-sm">Entrar</button>
+              <p class="form-hint" style="font-size:0.8rem;opacity:0.75;margin:0.35rem 0 0">Por seguridad, el acceso espera ~1 s y limita intentos fallidos.</p>
+              <button type="submit" class="btn btn-secondary btn-sm" id="c-login-btn">Entrar</button>
             </form>
           </details>
           <details>
@@ -169,64 +180,123 @@ function initComments(root, projectId) {
           </details>
         </div>`;
 
-      authBox.querySelector("#c-login").onsubmit = async (e) => {
-        e.preventDefault();
-        const err = authBox.querySelector("#c-login-err");
-        err.hidden = true;
-        try {
-          await signInWithEmailAndPassword(auth, e.target.email.value.trim(), e.target.password.value);
-        } catch {
-          err.textContent = "No se pudo iniciar sesión.";
-          err.hidden = false;
-        }
-      };
+        const loginForm = authBox.querySelector("#c-login");
+        loginForm.onsubmit = async (e) => {
+          e.preventDefault();
+          const err = authBox.querySelector("#c-login-err");
+          const btn = authBox.querySelector("#c-login-btn");
+          err.hidden = true;
+          const email = e.target.email.value.trim();
+          const password = e.target.password.value;
+          const captchaAns = e.target.captcha ? e.target.captcha.value : "";
 
-      authBox.querySelector("#c-register").onsubmit = async (e) => {
-        e.preventDefault();
-        const err = authBox.querySelector("#c-reg-err");
-        err.hidden = true;
-        const nombre = e.target.nombre.value.trim();
-        const username = normalizeUsername(e.target.username.value);
-        const email = e.target.email.value.trim();
-        const password = e.target.password.value;
-        if (nombre.length < 2) {
-          err.textContent = "Nombre demasiado corto.";
-          err.hidden = false;
-          return;
-        }
-        if (!validUsername(username)) {
-          err.textContent = "Usuario: 3–20 caracteres (letras, números, _ o -).";
-          err.hidden = false;
-          return;
-        }
-        try {
-          const unameRef = doc(db, "usernames", username);
-          const exists = await getDoc(unameRef);
-          if (exists.exists()) {
-            err.textContent = "Ese nombre de usuario ya está en uso.";
+          const lock = authIsLocked(email);
+          if (lock.locked) {
+            err.textContent = `Cuenta bloqueada temporalmente. Espera ${lock.minutes} min.`;
+            err.hidden = false;
+            authClearPasswords(e.target);
+            return;
+          }
+
+          if (authNeedsCaptcha(email)) {
+            const wrap = authBox.querySelector("#c-captcha-wrap");
+            if (wrap) wrap.hidden = false;
+            if (String(captchaAns).trim() !== captcha.answer) {
+              err.textContent = "CAPTCHA incorrecto.";
+              err.hidden = false;
+              captcha = authMakeCaptcha();
+              const q = authBox.querySelector("#c-captcha-q");
+              if (q) q.textContent = captcha.question;
+              authClearPasswords(e.target);
+              return;
+            }
+          }
+
+          btn.disabled = true;
+          btn.textContent = "Verificando…";
+          try {
+            await authDelay(AUTH_DELAY_MS);
+            await signInWithEmailAndPassword(auth, email, password);
+            authRecordSuccess(email);
+          } catch (ex) {
+            const s = authRecordFailure(email);
+            let msg = "No se pudo iniciar sesión.";
+            if (ex && ex.code === "auth/too-many-requests") msg = "Demasiados intentos. Espera un momento.";
+            if (s.fails >= AUTH_LOCK_AFTER) {
+              msg = "Demasiados intentos fallidos. Cuenta bloqueada 15 minutos.";
+            } else if (s.fails >= AUTH_CAPTCHA_AFTER) {
+              msg = msg + " Se requiere CAPTCHA.";
+              captcha = authMakeCaptcha();
+              paintAuthForms(email);
+              const err2 = authBox.querySelector("#c-login-err");
+              if (err2) { err2.textContent = msg; err2.hidden = false; }
+              return;
+            }
+            err.textContent = msg;
+            err.hidden = false;
+          } finally {
+            authClearPasswords(e.target);
+            if (btn) {
+              btn.disabled = false;
+              btn.textContent = "Entrar";
+            }
+          }
+        };
+
+        authBox.querySelector("#c-register").onsubmit = async (e) => {
+          e.preventDefault();
+          const err = authBox.querySelector("#c-reg-err");
+          err.hidden = true;
+          const nombre = e.target.nombre.value.trim();
+          const username = normalizeUsername(e.target.username.value);
+          const email = e.target.email.value.trim();
+          const password = e.target.password.value;
+          if (nombre.length < 2) {
+            err.textContent = "Nombre demasiado corto.";
             err.hidden = false;
             return;
           }
-          const cred = await createUserWithEmailAndPassword(auth, email, password);
-          await updateProfile(cred.user, { displayName: nombre });
-          await setDoc(unameRef, { uid: cred.user.uid, createdAt: serverTimestamp() });
-          await setDoc(doc(db, "perfiles", cred.user.uid), {
-            displayName: nombre,
-            username,
-            email,
-            rango: "usuario",
-            createdAt: serverTimestamp(),
-          });
-        } catch (ex) {
-          console.error(ex);
-          let msg = "No se pudo crear la cuenta.";
-          if (ex.code === "auth/email-already-in-use") msg = "Ese correo ya tiene una cuenta.";
-          if (ex.code === "auth/weak-password") msg = "Contraseña mínimo 6 caracteres.";
-          if (ex.code === "auth/invalid-email") msg = "Correo no válido.";
-          err.textContent = msg;
-          err.hidden = false;
-        }
-      };
+          if (!validUsername(username)) {
+            err.textContent = "Usuario: 3–20 caracteres (letras, números, _ o -).";
+            err.hidden = false;
+            return;
+          }
+          try {
+            await authDelay(AUTH_DELAY_MS);
+            const unameRef = doc(db, "usernames", username);
+            const exists = await getDoc(unameRef);
+            if (exists.exists()) {
+              err.textContent = "Ese nombre de usuario ya está en uso.";
+              err.hidden = false;
+              authClearPasswords(e.target);
+              return;
+            }
+            const cred = await createUserWithEmailAndPassword(auth, email, password);
+            authClearPasswords(e.target);
+            await updateProfile(cred.user, { displayName: nombre });
+            await setDoc(unameRef, { uid: cred.user.uid, createdAt: serverTimestamp() });
+            await setDoc(doc(db, "perfiles", cred.user.uid), {
+              displayName: nombre,
+              username,
+              email,
+              rango: "usuario",
+              createdAt: serverTimestamp(),
+            });
+            authRecordSuccess(email);
+          } catch (ex) {
+            console.error(ex);
+            let msg = "No se pudo crear la cuenta.";
+            if (ex.code === "auth/email-already-in-use") msg = "Ese correo ya tiene una cuenta.";
+            if (ex.code === "auth/weak-password") msg = "Contraseña mínimo 6 caracteres.";
+            if (ex.code === "auth/invalid-email") msg = "Correo no válido.";
+            err.textContent = msg;
+            err.hidden = false;
+            authClearPasswords(e.target);
+          }
+        };
+      }
+
+      paintAuthForms("");
     }
   }
 

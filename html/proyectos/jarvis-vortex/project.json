@@ -3,17 +3,17 @@
   "name": "Jarvis Vortex",
   "brand": "MultiSoftCreations",
   "category": "IA",
-  "status": "early_access",
+  "status": "development",
   "visibility": "public",
   "featured": true,
-  "description": "Asistente personal de IA (v2.0) con acceso seguro vía Google, memoria persistente, panel de control de reactores y capacidad de leer archivos adjuntos. Acceso restringido por ahora (configuración con tokens del desarrollador). Más adelante: tokens por usuario y versión de pago.",
+  "description": "Asistente personal de IA (v2.0) con acceso seguro vía Google, memoria persistente, panel de control de reactores y capacidad de leer archivos adjuntos. Acceso restringido: sin demo pública por ahora (configuración de tokens del desarrollador). Más adelante: tokens por usuario y versión de pago.",
   "image": "img/portada.webp",
   "technologies": [
     "Python",
     "JavaScript"
   ],
   "links": {
-    "demo": "https://jarvis-vortex-public.onrender.com/",
+    "demo": "",
     "repository": ""
   },
   "release": {

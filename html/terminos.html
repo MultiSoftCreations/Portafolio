@@ -94,6 +94,23 @@
           Si no aceptas ese riesgo, no descargues ni ejecutes esas demos.
         </p>
 
+        
+        <h2>Seguridad de cuentas y contraseñas</h2>
+        <p>
+          El inicio de sesión del área de comentarios utiliza Firebase Authentication.
+          Las contraseñas <strong>no se almacenan en texto plano</strong> en nuestros sistemas:
+          Firebase las procesa con algoritmos de hash seguros en sus servidores y la transmisión
+          se realiza por HTTPS. Tras cada intento, los campos de contraseña se limpian en el navegador.
+        </p>
+        <p>
+          Aplicamos medidas adicionales anti abuso: espera mínima entre intentos, CAPTCHA tras varios
+          fallos consecutivos y bloqueo temporal de la cuenta tras cinco intentos fallidos.
+        </p>
+        <p>
+          Space-Strike utiliza un proyecto de Firebase distinto al del portafolio; su sesión de Google
+          no se comparte de forma intencionada con el resto del sitio.
+        </p>
+
         <h2>6. Servicios</h2>
         <p>
           Las descripciones de servicios en el sitio son orientativas. Cualquier prestación de servicios

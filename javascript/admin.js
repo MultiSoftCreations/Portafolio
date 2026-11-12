@@ -55,20 +55,27 @@ function setLoginStatus(msg, isError) {
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    setLoginStatus("");
+    setLoginStatus("Verificando…");
     const email = loginForm.email.value.trim();
     const password = loginForm.password.value;
+    const passInput = loginForm.querySelector('input[type="password"]');
     try {
+      // Anti fuerza bruta básica + no dejar la contraseña en el DOM tras el intento
+      await new Promise((r) => setTimeout(r, 1000));
       const cred = await signInWithEmailAndPassword(auth, email, password);
+      if (passInput) passInput.value = "";
       if (!isAdminEmail(cred.user.email)) {
         await signOut(auth);
         setLoginStatus(
           "Esta cuenta no tiene permiso de administrador.",
           true
         );
+      } else {
+        setLoginStatus("");
       }
     } catch (err) {
       console.error(err);
+      if (passInput) passInput.value = "";
       setLoginStatus("No se pudo iniciar sesión. Revisa correo y contraseña.", true);
     }
   });
