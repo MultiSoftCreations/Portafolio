@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script>
+      /* Firebase (solo para validar códigos VIP / rewards; el progreso NO se sube) */
+      window.SPACE_STRIKE_VAPID_KEY = "BDJp_JVLC1-r1yqd-1u04kW4AFYuJ3NjMpwYapEg5Ww85PIYaRLxfF0gux3DCzCzffmkD41ieu-FsSC3PSLe9JY";
+      window.SPACE_STRIKE_AI_MODE = true;
+      window.SPACE_STRIKE_LOCAL_ONLY = true;
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SPACE STRIKE — AI / Local Review (sin Google)">
+    <meta name="theme-color" content="#030407">
+    <meta name="robots" content="noindex,nofollow">
+    <title>SPACE STRIKE · AI Review</title>
+    <!-- Assets del juego padre (misma carpeta SPACE_STRIKE) -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <script src="../javascript/preloader.js"></script>
+    <!-- Bootstrap modo IA: debe ir ANTES del resto de scripts del juego -->
+    <script src="javascript/ai-bootstrap.js"></script>
+</head>
+<body class="ss-loading">
+    <div id="space"></div>
+    <div class="ambient"></div>
+
+    <main class="menu">
+        <section class="logo">
+            <div class="logo-main">SPACE STRIKE</div>
+            <div class="logo-sub">AI ACCESS // LOCAL REVIEW</div>
+            <div id="pilotLabel" class="pilot-label"></div>
+        </section>
+
+        <div class="separator"></div>
+
+        <div id="noticeBanner" class="notice-banner hidden"></div>
+
+        <section class="buttons">
+            <button id="startGameButton" class="menu-button play-button" type="button"><span class="button-icon">|></span> MODO INFINITO</button>
+            <button id="adventureButton" class="menu-button play-button" type="button"><span class="button-icon">◈</span> MODO AVENTURA</button>
+            <button id="shopButton" class="menu-button" type="button"><span class="button-icon">$</span> TIENDA</button>
+            <button id="hangarButton" class="menu-button" type="button" style="border-color:rgba(140,120,255,0.4);"><span class="button-icon">◈</span> NAVES</button>
+            <!-- Google oculto en modo IA (bootstrap lo esconde también) -->
+            <button id="googleAuthButton" class="menu-button" type="button" style="display:none;border-color:rgba(100,180,255,0.35);"><span class="button-icon">G</span> ENTRAR CON GOOGLE</button>
+            <button id="rewardsButton" class="menu-button" type="button" style="border-color:rgba(140,120,255,0.4);"><span class="button-icon">◇</span> RECOMPENSAS</button>
+            <button id="premiumButton" class="menu-button" type="button" style="border-color:rgba(255,180,60,0.4);"><span class="button-icon">★</span> PREMIUM</button>
+            <button id="leaderboardButton" class="menu-button" type="button"><span class="button-icon">#</span> RANKING</button>
+            <button id="achievementsButton" class="menu-button" type="button"><span class="button-icon">✦</span> LOGROS</button>
+            <button id="howToPlayButton" class="menu-button" type="button"><span class="button-icon">?</span> COMO JUGAR</button>
+            <button id="settingsButton" class="menu-button" type="button"><span class="button-icon">*</span> CONFIGURACIÓN</button>
+            <button id="suggestButton" class="menu-button" type="button" style="border-color:rgba(100,220,140,0.35);"><span class="button-icon">✉</span> SUGERENCIAS</button>
+            <button id="creditsButton" class="menu-button" type="button" style="border-color:rgba(180,200,255,0.3);"><span class="button-icon">©</span> CRÉDITOS</button>
+            <button id="sendNoticeButton" class="menu-button hidden" type="button" style="border-color:rgba(255,140,60,0.55);background:linear-gradient(90deg,rgba(50,25,5,0.9),rgba(30,15,5,0.95));color:#ffd9a8;"><span class="button-icon">📣</span> ENVIAR AVISO</button>
+            <button id="whatsappChannelButton" class="menu-button" type="button" style="border-color:rgba(37,211,102,0.45);"><span class="button-icon">WA</span> CANAL WHATSAPP</button>
+        </section>
+
+        <div class="bottom-info">AI MODE // LOCAL ONLY // VIP CODES ONLINE</div>
+        <div class="version">V3.3.11 · AI_ACCESS</div>
+    </main>
+
+    <!-- Register modal (no se usa en modo IA; pilot auto) -->
+    <div id="registerOverlay" class="register-overlay hidden">
+        <div class="register-card">
+            <div class="register-title">REGISTRO DE PILOTO</div>
+            <p class="register-desc">Modo IA: el piloto se crea solo (AI_REVIEWER).</p>
+            <input id="pilotNameInput" type="text" maxlength="12" autocomplete="off" placeholder="Tu nombre de piloto">
+            <div id="registerError" class="register-error"></div>
+            <button id="registerConfirm" class="menu-button play-button" type="button">CONFIRMAR</button>
+        </div>
+    </div>
+
+    <img src="../img/marca.png" alt="" class="brand-logo-watermark" width="72" height="72">
+
+    <div id="transition"></div>
+
+    <!-- Mismos módulos del juego (rutas relativas al padre) -->
+    <script src="../javascript/core/game-state.js"></script>
+    <script src="../javascript/core/player-data.js"></script>
+    <script src="../javascript/core/save-manager.js"></script>
+
+    <script src="../javascript/data/enemies-data.js"></script>
+    <script src="../javascript/managers/progression.js"></script>
+
+    <script src="../javascript/systems/particles.js"></script>
+    <script src="../javascript/systems/audio.js"></script>
+    <script src="../javascript/systems/animation-manager.js"></script>
+
+    <script src="../javascript/managers/shop-manager.js"></script>
+
+    <!-- auth real se carga; ai-bootstrap ya instaló el stub y lo vuelve a imponer -->
+    <script src="../javascript/auth.js"></script>
+    <script src="javascript/ai-bootstrap.js"></script>
+    <script src="../javascript/player-profile.js"></script>
+    <script src="../javascript/achievements.js"></script>
+    <script src="../javascript/rank.js"></script>
+    <script src="../javascript/notifications.js"></script>
+    <script src="../javascript/managers/ad-manager.js"></script>
+    <script src="../javascript/managers/admin-control.js"></script>
+    <script src="../javascript/managers/push-announcements.js"></script>
+    <script src="../javascript/managers/scheduled-jobs.js"></script>
+    <script src="../javascript/index.js" defer></script>
+    <script src="../javascript/fullscreen.js"></script>
+    <script src="../javascript/skins.js"></script>
+    <!-- premium / codes: sí usan nube -->
+    <script src="../javascript/premium.js"></script>
+    <script src="../javascript/premium-codes.js"></script>
+    <script src="../javascript/reward-codes.js"></script>
+
+    <p style="text-align:center;padding:1rem;font-size:0.85rem;opacity:0.7">
+      <a href="../html/terminos.html" style="color:inherit">Términos y condiciones</a>
+      · <span style="opacity:.8">Entrada normal del juego:</span>
+      <a href="../index.html" style="color:inherit">/SPACE_STRIKE/</a>
+    </p>
+</body>
+</html>
