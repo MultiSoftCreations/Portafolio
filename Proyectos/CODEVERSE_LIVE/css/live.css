@@ -213,3 +213,35 @@
     font-size: 0.78rem;
   }
 }
+
+
+/* Herramientas LIVE y adaptación a pantallas pequeñas */
+.live-toolbar__right { flex-wrap: wrap; justify-content: flex-end; }
+.live-toolbar .btn { white-space: nowrap; }
+.live-page.theme-light {
+  --bg: #f4f5fb;
+  --bg-elevated: #e9eaf2;
+  --bg-card: #ffffff;
+  --border: #d5d7e2;
+  --border-subtle: #e2e3eb;
+  --text: #171827;
+  --text-muted: #45485b;
+  --text-dim: #686b7d;
+}
+.live-page.theme-light .live-toolbar,
+.live-page.theme-light .panel-label { background: #fff; }
+.live-page.theme-light .live-panel--editor { background: #f8f8fc; }
+.live-page.theme-light .console-output { background: #f1f2f8; color: #252638; }
+.live-page.theme-light .preview-frame { background: #fff; }
+.live-page.theme-light .live-status { color: #45485b; }
+
+@media (max-width: 800px) {
+  .live-page { height: 100dvh; }
+  .live-main { height: calc(100dvh - var(--header-h)); }
+  .live-toolbar { align-items: flex-start; }
+  .live-toolbar__left, .live-toolbar__right { width: 100%; }
+  .live-toolbar__right { justify-content: flex-start; gap: 6px; }
+  .live-toolbar__right .live-status { width: 100%; }
+  .live-toolbar__right .btn { padding: 6px 9px; font-size: .72rem; }
+  .live-tabs { flex-wrap: wrap; }
+}

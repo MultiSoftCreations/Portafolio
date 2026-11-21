@@ -1,0 +1,34 @@
+CODEVERSE LIVE - REVISION TECNICA
+Fecha: 20 de noviembre de 2026
+
+CAMBIOS
+1. Corregido buildSrcdoc() en js/live.js: los separadores ahora son saltos de linea reales, no los caracteres literales \\n. Esto repara la primera regla CSS, elimina el texto \\n de la vista previa y permite ejecutar el JavaScript del usuario.
+2. Agregada la pestaña Python con resaltado CodeMirror y ejecucion real mediante Pyodide/WebAssembly en el navegador.
+3. Recuperados los controles Guardar, Descargar, Compartir, Ejemplo y Modo claro. Guardar persiste el proyecto en localStorage de este navegador.
+4. Corregida la capa visual del menu movil para que tenga fondo opaco y se muestre por encima del contenido.
+5. Aumentado el espacio superior de las paginas internas para evitar que el encabezado fijo tape los titulos.
+6. Actualizado README.md con funciones actuales y limitaciones.
+
+VALIDACIONES REALIZADAS
+- Sintaxis JavaScript de js/live.js validada con node --check.
+- Verificada la presencia de los botones, la pestaña Python y el atributo sandbox del iframe.
+- Verificado que buildSrcdoc() utiliza escapes de salto de linea correctos.
+
+LIMITES Y NOTAS
+- No se pudo realizar una prueba end-to-end en un navegador real desde este entorno. Antes de publicar, prueba la lista manual de abajo.
+- CodeMirror y Pyodide se descargan desde CDN; LIVE necesita internet. La primera carga de Python puede tardar.
+- Python se ejecuta en el navegador con Pyodide, no en un servidor. No tiene acceso directo al sistema de archivos del dispositivo.
+- Guardar almacena los archivos en localStorage del navegador y dispositivo actual; no sincroniza con otros dispositivos ni cuentas.
+- Descargar genera un HTML combinado para el proyecto web. El código Python se ejecuta en LIVE, pero no se incorpora al HTML descargado.
+- La ejecución Python no debe tratarse como un entorno seguro para ejecutar código de terceros no confiable.
+
+PRUEBA MANUAL RECOMENDADA
+1. Abre live.html y pulsa Ejecutar: debe verse Hola CODEVERSE y la consola debe mostrar Proyecto cargado correctamente.
+2. Pulsa Haz clic: debe aparecer la alerta y el mensaje Botón presionado en la consola.
+3. Sustituye todo el CSS por: h1 { color: #ff0000; } y ejecuta: el título debe quedar rojo.
+4. En JavaScript escribe: document.querySelector('h1').textContent = 'JS FUNCIONA QA'; console.log('Prueba QA 123'); y ejecuta.
+5. Cambia a Python y ejecuta print('Python funciona'). La primera carga puede tardar.
+6. Modifica código, pulsa Guardar y recarga: el proyecto debe recuperarse.
+7. Prueba Descargar, Compartir, Ejemplo y Modo claro.
+8. En móvil abre y cierra el menú; debe tener fondo opaco y no dejar ver el contenido a través de él.
+9. Abre Academia y Comunidad: los títulos no deben quedar debajo del encabezado.
