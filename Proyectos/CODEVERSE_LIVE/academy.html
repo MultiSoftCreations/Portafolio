@@ -100,6 +100,10 @@
       </div>
     </div>
   </footer>
-  <script src="js/main.js"></script>
+    <script type="module">
+    import { protectPage } from "./js/auth-guard.js";
+    protectPage({ allowAI: true });
+  </script>
+<script src="js/main.js"></script>
 </body>
 </html>

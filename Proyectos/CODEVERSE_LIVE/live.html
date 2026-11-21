@@ -78,7 +78,11 @@
     </div>
   </main>
 
-  <script src="js/main.js"></script>
+    <script type="module">
+    import { protectPage } from "./js/auth-guard.js";
+    protectPage({ allowAI: true });
+  </script>
+<script src="js/main.js"></script>
   <script type="module">
     const loading = document.getElementById('editor-loading');
     const statusEl = document.getElementById('live-status');
