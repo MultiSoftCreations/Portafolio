@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Tunnel — CODEVERSE</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    .tunnel-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at top, #12121a 0%, #0a0a0f 70%);
+      padding: 1.5rem;
+    }
+    .tunnel-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(20, 20, 30, 0.9);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .tunnel-card h1 {
+      font-size: 1.5rem;
+      margin: 0 0 0.5rem;
+      text-align: center;
+    }
+    .tunnel-card .subtitle {
+      color: var(--text-muted, #999);
+      text-align: center;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+    .tunnel-card label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      color: #ccc;
+    }
+    .tunnel-card input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      font-size: 1.25rem;
+      letter-spacing: 0.35em;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 1.25rem;
+    }
+    .tunnel-card input:focus {
+      outline: none;
+      border-color: #6c5ce7;
+      box-shadow: 0 0 0 3px rgba(108,92,231,0.25);
+    }
+    .tunnel-card .btn {
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .tunnel-card .btn:hover { transform: translateY(-1px); }
+    .tunnel-card .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .tunnel-msg {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      text-align: center;
+      display: none;
+    }
+    .tunnel-msg.error {
+      display: block;
+      background: rgba(255,70,70,0.15);
+      color: #ff6b6b;
+      border: 1px solid rgba(255,70,70,0.3);
+    }
+    .tunnel-msg.success {
+      display: block;
+      background: rgba(0,200,120,0.12);
+      color: #2ecc71;
+      border: 1px solid rgba(0,200,120,0.3);
+    }
+    .tunnel-footer {
+      margin-top: 1.75rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #666;
+    }
+    .admin-section {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: none;
+    }
+    .admin-section.visible { display: block; }
+    .admin-section h2 {
+      font-size: 1.1rem;
+      margin: 0 0 1rem;
+    }
+    .code-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+    }
+    .code-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .code-item.used { opacity: 0.45; }
+  </style>
+</head>
+<body class="tunnel-page">
+  <div class="tunnel-card">
+    <h1>AI Tunnel</h1>
+    <p class="subtitle">Acceso restringido solo para IAs autorizadas<br>MultiSoftCreations · CODEVERSE</p>
+
+    <!-- Formulario de código para IAs -->
+    <div id="code-form">
+      <label for="ai-code">Código de acceso (8 dígitos)</label>
+      <input type="text" id="ai-code" maxlength="8" placeholder="••••••••" autocomplete="off" inputmode="numeric" />
+      <button class="btn" id="btn-validate">Entrar al túnel</button>
+      <div class="tunnel-msg" id="msg"></div>
+    </div>
+
+    <!-- Sección solo visible para admins logueados -->
+    <div class="admin-section" id="admin-section">
+      <h2>Panel Admin — Generar código</h2>
+      <label for="ai-label">Nombre / etiqueta de la IA</label>
+      <input type="text" id="ai-label" placeholder="Ej: Grok, Claude, GPT..." style="letter-spacing:normal; text-align:left; font-size:1rem;" />
+      <button class="btn" id="btn-generate" style="margin-top:0.5rem;">Generar código de 8 dígitos</button>
+      <div class="tunnel-msg" id="admin-msg"></div>
+      <div class="code-list" id="code-list"></div>
+    </div>
+
+    <div class="tunnel-footer">
+      Este acceso no está destinado a usuarios finales.<br>
+      Los códigos son de un solo uso y con expiración.
+    </div>
+  </div>
+
+  <script type="module">
+    import { 
+      validateAICode, 
+      hasValidAITunnelSession, 
+      generateAICode, 
+      listAICodes,
+      onUserChanged,
+      isAdmin,
+      loginWithGoogle
+    } from "./js/auth.js";
+
+    const codeInput = document.getElementById("ai-code");
+    const btnValidate = document.getElementById("btn-validate");
+    const msg = document.getElementById("msg");
+    const adminSection = document.getElementById("admin-section");
+    const btnGenerate = document.getElementById("btn-generate");
+    const aiLabel = document.getElementById("ai-label");
+    const adminMsg = document.getElementById("admin-msg");
+    const codeList = document.getElementById("code-list");
+
+    // Si ya tiene sesión de túnel válida, redirigir al LIVE
+    if (hasValidAITunnelSession()) {
+      window.location.href = "live.html?ai_tunnel=1";
+    }
+
+    function showMsg(el, text, type) {
+      el.textContent = text;
+      el.className = "tunnel-msg " + type;
+    }
+
+    // Validar código
+    btnValidate.addEventListener("click", async () => {
+      const code = codeInput.value.trim();
+      if (code.length !== 8) {
+        showMsg(msg, "El código debe tener exactamente 8 dígitos", "error");
+        return;
+      }
+      btnValidate.disabled = true;
+      btnValidate.textContent = "Validando...";
+      try {
+        await validateAICode(code);
+        showMsg(msg, "Código válido. Entrando al túnel...", "success");
+        setTimeout(() => {
+          window.location.href = "live.html?ai_tunnel=1";
+        }, 800);
+      } catch (err) {
+        showMsg(msg, err.message || "Error al validar", "error");
+        btnValidate.disabled = false;
+        btnValidate.textContent = "Entrar al túnel";
+      }
+    });
+
+    codeInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") btnValidate.click();
+    });
+
+    // Solo números
+    codeInput.addEventListener("input", () => {
+      codeInput.value = codeInput.value.replace(/\D/g, "").slice(0, 8);
+    });
+
+    // Detectar si el usuario logueado es admin → mostrar panel
+    onUserChanged(async (user) => {
+      if (user && isAdmin(user)) {
+        adminSection.classList.add("visible");
+        await refreshCodeList();
+      } else {
+        adminSection.classList.remove("visible");
+      }
+    });
+
+    // Generar código (admin)
+    btnGenerate.addEventListener("click", async () => {
+      const label = aiLabel.value.trim() || "IA";
+      btnGenerate.disabled = true;
+      btnGenerate.textContent = "Generando...";
+      try {
+        const result = await generateAICode(label, 72); // 72 horas
+        showMsg(adminMsg, `Código generado: ${result.code}`, "success");
+        aiLabel.value = "";
+        await refreshCodeList();
+      } catch (err) {
+        showMsg(adminMsg, err.message || "Error al generar", "error");
+      } finally {
+        btnGenerate.disabled = false;
+        btnGenerate.textContent = "Generar código de 8 dígitos";
+      }
+    });
+
+    async function refreshCodeList() {
+      try {
+        const codes = await listAICodes(15);
+        if (!codes.length) {
+          codeList.innerHTML = "<p style='color:#666'>Aún no hay códigos generados.</p>";
+          return;
+        }
+        codeList.innerHTML = codes.map(c => {
+          const usedClass = c.used ? "used" : "";
+          const status = c.used ? "USADO" : "ACTIVO";
+          return `<div class="code-item ${usedClass}">
+            <span>${c.code} · ${c.label || "IA"}</span>
+            <span>${status}</span>
+          </div>`;
+        }).join("");
+      } catch (e) {
+        codeList.innerHTML = "<p style='color:#666'>No se pudieron cargar los códigos.</p>";
+      }
+    }
+  </script>
+</body>
+</html>
