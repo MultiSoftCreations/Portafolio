@@ -433,6 +433,7 @@ for numero in range(1, 4):
         };
 
         try {
+          const isFirstLoad = !window.__codeversePyodide;
           const pyodide = window.__codeversePyodide || (window.__codeversePyodide = await loadPyodide({
             indexURL: PYODIDE_INDEX,
             stdout: (text) => logToConsole('log', [text]),
@@ -441,6 +442,60 @@ for numero in range(1, 4):
           updateProgress(96, 'Motor listo. Ejecutando código…');
           pyodide.setStdout({ batched: (text) => logToConsole('log', [text]) });
           pyodide.setStderr({ batched: (text) => logToConsole('error', [text]) });
+
+          // input() en el navegador: no hay stdin real → usamos prompt del navegador
+          const browserInput = (promptText) => {
+            const message = (promptText === undefined || promptText === null) ? '' : String(promptText);
+            const value = window.prompt(message || 'Entrada:');
+            if (value === null) {
+              // Usuario canceló
+              return null;
+            }
+            logToConsole('info', [(message || 'input>') + ' ' + value]);
+            return value;
+          };
+
+          try {
+            if (typeof pyodide.setStdin === 'function') {
+              pyodide.setStdin({
+                stdin: () => {
+                  const value = browserInput('');
+                  return value === null ? '' : value;
+                },
+                error: false,
+                isatty: false
+              });
+            }
+          } catch (_) {}
+
+          // Parche robusto de builtins.input (cubre casi todos los casos)
+          if (isFirstLoad || !window.__codeverseInputPatched) {
+            // Callback JS → consola CODEVERSE
+            globalThis.__codeversePromptInput = (promptText) => {
+              const value = browserInput(promptText);
+              if (value === null) return null;
+              return value;
+            };
+
+            await pyodide.runPythonAsync(`
+import builtins
+from js import globalThis
+
+def _codeverse_input(prompt=""):
+    try:
+        msg = "" if prompt is None else str(prompt)
+    except Exception:
+        msg = ""
+    value = globalThis.__codeversePromptInput(msg)
+    if value is None:
+        raise EOFError("Entrada cancelada por el usuario")
+    return str(value)
+
+builtins.input = _codeverse_input
+`);
+            window.__codeverseInputPatched = true;
+          }
+
           removeProgressLine();
           await pyodide.runPythonAsync(state.python || '');
           setStatus('Python ejecutado');
