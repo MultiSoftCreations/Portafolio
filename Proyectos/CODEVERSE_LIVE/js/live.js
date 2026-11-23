@@ -496,7 +496,7 @@ for numero in range(1, 4):
           } catch (_) {}
 
           // Parche robusto de builtins.input (cubre casi todos los casos)
-          if (isFirstLoad || !window.__codeverseInputPatched) {
+          if (true) { // siempre reaplicar input() (evita parches viejos en memoria)
             // Callback JS → consola CODEVERSE
             globalThis.__codeversePromptInput = (promptText) => {
               const value = browserInput(promptText);
@@ -506,16 +506,22 @@ for numero in range(1, 4):
 
             await pyodide.runPythonAsync(`
 import builtins
-from js import globalThis
+import js
 
 def _codeverse_input(prompt=""):
     try:
         msg = "" if prompt is None else str(prompt)
     except Exception:
         msg = ""
-    value = globalThis.__codeversePromptInput(msg)
+    # En Pyodide usamos window.prompt (globalThis no existe en el namespace Python)
+    value = js.window.prompt(msg if msg else "Entrada:")
     if value is None:
         raise EOFError("Entrada cancelada por el usuario")
+    try:
+        # Eco en consola del navegador / CODEVERSE
+        js.console.info((msg or "input> ") + str(value))
+    except Exception:
+        pass
     return str(value)
 
 builtins.input = _codeverse_input
@@ -659,7 +665,7 @@ builtins.input = _codeverse_input
           }
         } catch (_) {}
 
-        if (isFirstLoad || !window.__codeverseInputPatched) {
+        if (true) { // siempre reaplicar input() (evita parches viejos en memoria)
           globalThis.__codeversePromptInput = (promptText) => {
             const value = browserInput(promptText);
             if (value === null) return null;
@@ -667,16 +673,22 @@ builtins.input = _codeverse_input
           };
           await pyodide.runPythonAsync(`
 import builtins
-from js import globalThis
+import js
 
 def _codeverse_input(prompt=""):
     try:
         msg = "" if prompt is None else str(prompt)
     except Exception:
         msg = ""
-    value = globalThis.__codeversePromptInput(msg)
+    # En Pyodide usamos window.prompt (globalThis no existe en el namespace Python)
+    value = js.window.prompt(msg if msg else "Entrada:")
     if value is None:
         raise EOFError("Entrada cancelada por el usuario")
+    try:
+        # Eco en consola del navegador / CODEVERSE
+        js.console.info((msg or "input> ") + str(value))
+    except Exception:
+        pass
     return str(value)
 
 builtins.input = _codeverse_input
