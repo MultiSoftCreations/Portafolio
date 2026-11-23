@@ -386,6 +386,51 @@ for numero in range(1, 4):
       return full;
     }
 
+
+    // Parche único y simple de input() para Pyodide (sin globalThis)
+    async function installPythonInput(pyodide) {
+      const browserPrompt = (message) => {
+        const msg = message === undefined || message === null ? '' : String(message);
+        const value = window.prompt(msg || 'Entrada:');
+        if (value === null) return null;
+        try { logToConsole('info', [(msg || 'input> ') + value]); } catch (_) {}
+        return value;
+      };
+
+      // stdin del motor
+      try {
+        if (typeof pyodide.setStdin === 'function') {
+          pyodide.setStdin({
+            stdin: () => {
+              const value = browserPrompt('');
+              return value === null ? '' : value;
+            },
+            error: false,
+            isatty: false
+          });
+        }
+      } catch (_) {}
+
+      // builtins.input — lo más simple posible (compatible Pyodide)
+      await pyodide.runPythonAsync(`
+import builtins
+from js import prompt as _js_prompt
+
+def input(prompt=""):
+    try:
+        msg = "" if prompt is None else str(prompt)
+    except Exception:
+        msg = ""
+    value = _js_prompt(msg if msg else "Entrada:")
+    if value is None:
+        raise EOFError("Entrada cancelada por el usuario")
+    return str(value)
+
+builtins.input = input
+`);
+    }
+
+
     function loadPyodideRuntime() {
       if (window.loadPyodide) return Promise.resolve(window.loadPyodide);
       if (pyodidePromise) return pyodidePromise;
@@ -470,64 +515,9 @@ for numero in range(1, 4):
           pyodide.setStdout({ batched: (text) => logToConsole('log', [text]) });
           pyodide.setStderr({ batched: (text) => logToConsole('error', [text]) });
 
-          // input() en el navegador: no hay stdin real → usamos prompt del navegador
-          const browserInput = (promptText) => {
-            const message = (promptText === undefined || promptText === null) ? '' : String(promptText);
-            const value = window.prompt(message || 'Entrada:');
-            if (value === null) {
-              // Usuario canceló
-              return null;
-            }
-            logToConsole('info', [(message || 'input>') + ' ' + value]);
-            return value;
-          };
+          // input() parche centralizado
+          await installPythonInput(pyodide);
 
-          try {
-            if (typeof pyodide.setStdin === 'function') {
-              pyodide.setStdin({
-                stdin: () => {
-                  const value = browserInput('');
-                  return value === null ? '' : value;
-                },
-                error: false,
-                isatty: false
-              });
-            }
-          } catch (_) {}
-
-          // Parche robusto de builtins.input (cubre casi todos los casos)
-          if (true) { // siempre reaplicar input() (evita parches viejos en memoria)
-            // Callback JS → consola CODEVERSE
-            globalThis.__codeversePromptInput = (promptText) => {
-              const value = browserInput(promptText);
-              if (value === null) return null;
-              return value;
-            };
-
-            await pyodide.runPythonAsync(`
-import builtins
-import js
-
-def _codeverse_input(prompt=""):
-    try:
-        msg = "" if prompt is None else str(prompt)
-    except Exception:
-        msg = ""
-    # En Pyodide usamos window.prompt (globalThis no existe en el namespace Python)
-    value = js.window.prompt(msg if msg else "Entrada:")
-    if value is None:
-        raise EOFError("Entrada cancelada por el usuario")
-    try:
-        # Eco en consola del navegador / CODEVERSE
-        js.console.info((msg or "input> ") + str(value))
-    except Exception:
-        pass
-    return str(value)
-
-builtins.input = _codeverse_input
-`);
-            window.__codeverseInputPatched = true;
-          }
 
           removeProgressLine();
           await pyodide.runPythonAsync(state.python || '');
@@ -644,57 +634,7 @@ builtins.input = _codeverse_input
         }));
         pyodide.setStdout({ batched: (text) => logToConsole('log', [text]) });
         pyodide.setStderr({ batched: (text) => logToConsole('error', [text]) });
-
-        const browserInput = (promptText) => {
-          const message = (promptText === undefined || promptText === null) ? '' : String(promptText);
-          const value = window.prompt(message || 'Entrada:');
-          if (value === null) return null;
-          logToConsole('info', [(message || 'input>') + ' ' + value]);
-          return value;
-        };
-        try {
-          if (typeof pyodide.setStdin === 'function') {
-            pyodide.setStdin({
-              stdin: () => {
-                const value = browserInput('');
-                return value === null ? '' : value;
-              },
-              error: false,
-              isatty: false
-            });
-          }
-        } catch (_) {}
-
-        if (true) { // siempre reaplicar input() (evita parches viejos en memoria)
-          globalThis.__codeversePromptInput = (promptText) => {
-            const value = browserInput(promptText);
-            if (value === null) return null;
-            return value;
-          };
-          await pyodide.runPythonAsync(`
-import builtins
-import js
-
-def _codeverse_input(prompt=""):
-    try:
-        msg = "" if prompt is None else str(prompt)
-    except Exception:
-        msg = ""
-    # En Pyodide usamos window.prompt (globalThis no existe en el namespace Python)
-    value = js.window.prompt(msg if msg else "Entrada:")
-    if value is None:
-        raise EOFError("Entrada cancelada por el usuario")
-    try:
-        # Eco en consola del navegador / CODEVERSE
-        js.console.info((msg or "input> ") + str(value))
-    except Exception:
-        pass
-    return str(value)
-
-builtins.input = _codeverse_input
-`);
-          window.__codeverseInputPatched = true;
-        }
+        await installPythonInput(pyodide);
 
         stepState.pyodide = pyodide;
         return pyodide;
@@ -722,6 +662,7 @@ for _k in list(globals().keys()):
     async function runPythonStepsUntil(targetIndex, { silentPrevious = true } = {}) {
       const pyodide = await ensurePyodideForSteps();
       await resetPythonNamespace(pyodide);
+      await installPythonInput(pyodide);
 
       // Buffer de salida: silenciar pasos previos y mostrar solo el actual
       let capture = false;
