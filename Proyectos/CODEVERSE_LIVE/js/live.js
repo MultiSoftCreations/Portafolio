@@ -115,9 +115,38 @@ for numero in range(1, 4):
         '.cm-activeLineGutter': { backgroundColor: '#1a1a26' },
         '.cm-activeLine': { backgroundColor: 'rgba(99,102,241,0.08)' },
         '&.cm-focused .cm-cursor': { borderLeftColor: '#818cf8' },
-        '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': { backgroundColor: 'rgba(99,102,241,0.35)' }
+        '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': { backgroundColor: 'rgba(99,102,241,0.35)' },
+        '.cm-step-line': { backgroundColor: 'rgba(250, 204, 21, 0.22)', boxShadow: 'inset 3px 0 0 #facc15' },
+        '.cm-step-gutter': { color: '#facc15', fontWeight: '700' }
       }, { dark: true })
     ];
+
+    // Resaltado de línea en modo paso a paso
+    const stepLineEffect = (CM.StateEffect && CM.StateEffect.define) ? CM.StateEffect.define() : null;
+    const stepLineField = (CM.StateField && stepLineEffect) ? CM.StateField.define({
+      create() { return (CM.Decorations && CM.Decorations.none) ? CM.Decorations.none : []; },
+      update(value, tr) {
+        if (!CM.Decorations) return value;
+        value = value.map(tr.changes);
+        for (const effect of tr.effects) {
+          if (effect.is(stepLineEffect)) {
+            const lineNo = effect.value; // 1-based, 0 = limpiar
+            if (!lineNo || lineNo < 1) return CM.Decorations.none;
+            const doc = tr.state.doc;
+            if (lineNo > doc.lines) return CM.Decorations.none;
+            const line = doc.line(lineNo);
+            const deco = (CM.Decoration && CM.Decoration.line)
+              ? CM.Decoration.line({ class: 'cm-step-line' })
+              : null;
+            if (!deco) return CM.Decorations.none;
+            return CM.Decorations.set([deco.range(line.from)]);
+          }
+        }
+        return value;
+      },
+      provide: (f) => CM.EditorView.decorations.from(f)
+    }) : null;
+
 
     function setStatus(message) {
       if (statusEl) statusEl.textContent = message;
@@ -137,11 +166,27 @@ for numero in range(1, 4):
     function createEditor(tab) {
       if (view) view.destroy();
       editorHost.innerHTML = '';
+      const extras = [languageFor(tab)];
+      if (stepLineField) extras.push(stepLineField);
       view = new CM.EditorView({
         doc: state[tab] || '',
-        extensions: [...baseExtensions, languageFor(tab)],
+        extensions: [...baseExtensions, ...extras],
         parent: editorHost
       });
+    }
+
+    function highlightStepLine(lineNo) {
+      if (!view) return;
+      if (stepLineEffect) {
+        view.dispatch({ effects: stepLineEffect.of(lineNo || 0) });
+      }
+      if (lineNo && lineNo >= 1 && lineNo <= view.state.doc.lines) {
+        const line = view.state.doc.line(lineNo);
+        view.dispatch({
+          selection: { anchor: line.from, head: line.from },
+          effects: CM.EditorView.scrollIntoView(line.from, { y: 'center' })
+        });
+      }
     }
 
     async function loadPythonLanguage() {
@@ -510,6 +555,289 @@ builtins.input = _codeverse_input
       }
     }
 
+
+    // =========================
+    // Modo Paso a Paso (Python)
+    // =========================
+    const stepState = {
+      active: false,
+      steps: [],       // [{ lineNo, code }]
+      index: -1,       // índice del paso actual (ya ejecutado)
+      pyodide: null
+    };
+
+    function getStepButtons() {
+      return {
+        start: document.getElementById('btn-step'),
+        back: document.getElementById('btn-step-back'),
+        next: document.getElementById('btn-step-next'),
+        stop: document.getElementById('btn-step-stop')
+      };
+    }
+
+    function updateStepButtons() {
+      const b = getStepButtons();
+      if (!b.start) return;
+      const on = stepState.active;
+      if (b.back) b.back.hidden = !on;
+      if (b.next) b.next.hidden = !on;
+      if (b.stop) b.stop.hidden = !on;
+      if (b.start) {
+        b.start.hidden = on;
+        b.start.disabled = state.activeTab !== 'python';
+      }
+      if (on && b.next) {
+        b.next.disabled = stepState.index >= stepState.steps.length - 1;
+      }
+      if (on && b.back) {
+        b.back.disabled = stepState.index < 0;
+      }
+    }
+
+    function buildPythonSteps(source) {
+      const lines = String(source || '').split('\n');
+      const steps = [];
+      for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i];
+        const trimmed = raw.trim();
+        if (!trimmed) continue;
+        if (trimmed.startsWith('#')) continue;
+        steps.push({ lineNo: i + 1, code: raw });
+      }
+      return steps;
+    }
+
+    function describeStep(step) {
+      const t = step.code.trim();
+      if (/^print\s*\(/.test(t)) return 'print → se mostrará la salida en la consola';
+      if (/^input\s*\(/.test(t) || /\binput\s*\(/.test(t)) return 'input → se pedirá un valor';
+      if (/^(for|while|if|elif|else|try|except|def|class|with)\b/.test(t)) return 'estructura de control / definición';
+      return 'ejecutando sentencia';
+    }
+
+    async function ensurePyodideForSteps() {
+      if (stepState.pyodide) return stepState.pyodide;
+      // Reutiliza la carga normal (con progreso)
+      const loadPyodide = await loadPyodideRuntime();
+      const originalFetch = window.fetch;
+      let packageProgress = 35;
+      window.fetch = async function(input, init) {
+        const url = typeof input === 'string' ? input : (input && input.url) || '';
+        const isPyodideAsset = url.indexOf('/pyodide/') !== -1 || url.indexOf('cdn.jsdelivr.net/pyodide') !== -1;
+        if (isPyodideAsset && 'caches' in window) {
+          try {
+            const cache = await caches.open(PYODIDE_CACHE);
+            const hit = await cache.match(url);
+            if (hit) {
+              packageProgress = Math.min(90, packageProgress + 3);
+              updateProgress(packageProgress, 'Usando caché local del motor…');
+              return hit;
+            }
+          } catch (_) {}
+        }
+        const resp = await originalFetch(input, init);
+        if (isPyodideAsset && resp && resp.ok) {
+          try {
+            const cache = await caches.open(PYODIDE_CACHE);
+            cache.put(url, resp.clone());
+          } catch (_) {}
+          packageProgress = Math.min(92, packageProgress + 4);
+          updateProgress(packageProgress, 'Descargando componentes de Python…');
+        }
+        return resp;
+      };
+      try {
+        const isFirstLoad = !window.__codeversePyodide;
+        const pyodide = window.__codeversePyodide || (window.__codeversePyodide = await loadPyodide({
+          indexURL: PYODIDE_INDEX,
+          stdout: (text) => logToConsole('log', [text]),
+          stderr: (text) => logToConsole('error', [text])
+        }));
+        pyodide.setStdout({ batched: (text) => logToConsole('log', [text]) });
+        pyodide.setStderr({ batched: (text) => logToConsole('error', [text]) });
+
+        const browserInput = (promptText) => {
+          const message = (promptText === undefined || promptText === null) ? '' : String(promptText);
+          const value = window.prompt(message || 'Entrada:');
+          if (value === null) return null;
+          logToConsole('info', [(message || 'input>') + ' ' + value]);
+          return value;
+        };
+        try {
+          if (typeof pyodide.setStdin === 'function') {
+            pyodide.setStdin({
+              stdin: () => {
+                const value = browserInput('');
+                return value === null ? '' : value;
+              },
+              error: false,
+              isatty: false
+            });
+          }
+        } catch (_) {}
+
+        if (isFirstLoad || !window.__codeverseInputPatched) {
+          globalThis.__codeversePromptInput = (promptText) => {
+            const value = browserInput(promptText);
+            if (value === null) return null;
+            return value;
+          };
+          await pyodide.runPythonAsync(`
+import builtins
+from js import globalThis
+
+def _codeverse_input(prompt=""):
+    try:
+        msg = "" if prompt is None else str(prompt)
+    except Exception:
+        msg = ""
+    value = globalThis.__codeversePromptInput(msg)
+    if value is None:
+        raise EOFError("Entrada cancelada por el usuario")
+    return str(value)
+
+builtins.input = _codeverse_input
+`);
+          window.__codeverseInputPatched = true;
+        }
+
+        stepState.pyodide = pyodide;
+        return pyodide;
+      } finally {
+        window.fetch = originalFetch;
+      }
+    }
+
+    async function resetPythonNamespace(pyodide) {
+      await pyodide.runPythonAsync(`
+import builtins
+_keep = {
+    'builtins', 'js', '__name__', '__doc__', '__package__', '__loader__',
+    '__spec__', '__annotations__', '__builtins__', '_codeverse_input'
+}
+for _k in list(globals().keys()):
+    if _k not in _keep and not _k.startswith('__codeverse'):
+        try:
+            del globals()[_k]
+        except Exception:
+            pass
+`);
+    }
+
+    async function runPythonStepsUntil(targetIndex, { silentPrevious = true } = {}) {
+      const pyodide = await ensurePyodideForSteps();
+      await resetPythonNamespace(pyodide);
+
+      // Buffer de salida: silenciar pasos previos y mostrar solo el actual
+      let capture = false;
+      const outBuf = [];
+      pyodide.setStdout({
+        batched: (text) => {
+          if (capture) logToConsole('log', [text]);
+          else outBuf.push(text);
+        }
+      });
+      pyodide.setStderr({
+        batched: (text) => {
+          if (capture) logToConsole('error', [text]);
+          else outBuf.push(text);
+        }
+      });
+
+      for (let i = 0; i <= targetIndex; i++) {
+        const step = stepState.steps[i];
+        const isLast = i === targetIndex;
+        capture = isLast || !silentPrevious;
+        try {
+          await pyodide.runPythonAsync(step.code);
+        } catch (err) {
+          highlightStepLine(step.lineNo);
+          throw err;
+        }
+      }
+    }
+
+    async function showCurrentStep() {
+      const step = stepState.steps[stepState.index];
+      if (!step) return;
+      clearConsole();
+      logToConsole('info', ['Paso ' + (stepState.index + 1) + ' de ' + stepState.steps.length + ' · línea ' + step.lineNo]);
+      logToConsole('info', [describeStep(step)]);
+      logToConsole('debug', [step.code.trim()]);
+      highlightStepLine(step.lineNo);
+      setStatus('Paso ' + (stepState.index + 1) + '/' + stepState.steps.length + ' · línea ' + step.lineNo);
+      try {
+        await runPythonStepsUntil(stepState.index, { silentPrevious: true });
+        logToConsole('info', ['— fin del paso —']);
+      } catch (err) {
+        logToConsole('error', [err && err.message ? err.message : String(err)]);
+        setStatus('Error en el paso');
+      }
+      updateStepButtons();
+    }
+
+    async function startStepMode() {
+      if (state.activeTab !== 'python') {
+        alert('El modo paso a paso está disponible solo en Python por ahora.');
+        return;
+      }
+      syncEditor();
+      const steps = buildPythonSteps(state.python);
+      if (!steps.length) {
+        alert('No hay líneas ejecutables en el código Python.');
+        return;
+      }
+      stepState.active = true;
+      stepState.steps = steps;
+      stepState.index = 0;
+      updateStepButtons();
+      clearConsole();
+      ensureProgressLine();
+      updateProgress(1, 'Preparando motor Python para paso a paso…');
+      try {
+        await ensurePyodideForSteps();
+        removeProgressLine();
+        await showCurrentStep();
+      } catch (err) {
+        removeProgressLine();
+        stepState.active = false;
+        updateStepButtons();
+        logToConsole('error', [err && err.message ? err.message : String(err)]);
+        setStatus('Error al iniciar paso a paso');
+      }
+    }
+
+    async function stepNext() {
+      if (!stepState.active) return;
+      if (stepState.index >= stepState.steps.length - 1) {
+        setStatus('Ya estás en el último paso');
+        return;
+      }
+      stepState.index += 1;
+      await showCurrentStep();
+    }
+
+    async function stepBack() {
+      if (!stepState.active) return;
+      if (stepState.index <= 0) {
+        stepState.index = 0;
+        await showCurrentStep();
+        return;
+      }
+      stepState.index -= 1;
+      await showCurrentStep();
+    }
+
+    function stopStepMode() {
+      stepState.active = false;
+      stepState.index = -1;
+      highlightStepLine(0);
+      updateStepButtons();
+      setStatus('Modo paso a paso detenido');
+      logToConsole('info', ['Modo paso a paso finalizado.']);
+    }
+
+
     async function run() {
       clearConsole();
       logToConsole('info', ['Ejecutando proyecto…']);
@@ -590,7 +918,25 @@ builtins.input = _codeverse_input
     const btnTheme = document.getElementById('btn-theme');
     const btnClearConsole = document.getElementById('btn-clear-console');
 
-    if (btnRun) btnRun.addEventListener('click', run);
+    if (btnRun) btnRun.addEventListener('click', () => {
+      if (stepState.active) stopStepMode();
+      run();
+    });
+    const btnStep = document.getElementById('btn-step');
+    const btnStepNext = document.getElementById('btn-step-next');
+    const btnStepBack = document.getElementById('btn-step-back');
+    const btnStepStop = document.getElementById('btn-step-stop');
+    if (btnStep) btnStep.addEventListener('click', startStepMode);
+    if (btnStepNext) btnStepNext.addEventListener('click', stepNext);
+    if (btnStepBack) btnStepBack.addEventListener('click', stepBack);
+    if (btnStepStop) btnStepStop.addEventListener('click', stopStepMode);
+    updateStepButtons();
+    // Habilitar/deshabilitar según pestaña
+    const originalSelectTab = selectTab;
+    // selectTab ya existe; actualizamos botones tras cambio de pestaña
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', () => setTimeout(updateStepButtons, 0));
+    });
     if (btnSave) btnSave.addEventListener('click', () => saveProject(true));
     if (btnDownload) btnDownload.addEventListener('click', downloadProject);
     if (btnShare) btnShare.addEventListener('click', shareProject);

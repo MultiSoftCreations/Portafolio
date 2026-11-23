@@ -55,6 +55,10 @@
         <button class="btn btn--sm btn--ghost" id="btn-example" title="Restaurar ejemplo">Ejemplo</button>
         <button class="btn btn--sm btn--ghost" id="btn-theme" title="Cambiar tema">Modo claro</button>
         <button class="btn btn--sm btn--ghost" id="btn-clear-console" title="Limpiar consola">Limpiar</button>
+        <button class="btn btn--sm btn--ghost" id="btn-step" title="Ejecutar Python paso a paso">Paso a paso</button>
+        <button class="btn btn--sm btn--ghost" id="btn-step-back" title="Paso anterior" hidden>◀ Anterior</button>
+        <button class="btn btn--sm btn--ghost" id="btn-step-next" title="Siguiente paso" hidden>Siguiente ▶</button>
+        <button class="btn btn--sm btn--ghost" id="btn-step-stop" title="Salir del modo paso a paso" hidden>Detener</button>
         <button class="btn btn--sm btn--primary" id="btn-run" title="Ejecutar (Ctrl+Enter)" disabled>▶ Ejecutar</button>
       </div>
     </div>
@@ -106,11 +110,13 @@
 
     try {
       const { EditorView, basicSetup } = await import('https://esm.sh/codemirror@6.0.1');
+      const { Decoration, Decorations } = await import('https://esm.sh/@codemirror/view@6.34.1');
+      const { StateEffect, StateField } = await import('https://esm.sh/@codemirror/state@6.4.1');
       const { html } = await import('https://esm.sh/@codemirror/lang-html@6.4.9');
       const { css } = await import('https://esm.sh/@codemirror/lang-css@6.3.1');
       const { javascript } = await import('https://esm.sh/@codemirror/lang-javascript@6.2.2');
 
-      window.CodeMirror = { EditorView, basicSetup, html, css, javascript };
+      window.CodeMirror = { EditorView, basicSetup, Decoration, Decorations, StateEffect, StateField, html, css, javascript };
 
       if (loading) loading.remove();
       if (statusEl) statusEl.textContent = 'Listo';
