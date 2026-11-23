@@ -194,6 +194,7 @@ for numero in range(1, 4):
 
     function clearConsole() {
       if (consoleEl) consoleEl.innerHTML = '';
+      progressLineEl = null;
     }
 
     function consoleBridge() {
@@ -242,35 +243,213 @@ for numero in range(1, 4):
       setStatus('Ejecutando vista previa…');
     }
 
+    const PYODIDE_VERSION = '0.27.7';
+    const PYODIDE_INDEX = 'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/';
+    const PYODIDE_CACHE = 'codeverse-pyodide-v' + PYODIDE_VERSION;
+    let progressLineEl = null;
+    let progressStartedAt = 0;
+
+    function formatEta(seconds) {
+      if (!isFinite(seconds) || seconds < 0) return 'calculando…';
+      if (seconds < 5) return 'unos segundos';
+      if (seconds < 60) return 'aprox. ' + Math.ceil(seconds) + ' s';
+      const m = Math.floor(seconds / 60);
+      const s = Math.ceil(seconds % 60);
+      return 'aprox. ' + m + ' min ' + s + ' s';
+    }
+
+    function ensureProgressLine() {
+      if (!consoleEl) return null;
+      if (progressLineEl && progressLineEl.isConnected) return progressLineEl;
+      progressLineEl = document.createElement('div');
+      progressLineEl.className = 'console-line console-progress';
+      progressLineEl.innerHTML =
+        '<div class="py-progress">' +
+          '<div class="py-progress__label">Descargando motor Python…</div>' +
+          '<div class="py-progress__bar"><div class="py-progress__fill" style="width:0%"></div></div>' +
+          '<div class="py-progress__meta"><span class="py-progress__pct">0%</span> · <span class="py-progress__eta">calculando…</span></div>' +
+        '</div>';
+      consoleEl.appendChild(progressLineEl);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+      progressStartedAt = Date.now();
+      return progressLineEl;
+    }
+
+    function updateProgress(percent, label) {
+      const line = ensureProgressLine();
+      if (!line) return;
+      const pct = Math.max(0, Math.min(100, Math.round(percent)));
+      const fill = line.querySelector('.py-progress__fill');
+      const pctEl = line.querySelector('.py-progress__pct');
+      const etaEl = line.querySelector('.py-progress__eta');
+      const labelEl = line.querySelector('.py-progress__label');
+      if (fill) fill.style.width = pct + '%';
+      if (pctEl) pctEl.textContent = pct + '%';
+      if (labelEl && label) labelEl.textContent = label;
+      if (etaEl && pct > 0 && pct < 100) {
+        const elapsed = (Date.now() - progressStartedAt) / 1000;
+        const total = elapsed / (pct / 100);
+        const remaining = total - elapsed;
+        etaEl.textContent = 'faltan ' + formatEta(remaining);
+      } else if (etaEl && pct >= 100) {
+        etaEl.textContent = 'listo';
+      }
+      if (consoleEl) consoleEl.scrollTop = consoleEl.scrollHeight;
+      setStatus(label || ('Descargando motor Python… ' + pct + '%'));
+    }
+
+    function removeProgressLine() {
+      if (progressLineEl && progressLineEl.parentNode) {
+        progressLineEl.parentNode.removeChild(progressLineEl);
+      }
+      progressLineEl = null;
+    }
+
+    async function cachePut(request, response) {
+      try {
+        if (!('caches' in window)) return;
+        const cache = await caches.open(PYODIDE_CACHE);
+        await cache.put(request, response.clone());
+      } catch (_) {}
+    }
+
+    async function cachedFetch(url, onProgress) {
+      // 1) Intentar desde Cache Storage (guardado local del motor)
+      if ('caches' in window) {
+        try {
+          const cache = await caches.open(PYODIDE_CACHE);
+          const hit = await cache.match(url);
+          if (hit) {
+            if (onProgress) onProgress(100, 'Motor Python (caché local)');
+            return hit;
+          }
+        } catch (_) {}
+      }
+
+      // 2) Descargar con progreso si es posible
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('No se pudo descargar: ' + url);
+
+      const contentLength = Number(response.headers.get('Content-Length') || 0);
+      if (!response.body || !contentLength || !onProgress) {
+        await cachePut(url, response);
+        if (onProgress) onProgress(100, 'Descarga completada');
+        return response;
+      }
+
+      const reader = response.body.getReader();
+      const chunks = [];
+      let received = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.length;
+        const pct = Math.min(99, (received / contentLength) * 100);
+        onProgress(pct, 'Descargando motor Python…');
+      }
+      const blob = new Blob(chunks);
+      const full = new Response(blob, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers
+      });
+      await cachePut(url, full);
+      onProgress(100, 'Motor Python descargado');
+      return full;
+    }
+
     function loadPyodideRuntime() {
       if (window.loadPyodide) return Promise.resolve(window.loadPyodide);
       if (pyodidePromise) return pyodidePromise;
-      pyodidePromise = new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js';
-        script.onload = () => window.loadPyodide ? resolve(window.loadPyodide) : reject(new Error('El motor Python no quedó disponible.'));
-        script.onerror = () => reject(new Error('No se pudo descargar Pyodide. Comprueba tu conexión.'));
-        document.head.appendChild(script);
-      });
+      pyodidePromise = (async () => {
+        const scriptUrl = PYODIDE_INDEX + 'pyodide.js';
+        updateProgress(2, 'Preparando motor Python…');
+
+        // Preferir script desde caché local
+        let scriptSrc = scriptUrl;
+        try {
+          const resp = await cachedFetch(scriptUrl, (pct, label) => {
+            // pyodide.js es solo una parte; reservamos 0-35%
+            updateProgress(2 + (pct * 0.33), label || 'Descargando pyodide.js…');
+          });
+          const blob = await resp.blob();
+          scriptSrc = URL.createObjectURL(blob);
+        } catch (err) {
+          // Fallback: script tag normal
+          console.warn('[CODEVERSE] Cache fetch falló, usando CDN directo', err);
+        }
+
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = scriptSrc;
+          script.onload = () => (window.loadPyodide ? resolve() : reject(new Error('El motor Python no quedó disponible.')));
+          script.onerror = () => reject(new Error('No se pudo cargar Pyodide. Comprueba tu conexión.'));
+          document.head.appendChild(script);
+        });
+
+        updateProgress(35, 'Inicializando motor Python…');
+        return window.loadPyodide;
+      })();
       return pyodidePromise;
     }
 
     async function runPython() {
       syncEditor();
       setStatus('Cargando Python…');
-      logToConsole('info', ['Iniciando motor Python (Pyodide); la primera carga puede tardar.']);
+      clearConsole();
+      ensureProgressLine();
+      updateProgress(1, 'Iniciando motor Python (Pyodide)…');
       try {
         const loadPyodide = await loadPyodideRuntime();
-        const pyodide = window.__codeversePyodide || (window.__codeversePyodide = await loadPyodide({
-          stdout: (text) => logToConsole('log', [text]),
-          stderr: (text) => logToConsole('error', [text])
-        }));
-        pyodide.setStdout({ batched: (text) => logToConsole('log', [text]) });
-        pyodide.setStderr({ batched: (text) => logToConsole('error', [text]) });
-        await pyodide.runPythonAsync(state.python || '');
-        setStatus('Python ejecutado');
-        logToConsole('info', ['Ejecución de Python finalizada.']);
+
+        // Interceptar fetch durante la carga para cachear wasm/packages y mostrar progreso
+        const originalFetch = window.fetch;
+        let packageProgress = 35;
+        window.fetch = async function(input, init) {
+          const url = typeof input === 'string' ? input : (input && input.url) || '';
+          const isPyodideAsset = url.indexOf('/pyodide/') !== -1 || url.indexOf('cdn.jsdelivr.net/pyodide') !== -1;
+          if (isPyodideAsset && 'caches' in window) {
+            try {
+              const cache = await caches.open(PYODIDE_CACHE);
+              const hit = await cache.match(url);
+              if (hit) {
+                packageProgress = Math.min(90, packageProgress + 3);
+                updateProgress(packageProgress, 'Usando caché local del motor…');
+                return hit;
+              }
+            } catch (_) {}
+          }
+          const resp = await originalFetch(input, init);
+          if (isPyodideAsset && resp && resp.ok) {
+            try {
+              const cache = await caches.open(PYODIDE_CACHE);
+              cache.put(url, resp.clone());
+            } catch (_) {}
+            packageProgress = Math.min(92, packageProgress + 4);
+            updateProgress(packageProgress, 'Descargando componentes de Python…');
+          }
+          return resp;
+        };
+
+        try {
+          const pyodide = window.__codeversePyodide || (window.__codeversePyodide = await loadPyodide({
+            indexURL: PYODIDE_INDEX,
+            stdout: (text) => logToConsole('log', [text]),
+            stderr: (text) => logToConsole('error', [text])
+          }));
+          updateProgress(96, 'Motor listo. Ejecutando código…');
+          pyodide.setStdout({ batched: (text) => logToConsole('log', [text]) });
+          pyodide.setStderr({ batched: (text) => logToConsole('error', [text]) });
+          removeProgressLine();
+          await pyodide.runPythonAsync(state.python || '');
+          setStatus('Python ejecutado');
+          logToConsole('info', ['Ejecución de Python finalizada.']);
+        } finally {
+          window.fetch = originalFetch;
+        }
       } catch (error) {
+        removeProgressLine();
         setStatus('Error en Python');
         logToConsole('error', [error && error.message ? error.message : String(error)]);
       }
