@@ -245,3 +245,128 @@
   .live-toolbar__right .btn { padding: 6px 9px; font-size: .72rem; }
   .live-tabs { flex-wrap: wrap; }
 }
+
+/* ===== Cloud projects modal ===== */
+.cloud-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.cloud-modal[hidden] { display: none !important; }
+.cloud-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+}
+.cloud-modal__panel {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow: auto;
+  background: #14141e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 1.25rem 1.35rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.cloud-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.cloud-modal__header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.cloud-modal__close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.cloud-modal__toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.cloud-modal__toolbar input {
+  flex: 1;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+}
+.cloud-projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 80px;
+}
+.cloud-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+.cloud-item.is-active {
+  border-color: rgba(108,92,231,0.5);
+  background: rgba(108,92,231,0.12);
+}
+.cloud-item__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.cloud-item__main strong {
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cloud-item__date {
+  font-size: 0.75rem;
+  color: #888;
+}
+.cloud-item__actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+.cloud-empty {
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+.cloud-modal__hint {
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+  color: #666;
+}
+body.theme-light .cloud-modal__panel {
+  background: #f6f6fa;
+  border-color: rgba(0,0,0,0.08);
+}
+body.theme-light .cloud-modal__toolbar input {
+  background: #fff;
+  color: #111;
+  border-color: rgba(0,0,0,0.12);
+}
+body.theme-light .cloud-item {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+}

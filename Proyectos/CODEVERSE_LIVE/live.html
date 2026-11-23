@@ -47,7 +47,9 @@
       </div>
       <div class="live-toolbar__right">
         <span class="live-status" id="live-status">Cargando editor…</span>
-        <button class="btn btn--sm btn--ghost" id="btn-save" title="Guardar proyecto">Guardar</button>
+        <button class="btn btn--sm btn--ghost" id="btn-save" title="Guardar en este dispositivo">Guardar local</button>
+        <button class="btn btn--sm btn--ghost" id="btn-save-cloud" title="Guardar en la nube">☁ Nube</button>
+        <button class="btn btn--sm btn--ghost" id="btn-my-projects" title="Mis proyectos en la nube">Mis proyectos</button>
         <button class="btn btn--sm btn--ghost" id="btn-download" title="Descargar proyecto">Descargar</button>
         <button class="btn btn--sm btn--ghost" id="btn-share" title="Compartir proyecto">Compartir</button>
         <button class="btn btn--sm btn--ghost" id="btn-example" title="Restaurar ejemplo">Ejemplo</button>
@@ -123,5 +125,25 @@
       showError(String(err.message || err));
     }
   </script>
+
+  <!-- Panel Mis proyectos (nube) -->
+  <div id="cloud-projects-modal" class="cloud-modal" hidden>
+    <div class="cloud-modal__backdrop" data-close-modal></div>
+    <div class="cloud-modal__panel">
+      <div class="cloud-modal__header">
+        <h2>Mis proyectos</h2>
+        <button type="button" class="cloud-modal__close" data-close-modal aria-label="Cerrar">×</button>
+      </div>
+      <div class="cloud-modal__toolbar">
+        <input type="text" id="cloud-project-name" placeholder="Nombre del proyecto" maxlength="80" />
+        <button type="button" class="btn btn--sm btn--primary" id="btn-cloud-new">Nuevo</button>
+      </div>
+      <div id="cloud-projects-list" class="cloud-projects-list">
+        <p class="cloud-empty">Cargando…</p>
+      </div>
+      <p class="cloud-modal__hint">Los proyectos se guardan en tu cuenta y no se pierden al cambiar de dispositivo.</p>
+    </div>
+  </div>
+  <script type="module" src="js/cloud-ui.js"></script>
 </body>
 </html>
