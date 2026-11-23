@@ -121,32 +121,6 @@ for numero in range(1, 4):
       }, { dark: true })
     ];
 
-    // Resaltado de línea en modo paso a paso
-    const stepLineEffect = (CM.StateEffect && CM.StateEffect.define) ? CM.StateEffect.define() : null;
-    const stepLineField = (CM.StateField && stepLineEffect) ? CM.StateField.define({
-      create() { return (CM.Decorations && CM.Decorations.none) ? CM.Decorations.none : []; },
-      update(value, tr) {
-        if (!CM.Decorations) return value;
-        value = value.map(tr.changes);
-        for (const effect of tr.effects) {
-          if (effect.is(stepLineEffect)) {
-            const lineNo = effect.value; // 1-based, 0 = limpiar
-            if (!lineNo || lineNo < 1) return CM.Decorations.none;
-            const doc = tr.state.doc;
-            if (lineNo > doc.lines) return CM.Decorations.none;
-            const line = doc.line(lineNo);
-            const deco = (CM.Decoration && CM.Decoration.line)
-              ? CM.Decoration.line({ class: 'cm-step-line' })
-              : null;
-            if (!deco) return CM.Decorations.none;
-            return CM.Decorations.set([deco.range(line.from)]);
-          }
-        }
-        return value;
-      },
-      provide: (f) => CM.EditorView.decorations.from(f)
-    }) : null;
-
 
     function setStatus(message) {
       if (statusEl) statusEl.textContent = message;
@@ -164,28 +138,36 @@ for numero in range(1, 4):
     }
 
     function createEditor(tab) {
-      if (view) view.destroy();
-      editorHost.innerHTML = '';
-      const extras = [languageFor(tab)];
-      if (stepLineField) extras.push(stepLineField);
-      view = new CM.EditorView({
-        doc: state[tab] || '',
-        extensions: [...baseExtensions, ...extras],
-        parent: editorHost
-      });
+      if (view) {
+        try { view.destroy(); } catch (_) {}
+      }
+      if (editorHost) editorHost.innerHTML = '';
+      try {
+        view = new CM.EditorView({
+          doc: state[tab] || '',
+          extensions: [...baseExtensions, languageFor(tab)],
+          parent: editorHost
+        });
+      } catch (err) {
+        console.error('[CODEVERSE] Error al crear editor:', err);
+        if (editorHost) {
+          editorHost.innerHTML = '<div style="padding:1rem;color:#f87171">No se pudo iniciar el editor. Recarga la página.</div>';
+        }
+        view = null;
+      }
     }
 
     function highlightStepLine(lineNo) {
       if (!view) return;
-      if (stepLineEffect) {
-        view.dispatch({ effects: stepLineEffect.of(lineNo || 0) });
-      }
-      if (lineNo && lineNo >= 1 && lineNo <= view.state.doc.lines) {
+      try {
+        if (!lineNo || lineNo < 1 || lineNo > view.state.doc.lines) return;
         const line = view.state.doc.line(lineNo);
         view.dispatch({
-          selection: { anchor: line.from, head: line.from },
+          selection: { anchor: line.from, head: line.to },
           effects: CM.EditorView.scrollIntoView(line.from, { y: 'center' })
         });
+      } catch (err) {
+        console.warn('[CODEVERSE] No se pudo resaltar línea', err);
       }
     }
 
@@ -577,11 +559,12 @@ builtins.input = _codeverse_input
 
     function updateStepButtons() {
       const b = getStepButtons();
-      if (!b.start) return;
-      const on = stepState.active;
+      const on = !!(stepState && stepState.active);
+      // Controles de paso: solo visibles en modo paso a paso
       if (b.back) b.back.hidden = !on;
       if (b.next) b.next.hidden = !on;
       if (b.stop) b.stop.hidden = !on;
+      // Botón para entrar al modo: visible fuera del modo, solo útil en Python
       if (b.start) {
         b.start.hidden = on;
         b.start.disabled = state.activeTab !== 'python';
@@ -590,7 +573,7 @@ builtins.input = _codeverse_input
         b.next.disabled = stepState.index >= stepState.steps.length - 1;
       }
       if (on && b.back) {
-        b.back.disabled = stepState.index < 0;
+        b.back.disabled = stepState.index <= 0;
       }
     }
 

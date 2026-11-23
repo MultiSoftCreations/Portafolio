@@ -110,14 +110,10 @@
 
     try {
       const { EditorView, basicSetup } = await import('https://esm.sh/codemirror@6.0.1');
-      const { Decoration, Decorations } = await import('https://esm.sh/@codemirror/view@6.34.1');
-      const { StateEffect, StateField } = await import('https://esm.sh/@codemirror/state@6.4.1');
       const { html } = await import('https://esm.sh/@codemirror/lang-html@6.4.9');
       const { css } = await import('https://esm.sh/@codemirror/lang-css@6.3.1');
       const { javascript } = await import('https://esm.sh/@codemirror/lang-javascript@6.2.2');
-
-      window.CodeMirror = { EditorView, basicSetup, Decoration, Decorations, StateEffect, StateField, html, css, javascript };
-
+      window.CodeMirror = { EditorView, basicSetup, html, css, javascript };
       if (loading) loading.remove();
       if (statusEl) statusEl.textContent = 'Listo';
       if (btnRun) btnRun.disabled = false;
@@ -151,5 +147,6 @@
     </div>
   </div>
   <script type="module" src="js/cloud-ui.js"></script>
+
 </body>
 </html>
