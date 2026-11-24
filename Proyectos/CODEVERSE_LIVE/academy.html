@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script src="js/cache-version.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Academia CODEVERSE — Cursos y ejercicios de programación." />
@@ -8,6 +9,7 @@
   <link rel="icon" href="favicon.png" type="image/png" />
   <title>Academia — CODEVERSE</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/courses.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -39,40 +41,12 @@
         <p class="page__eyebrow">Academia</p>
         <h1 class="page__title">Aprende haciendo</h1>
         <p class="page__desc">
-          Cursos divididos en módulos, lecciones y actividades cortas.
-          Cada ejercicio se puede abrir directamente en CODEVERSE LIVE.
+          Cursos por niveles. Las lecciones se desbloquean en orden y tu progreso se guarda en la nube.
         </p>
       </div>
 
-      <div class="cards-grid">
-        <article class="card">
-          <span class="lang-card__tag">Ruta prioritaria</span>
-          <h3>HTML + CSS</h3>
-          <p>Estructura de páginas, selectores, cascada, layout y diseño responsivo. Base de cualquier proyecto web.</p>
-          <p class="meta">Estado: en preparación · Próximamente</p>
-        </article>
-        <article class="card">
-          <span class="lang-card__tag">Ruta prioritaria</span>
-          <h3>JavaScript</h3>
-          <p>Variables, funciones, DOM, eventos y lógica. Interactividad real en el navegador.</p>
-          <p class="meta">Estado: en preparación · Próximamente</p>
-        </article>
-        <article class="card">
-          <span class="lang-card__tag">Ruta prioritaria</span>
-          <h3>Python</h3>
-          <p>Pensamiento lógico, estructuras de control, funciones y ejercicios prácticos desde cero.</p>
-          <p class="meta">Estado: en preparación · Próximamente</p>
-        </article>
-      </div>
-
-      <div class="placeholder-card" style="margin-top: 40px;">
-        <span class="status">En construcción</span>
-        <h3>Contenido de cursos en desarrollo</h3>
-        <p>
-          Según el roadmap, la Academia inicial (HTML y Python) es la etapa 2.
-          Aquí aparecerán los módulos, lecciones y ejercicios vinculados a LIVE.
-        </p>
-        <a href="live.html" class="btn btn--primary btn--sm">Ir a LIVE mientras tanto</a>
+      <div id="courses-root">
+        <p class="meta">Cargando cursos…</p>
       </div>
     </div>
   </main>
@@ -100,10 +74,91 @@
       </div>
     </div>
   </footer>
-    <script type="module">
+
+  <script type="module">
     import { protectPage } from "./js/auth-guard.js";
-    protectPage({ allowAI: true });
+    import { loadCourse, loadProgress, isLessonUnlocked, isLessonCompleted } from "./js/courses.js";
+
+    await protectPage({ allowAI: true });
+
+    const root = document.getElementById("courses-root");
+    const params = new URLSearchParams(window.location.search);
+    const focus = params.get("course") || "html";
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    try {
+      const course = await loadCourse("html");
+      const progress = await loadProgress("html");
+      const total = course.lessons.length;
+      const done = (progress.completedLessons || []).filter((id) =>
+        course.lessons.some((l) => l.id === id)
+      ).length;
+
+      const rows = course.lessons
+        .map((lesson, index) => {
+          const unlocked = isLessonUnlocked(course, progress, lesson.id);
+          const completed = isLessonCompleted(progress, lesson.id);
+          const href = unlocked ? `Cursos/HTML/${lesson.file}` : "#";
+          const state = completed ? "Completada" : unlocked ? "Disponible" : "Bloqueada";
+          const cls = [
+            "lesson-row",
+            completed ? "is-done" : "",
+            !unlocked ? "is-locked" : ""
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          const tag = unlocked ? "a" : "div";
+          return `<${tag} class="${cls}" ${unlocked ? `href="${href}"` : 'aria-disabled="true"'}">
+            <div class="lesson-row__main">
+              <strong>${index + 1}. ${escapeHtml(lesson.title)}</strong>
+              <span>${escapeHtml(lesson.summary || "")}</span>
+            </div>
+            <span class="lesson-row__state">${state}</span>
+          </${tag}>`;
+        })
+        .join("");
+
+      root.innerHTML = `
+        <section class="course-hero">
+          <span class="course-hero__badge">${escapeHtml(course.level)} · ${escapeHtml(course.language)}</span>
+          <h2>${escapeHtml(course.title)}</h2>
+          <p>${escapeHtml(course.description)}</p>
+          <p class="course-progress">Progreso: <strong>${done}</strong> de <strong>${total}</strong> lecciones
+            ${progress.source === "cloud" ? "· guardado en la nube" : "· inicia sesión para sincronizar"}
+          </p>
+        </section>
+        <div class="lessons-list">${rows}</div>
+        <div class="cards-grid" style="margin-top:2.5rem">
+          <article class="card">
+            <span class="lang-card__tag">Próximamente</span>
+            <h3>CSS</h3>
+            <p>Selectores, colores, flexbox y diseño responsivo.</p>
+          </article>
+          <article class="card">
+            <span class="lang-card__tag">Próximamente</span>
+            <h3>JavaScript</h3>
+            <p>Variables, funciones y DOM desde cero.</p>
+          </article>
+          <article class="card">
+            <span class="lang-card__tag">Próximamente</span>
+            <h3>Python</h3>
+            <p>Lógica, control de flujo y ejercicios prácticos.</p>
+          </article>
+        </div>
+      `;
+    } catch (err) {
+      console.error(err);
+      root.innerHTML = `<p class="meta">No se pudieron cargar los cursos. ${escapeHtml(err.message || "")}</p>`;
+    }
   </script>
-<script src="js/main.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

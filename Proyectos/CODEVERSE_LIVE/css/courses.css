@@ -1,0 +1,175 @@
+/* CODEVERSE — Cursos y lecciones */
+.course-page .lesson {
+  padding: 2rem 0 4rem;
+}
+.lesson__wrap {
+  max-width: 760px;
+}
+.lesson__crumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 1.25rem;
+}
+.lesson__crumb a {
+  color: #a29bfe;
+  text-decoration: none;
+}
+.lesson__meta {
+  color: #888;
+  font-size: 0.85rem;
+  margin: 0 0 0.35rem;
+}
+.lesson__title {
+  font-size: 1.75rem;
+  margin: 0 0 1.25rem;
+  line-height: 1.25;
+}
+.lesson__body {
+  line-height: 1.65;
+  color: #d4d4de;
+}
+.lesson__body h2 {
+  font-size: 1.15rem;
+  margin: 1.5rem 0 0.6rem;
+}
+.lesson__body ul {
+  padding-left: 1.25rem;
+}
+.lesson__body li {
+  margin: 0.35rem 0;
+}
+.lesson__body code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.9em;
+  background: rgba(255,255,255,0.06);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.lesson__body pre {
+  background: #0d0d14;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.lesson__body pre code {
+  background: none;
+  padding: 0;
+}
+.lesson-callout {
+  margin: 1.5rem 0;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid rgba(108, 92, 231, 0.35);
+  background: rgba(108, 92, 231, 0.1);
+}
+.lesson-callout strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+.lesson__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.lesson__hint {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #999;
+}
+.lesson-gate {
+  padding: 2rem;
+  text-align: center;
+  color: #999;
+  border: 1px dashed rgba(255,255,255,0.12);
+  border-radius: 12px;
+}
+
+/* Academia: lista de lecciones */
+.course-hero {
+  margin-bottom: 1.75rem;
+}
+.course-hero__badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(108, 92, 231, 0.2);
+  color: #c4b5fd;
+  margin-bottom: 0.5rem;
+}
+.lessons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+.lesson-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.lesson-row:not(.is-locked):hover {
+  border-color: rgba(108, 92, 231, 0.45);
+  background: rgba(108, 92, 231, 0.08);
+}
+.lesson-row.is-locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.lesson-row.is-done {
+  border-color: rgba(46, 204, 113, 0.35);
+}
+.lesson-row__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.lesson-row__main strong {
+  font-size: 0.98rem;
+}
+.lesson-row__main span {
+  font-size: 0.82rem;
+  color: #888;
+}
+.lesson-row__state {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: #bbb;
+}
+.lesson-row.is-done .lesson-row__state {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+.lesson-row.is-locked .lesson-row__state {
+  background: rgba(255,255,255,0.04);
+  color: #777;
+}
+.course-progress {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: #999;
+}

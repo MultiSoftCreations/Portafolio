@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="../../js/cache-version.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Enlaces e imágenes — Introducción a HTML · CODEVERSE</title>
+  <link rel="icon" href="../../favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../../css/styles.css" />
+  <link rel="stylesheet" href="../../css/courses.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body class="course-page">
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="../../index.html" class="logo">
+        <img src="../../assets/img/codeverse-logo.png" alt="CODEVERSE" class="logo__img" />
+        <span class="logo__text">CODEVERSE</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="../../index.html" class="nav__link">Inicio</a>
+        <a href="../../academy.html" class="nav__link active">Academia</a>
+        <a href="../../live.html" class="nav__link">LIVE</a>
+        <a href="../../dashboard.html" class="nav__link">Dashboard</a>
+      </nav>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <div class="container lesson__wrap">
+      <div class="lesson__crumb">
+        <a href="../../academy.html">Academia</a>
+        <span>/</span>
+        <a href="../../academy.html?course=html">Introducción a HTML</a>
+        <span>/</span>
+        <span>Lección 4</span>
+      </div>
+
+      <div id="lesson-gate" class="lesson-gate">Comprobando acceso a la lección…</div>
+
+      <article id="lesson-content" class="lesson__content" hidden>
+        <p class="lesson__meta">Lección 4 de 5 · HTML · Principiante</p>
+        <h1 class="lesson__title">Enlaces e imágenes</h1>
+        <div class="lesson__body">
+
+          <p>Los enlaces conectan páginas. La etiqueta es <code>&lt;a&gt;</code> (anchor) y el destino va en el atributo <code>href</code>.</p>
+          <pre><code>&lt;a href="https://multisoftcreations.com.mx"&gt;Visitar MultiSoftCreations&lt;/a&gt;</code></pre>
+          <p>Las imágenes usan <code>&lt;img&gt;</code>. Es una etiqueta vacía (no tiene cierre). Siempre incluye <code>alt</code> por accesibilidad.</p>
+          <pre><code>&lt;img src="foto.jpg" alt="Descripción de la imagen" /&gt;</code></pre>
+          <h2>Atributos útiles</h2>
+          <ul>
+            <li><code>href</code> — URL del enlace</li>
+            <li><code>target="_blank"</code> — abrir en nueva pestaña</li>
+            <li><code>src</code> — ruta de la imagen</li>
+            <li><code>alt</code> — texto alternativo</li>
+          </ul>
+          <div class="lesson-callout">
+            <strong>Práctica en LIVE</strong>
+            <p>Haz un párrafo con un enlace a tu sitio favorito y una etiqueta <code>img</code> (puedes usar cualquier URL de imagen pública).</p>
+          </div>
+
+        </div>
+
+        <div class="lesson__actions">
+          <a class="btn btn--ghost btn--sm" href="../../academy.html?course=html">Volver al curso</a>
+          <a class="btn btn--ghost btn--sm" href="../../live.html" target="_blank" rel="noopener">Abrir LIVE</a>
+          <button type="button" class="btn btn--primary btn--sm" id="btn-complete">Marcar como completada y continuar</button>
+        </div>
+        <p class="lesson__hint" id="lesson-status"></p>
+      </article>
+    </div>
+  </main>
+
+  <script src="../../js/main.js"></script>
+  <script type="module">
+    import { guardLessonPage, completeLesson, loadCourse, isLessonCompleted } from "../../js/courses.js";
+
+    const COURSE_ID = "html";
+    const LESSON_ID = "04-enlaces-e-imagenes";
+
+    const gate = document.getElementById("lesson-gate");
+    const content = document.getElementById("lesson-content");
+    const btn = document.getElementById("btn-complete");
+    const status = document.getElementById("lesson-status");
+
+    try {
+      const { course, progress, lesson } = await guardLessonPage(COURSE_ID, LESSON_ID);
+      gate.hidden = true;
+      content.hidden = false;
+
+      if (isLessonCompleted(progress, LESSON_ID)) {
+        status.textContent = "Ya completaste esta lección. Puedes repasar o continuar.";
+        btn.textContent = "Continuar";
+      }
+
+      btn.addEventListener("click", async () => {
+        btn.disabled = true;
+        btn.textContent = "Guardando…";
+        try {
+          const updated = await completeLesson(course, LESSON_ID);
+          const idx = course.lessons.findIndex((l) => l.id === LESSON_ID);
+          const next = course.lessons[idx + 1];
+          if (next) {
+            window.location.href = next.file;
+          } else {
+            status.textContent = "¡Curso completado! Excelente trabajo.";
+            btn.textContent = "Curso completado";
+            setTimeout(() => { window.location.href = "../../academy.html?course=html"; }, 1200);
+          }
+        } catch (err) {
+          console.error(err);
+          status.textContent = err.message || "No se pudo guardar el progreso. ¿Iniciaste sesión?";
+          btn.disabled = false;
+          btn.textContent = "Reintentar";
+        }
+      });
+    } catch (err) {
+      // redirecciones ya manejadas en guardLessonPage
+      if (err && (err.message === "login_required" || err.message === "lesson_locked")) return;
+      gate.textContent = "No se pudo abrir la lección. Intenta de nuevo desde Academia.";
+      console.error(err);
+    }
+  </script>
+</body>
+</html>

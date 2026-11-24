@@ -1,0 +1,40 @@
+{
+  "id": "html",
+  "title": "Introducción a HTML",
+  "shortTitle": "HTML",
+  "description": "Aprende la estructura básica de las páginas web: etiquetas, texto, enlaces, imágenes y listas. Ideal para empezar desde cero.",
+  "level": "Principiante",
+  "language": "HTML",
+  "lessons": [
+    {
+      "id": "01-que-es-html",
+      "file": "01-que-es-html.html",
+      "title": "¿Qué es HTML?",
+      "summary": "Qué es HTML, para qué sirve y cómo se relaciona con el navegador."
+    },
+    {
+      "id": "02-estructura-basica",
+      "file": "02-estructura-basica.html",
+      "title": "Estructura básica de un documento",
+      "summary": "DOCTYPE, html, head, body y la primera página válida."
+    },
+    {
+      "id": "03-titulos-y-parrafos",
+      "file": "03-titulos-y-parrafos.html",
+      "title": "Títulos y párrafos",
+      "summary": "Encabezados h1–h6, párrafos y saltos de línea."
+    },
+    {
+      "id": "04-enlaces-e-imagenes",
+      "file": "04-enlaces-e-imagenes.html",
+      "title": "Enlaces e imágenes",
+      "summary": "Etiquetas a e img: conectar páginas y mostrar imágenes."
+    },
+    {
+      "id": "05-listas",
+      "file": "05-listas.html",
+      "title": "Listas",
+      "summary": "Listas ordenadas, no ordenadas y de definición."
+    }
+  ]
+}
