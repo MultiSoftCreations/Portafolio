@@ -1,7 +1,7 @@
 // CODEVERSE — Cursos y progreso (bloqueo de lecciones)
 // MultiSoftCreations
 
-import { onUserChanged, getCurrentUser } from "./auth.js";
+import { onUserChanged, getCurrentUser, hasValidAITunnelSession, getAITunnelInfo } from "./auth.js";
 import { getCourseProgress, saveCourseProgress } from "./projects.js";
 
 /**
@@ -31,11 +31,21 @@ export function emptyProgress() {
   };
 }
 
+/** Clave de progreso: usuarios normales vs sesión de túnel IA (aislada) */
+function progressStorageKey(courseId) {
+  if (hasValidAITunnelSession()) {
+    const info = getAITunnelInfo();
+    const tag = (info && info.code) ? String(info.code) : "ai";
+    return "codeverse_progress_ai_" + tag + "_" + courseId;
+  }
+  return "codeverse_progress_" + courseId;
+}
+
 /**
- * Obtiene progreso del usuario (nube). Si no hay sesión, usa localStorage como respaldo.
+ * Obtiene progreso del usuario (nube). IA del túnel y sin login usan almacenamiento local.
  */
 export async function loadProgress(courseId) {
-  const localKey = "codeverse_progress_" + courseId;
+  const localKey = progressStorageKey(courseId);
   let local = emptyProgress();
   try {
     const raw = localStorage.getItem(localKey);
@@ -74,10 +84,15 @@ export async function persistProgress(courseId, progress) {
     completedLessons: progress.completedLessons || [],
     currentLessonId: progress.currentLessonId || null
   };
-  const localKey = "codeverse_progress_" + courseId;
+  const localKey = progressStorageKey(courseId);
   try {
     localStorage.setItem(localKey, JSON.stringify(payload));
   } catch (_) {}
+
+  // Túnel IA: solo local/sesión (no nube Firebase de usuarios)
+  if (hasValidAITunnelSession() && !getCurrentUser()) {
+    return { ...payload, source: "ai_tunnel" };
+  }
 
   const user = getCurrentUser();
   if (!user) return { ...payload, source: "local" };
@@ -144,9 +159,10 @@ export async function guardLessonPage(courseId, lessonId) {
     });
   });
 
-  // Exigir login para cursos (progreso en nube)
-  if (!user) {
-    // Ruta relativa desde la raíz de CODEVERSE_LIVE (para login.html?redirect=)
+  const aiTunnel = hasValidAITunnelSession();
+
+  // Usuarios normales: login obligatorio. Túnel IA: puede entrar a probar cursos.
+  if (!user && !aiTunnel) {
     const parts = window.location.pathname.split("/");
     const idx = parts.lastIndexOf("Cursos");
     const rel = idx >= 0 ? parts.slice(idx).join("/") : "academy.html";
@@ -157,6 +173,7 @@ export async function guardLessonPage(courseId, lessonId) {
   const course = await loadCourse(courseId);
   const progress = await loadProgress(courseId);
 
+  // Misma regla de seguridad para todos (usuario e IA): no saltar lecciones
   if (!isLessonUnlocked(course, progress, lessonId)) {
     alert("Esta lección aún está bloqueada. Completa las anteriores para continuar.");
     window.location.replace("../../academy.html?course=" + encodeURIComponent(courseId));
@@ -164,7 +181,7 @@ export async function guardLessonPage(courseId, lessonId) {
   }
 
   const lesson = (course.lessons || []).find((l) => l.id === lessonId);
-  return { course, progress, lesson, user };
+  return { course, progress, lesson, user, aiTunnel };
 }
 
 export function courseListPath() {

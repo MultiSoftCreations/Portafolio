@@ -1,7 +1,7 @@
 // CODEVERSE — Cloud UI (guardar / cargar proyectos en la nube)
 // MultiSoftCreations
 
-import { onUserChanged, getCurrentUser } from "./auth.js";
+import { onUserChanged, getCurrentUser, hasValidAITunnelSession } from "./auth.js";
 import {
   listProjects,
   createProject,
@@ -62,6 +62,13 @@ function getCurrentCloudId() {
 
 async function saveToCloud() {
   const user = getCurrentUser();
+  // Túnel IA sin cuenta: guarda en este dispositivo (no Firebase de usuarios)
+  if (!user && hasValidAITunnelSession()) {
+    const btnLocal = $("btn-save");
+    if (btnLocal) btnLocal.click();
+    setStatus("Guardado local (sesión IA)");
+    return;
+  }
   if (!user) {
     alert("Inicia sesión para guardar en la nube.");
     window.location.href = "login.html?redirect=live.html";
@@ -210,6 +217,10 @@ function bind() {
   if (btnMy) {
     btnMy.addEventListener("click", () => {
       if (!getCurrentUser()) {
+        if (hasValidAITunnelSession()) {
+          alert("La sesión IA usa guardado local del editor. Los proyectos en la nube Firebase son solo para cuentas de usuario.");
+          return;
+        }
         alert("Inicia sesión para ver tus proyectos.");
         window.location.href = "login.html?redirect=live.html";
         return;

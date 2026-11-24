@@ -132,7 +132,7 @@
           <h2>${escapeHtml(course.title)}</h2>
           <p>${escapeHtml(course.description)}</p>
           <p class="course-progress">Progreso: <strong>${done}</strong> de <strong>${total}</strong> lecciones
-            ${progress.source === "cloud" ? "· guardado en la nube" : "· inicia sesión para sincronizar"}
+            ${progress.source === "cloud" ? "· guardado en la nube" : progress.source === "ai_tunnel" ? "· progreso sesión IA (pruebas)" : "· inicia sesión para sincronizar"}
           </p>
         </section>
         <div class="lessons-list">${rows}</div>
