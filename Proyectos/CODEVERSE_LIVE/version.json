@@ -1,6 +1,6 @@
 {
-  "version": "1.2.2",
+  "version": "1.2.3",
   "name": "CODEVERSE LIVE",
   "updatedAt": "2026-11-24",
-  "notes": "Fix: SyntaxError return en lecciones + source IA + cache-version.js"
+  "notes": "Fix: course.json y version.json con ruta desde raíz LIVE (no duplicar Cursos/HTML)"
 }

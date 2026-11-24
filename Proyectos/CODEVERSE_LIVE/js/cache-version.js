@@ -13,7 +13,13 @@
 
   var STORAGE_KEY = 'codeverse_app_version';
   var RELOAD_KEY = 'codeverse_version_reloading';
-  var VERSION_URL = 'version.json';
+  var VERSION_URL = (function () {
+    var path = window.location.pathname || "/";
+    var cursos = path.indexOf("/Cursos/");
+    if (cursos >= 0) return path.slice(0, cursos + 1) + "version.json";
+    var last = path.lastIndexOf("/");
+    return (last >= 0 ? path.slice(0, last + 1) : "/") + "version.json";
+  })();
 
   function getStoredVersion() {
     try {

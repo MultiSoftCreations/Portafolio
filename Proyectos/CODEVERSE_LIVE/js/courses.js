@@ -4,19 +4,39 @@
 import { onUserChanged, getCurrentUser, hasValidAITunnelSession, getAITunnelInfo } from "./auth.js";
 import { getCourseProgress, saveCourseProgress } from "./projects.js";
 
+
+/**
+ * Raíz de CODEVERSE_LIVE en la URL (funciona desde / y desde /Cursos/HTML/).
+ */
+export function getLiveRoot() {
+  const path = window.location.pathname || "/";
+  const cursos = path.indexOf("/Cursos/");
+  if (cursos >= 0) return path.slice(0, cursos + 1);
+  const last = path.lastIndexOf("/");
+  return last >= 0 ? path.slice(0, last + 1) : "/";
+}
+
+/** URL absoluta en el sitio a partir de una ruta relativa a la raíz LIVE */
+export function liveUrl(rel) {
+  const clean = String(rel || "").replace(/^\/+/, "");
+  return getLiveRoot() + clean;
+}
+
+
 /**
  * Carga el manifiesto de un curso.
  * @param {string} courseId ej. "html"
  * @param {string} basePath ruta relativa a la carpeta del curso
  */
 export async function loadCourse(courseId, basePath = `Cursos/${courseId.toUpperCase()}`) {
-  // HTML está en Cursos/HTML (mayúsculas)
+  // Rutas siempre desde la raíz de CODEVERSE_LIVE (no relativas a la lección)
   const pathMap = {
     html: "Cursos/HTML/course.json"
   };
-  const url = pathMap[courseId] || `${basePath}/course.json`;
-  const res = await fetch(url + "?t=" + Date.now(), { cache: "no-store" });
-  if (!res.ok) throw new Error("No se pudo cargar el curso: " + courseId);
+  const rel = pathMap[courseId] || `${basePath}/course.json`;
+  const url = liveUrl(rel) + "?t=" + Date.now();
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("No se pudo cargar el curso: " + courseId + " (" + url + ")");
   return res.json();
 }
 
@@ -169,7 +189,7 @@ export async function guardLessonPage(courseId, lessonId) {
     const parts = window.location.pathname.split("/");
     const idx = parts.lastIndexOf("Cursos");
     const rel = idx >= 0 ? parts.slice(idx).join("/") : "academy.html";
-    window.location.replace("../../login.html?redirect=" + encodeURIComponent(rel + window.location.search));
+    window.location.replace(liveUrl("login.html") + "?redirect=" + encodeURIComponent(rel + window.location.search));
     throw new Error("login_required");
   }
 
@@ -179,7 +199,7 @@ export async function guardLessonPage(courseId, lessonId) {
   // Misma regla de seguridad para todos (usuario e IA): no saltar lecciones
   if (!isLessonUnlocked(course, progress, lessonId)) {
     alert("Esta lección aún está bloqueada. Completa las anteriores para continuar.");
-    window.location.replace("../../academy.html?course=" + encodeURIComponent(courseId));
+    window.location.replace(liveUrl("academy.html") + "?course=" + encodeURIComponent(courseId));
     throw new Error("lesson_locked");
   }
 
