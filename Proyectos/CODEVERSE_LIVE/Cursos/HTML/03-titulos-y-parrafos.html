@@ -119,10 +119,13 @@
         }
       });
     } catch (err) {
-      // redirecciones ya manejadas en guardLessonPage
-      if (err && (err.message === "login_required" || err.message === "lesson_locked")) return;
-      gate.textContent = "No se pudo abrir la lección. Intenta de nuevo desde Academia.";
-      console.error(err);
+      // redirecciones ya manejadas en guardLessonPage (login_required / lesson_locked)
+      if (err && (err.message === "login_required" || err.message === "lesson_locked")) {
+        // no tocar el gate: la navegación ya fue solicitada
+      } else {
+        gate.textContent = "No se pudo abrir la lección. Intenta de nuevo desde Academia.";
+        console.error(err);
+      }
     }
   </script>
 </body>

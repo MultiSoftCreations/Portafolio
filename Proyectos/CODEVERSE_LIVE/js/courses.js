@@ -53,7 +53,10 @@ export async function loadProgress(courseId) {
   } catch (_) {}
 
   const user = getCurrentUser();
-  if (!user) return { ...local, source: "local" };
+  if (!user) {
+    if (hasValidAITunnelSession()) return { ...local, source: "ai_tunnel" };
+    return { ...local, source: "local" };
+  }
 
   try {
     const remote = await getCourseProgress(courseId);
