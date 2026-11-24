@@ -47,27 +47,59 @@
         <h1 class="lesson__title">Enlaces e imágenes</h1>
         <div class="lesson__body">
 
-          <p>Los enlaces conectan páginas. La etiqueta es <code>&lt;a&gt;</code> (anchor) y el destino va en el atributo <code>href</code>.</p>
-          <pre><code>&lt;a href="https://multisoftcreations.com.mx"&gt;Visitar MultiSoftCreations&lt;/a&gt;</code></pre>
-          <p>Las imágenes usan <code>&lt;img&gt;</code>. Es una etiqueta vacía (no tiene cierre). Siempre incluye <code>alt</code> por accesibilidad.</p>
-          <pre><code>&lt;img src="foto.jpg" alt="Descripción de la imagen" /&gt;</code></pre>
-          <h2>Atributos útiles</h2>
+          <p>Los <strong>enlaces</strong> son puertas a otras páginas. Las <strong>imágenes</strong> son fotos que cuelgas en tu muro digital.</p>
+
+          <h2>Analogía</h2>
           <ul>
-            <li><code>href</code> — URL del enlace</li>
-            <li><code>target="_blank"</code> — abrir en nueva pestaña</li>
-            <li><code>src</code> — ruta de la imagen</li>
-            <li><code>alt</code> — texto alternativo</li>
+            <li><code>&lt;a href="..."&gt;</code> → una flecha que apunta a una dirección (URL).</li>
+            <li><code>&lt;img src="..." alt="..."&gt;</code> → un marco con foto; <code>alt</code> describe la foto si no carga o para accesibilidad.</li>
           </ul>
-          <div class="lesson-callout">
-            <strong>Práctica en LIVE</strong>
-            <p>Haz un párrafo con un enlace a tu sitio favorito y una etiqueta <code>img</code> (puedes usar cualquier URL de imagen pública).</p>
+
+          <pre><code>&lt;a href="https://multisoftcreations.com.mx"&gt;Visitar el sitio&lt;/a&gt;
+
+&lt;img src="https://via.placeholder.com/200" alt="Cuadrado de ejemplo" /&gt;</code></pre>
+
+          
+          <div class="lesson-quiz" data-lesson-quiz data-answer="b">
+            <p class="lesson-quiz__q"><strong>Pregunta rápida</strong></p>
+            <div class="lesson-quiz__choices">
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="a">img necesita etiqueta de cierre &lt;/img&gt; siempre</button>
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="b">alt describe la imagen si no se puede ver</button>
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="c">href se usa en las imágenes</button>
+            </div>
+            <p class="lesson-quiz__feedback"></p>
+          </div>
+
+          <h2>Prueba tú</h2>
+          <p>Cambia el texto del enlace y el <code>alt</code> de la imagen.</p>
+          
+          <div class="lesson-mini" data-lesson-mini>
+            <div class="lesson-mini__bar">
+              <span>Práctica aquí (HTML + vista previa)</span>
+              <div class="lesson-mini__bar-actions">
+                <button type="button" class="btn btn--sm btn--ghost lesson-mini__reset">Reiniciar</button>
+                <button type="button" class="btn btn--sm btn--primary lesson-mini__run">Ejecutar</button>
+              </div>
+            </div>
+            <div class="lesson-mini__grid">
+              <textarea class="lesson-mini__code" spellcheck="false"><!DOCTYPE html>
+<html>
+<body>
+  <p>Mi enlace favorito:</p>
+  <p><a href="https://multisoftcreations.com.mx" target="_blank">MultiSoftCreations</a></p>
+  <p>Una imagen de ejemplo:</p>
+  <img src="https://via.placeholder.com/220x120" alt="Imagen de ejemplo" />
+</body>
+</html></textarea>
+              <iframe class="lesson-mini__preview" sandbox="allow-scripts" title="Vista previa"></iframe>
+            </div>
+            <p class="lesson-mini__hint">Prueba cambiar el texto y pulsa Ejecutar.</p>
           </div>
 
         </div>
 
         <div class="lesson__actions">
           <a class="btn btn--ghost btn--sm" href="../../academy.html?course=html">Volver al curso</a>
-          <a class="btn btn--ghost btn--sm" href="../../live.html" target="_blank" rel="noopener">Abrir LIVE</a>
           <button type="button" class="btn btn--primary btn--sm" id="btn-complete">Marcar como completada y continuar</button>
         </div>
         <p class="lesson__hint" id="lesson-status"></p>
@@ -77,7 +109,8 @@
 
   <script src="../../js/main.js"></script>
   <script type="module">
-    import { guardLessonPage, completeLesson, loadCourse, isLessonCompleted } from "../../js/courses.js";
+    import { guardLessonPage, completeLesson, isLessonCompleted } from "../../js/courses.js";
+    import { initLessonInteractives } from "../../js/lesson-mini.js";
 
     const COURSE_ID = "html";
     const LESSON_ID = "04-enlaces-e-imagenes";
@@ -88,9 +121,10 @@
     const status = document.getElementById("lesson-status");
 
     try {
-      const { course, progress, lesson } = await guardLessonPage(COURSE_ID, LESSON_ID);
+      const { course, progress } = await guardLessonPage(COURSE_ID, LESSON_ID);
       gate.hidden = true;
       content.hidden = false;
+      initLessonInteractives(content);
 
       if (isLessonCompleted(progress, LESSON_ID)) {
         status.textContent = "Ya completaste esta lección. Puedes repasar o continuar.";
@@ -101,7 +135,7 @@
         btn.disabled = true;
         btn.textContent = "Guardando…";
         try {
-          const updated = await completeLesson(course, LESSON_ID);
+          await completeLesson(course, LESSON_ID);
           const idx = course.lessons.findIndex((l) => l.id === LESSON_ID);
           const next = course.lessons[idx + 1];
           if (next) {
@@ -113,15 +147,14 @@
           }
         } catch (err) {
           console.error(err);
-          status.textContent = err.message || "No se pudo guardar el progreso. ¿Iniciaste sesión?";
+          status.textContent = err.message || "No se pudo guardar el progreso.";
           btn.disabled = false;
           btn.textContent = "Reintentar";
         }
       });
     } catch (err) {
-      // redirecciones ya manejadas en guardLessonPage (login_required / lesson_locked)
       if (err && (err.message === "login_required" || err.message === "lesson_locked")) {
-        // no tocar el gate: la navegación ya fue solicitada
+        // redirección ya hecha
       } else {
         gate.textContent = "No se pudo abrir la lección. Intenta de nuevo desde Academia.";
         console.error(err);

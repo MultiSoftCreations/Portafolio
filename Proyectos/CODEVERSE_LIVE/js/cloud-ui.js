@@ -1,4 +1,4 @@
-// CODEVERSE — Cloud UI (guardar / cargar proyectos en la nube)
+// CODEVERSE — Cloud UI (guardar / cargar / actualizar proyectos)
 // MultiSoftCreations
 
 import { onUserChanged, getCurrentUser, hasValidAITunnelSession } from "./auth.js";
@@ -12,13 +12,13 @@ import {
 } from "./projects.js";
 
 const CLOUD_CURRENT_KEY = "codeverse_live_cloud_project_id";
+const CLOUD_CURRENT_NAME = "codeverse_live_cloud_project_name";
 
 function $(id) {
   return document.getElementById(id);
 }
 
 function getEditorState() {
-  // live.js guarda el estado internamente; leemos del localStorage como fuente de verdad
   try {
     const raw = localStorage.getItem("codeverse_live_project_v2");
     if (!raw) return { files: { html: "", css: "", js: "", python: "" }, activeTab: "html" };
@@ -30,6 +30,21 @@ function getEditorState() {
   } catch {
     return { files: { html: "", css: "", js: "", python: "" }, activeTab: "html" };
   }
+}
+
+/** Detecta lenguajes con contenido real (no vacío) */
+export function detectLanguages(files = {}, activeTab = "html") {
+  const langs = [];
+  const f = files || {};
+  if ((f.html || "").trim()) langs.push("HTML");
+  if ((f.css || "").trim()) langs.push("CSS");
+  if ((f.js || "").trim()) langs.push("JS");
+  if ((f.python || "").trim()) langs.push("Python");
+  if (!langs.length && activeTab) {
+    const map = { html: "HTML", css: "CSS", js: "JS", python: "Python" };
+    langs.push(map[activeTab] || activeTab.toUpperCase());
+  }
+  return langs;
 }
 
 function applyToEditor(project) {
@@ -47,7 +62,7 @@ function applyToEditor(project) {
   };
   localStorage.setItem("codeverse_live_project_v2", JSON.stringify(payload));
   localStorage.setItem(CLOUD_CURRENT_KEY, project.id);
-  // Recargar para que live.js tome el proyecto
+  if (project.name) localStorage.setItem(CLOUD_CURRENT_NAME, project.name);
   window.location.reload();
 }
 
@@ -60,9 +75,38 @@ function getCurrentCloudId() {
   return localStorage.getItem(CLOUD_CURRENT_KEY) || null;
 }
 
-async function saveToCloud() {
+function getCurrentCloudName() {
+  return localStorage.getItem(CLOUD_CURRENT_NAME) || "";
+}
+
+function updateCurrentLabel() {
+  const label = $("cloud-current-label");
+  if (!label) return;
+  const id = getCurrentCloudId();
+  const name = getCurrentCloudName();
+  if (id && name) {
+    label.textContent = "Proyecto actual: " + name;
+    label.hidden = false;
+  } else if (id) {
+    label.textContent = "Proyecto actual cargado";
+    label.hidden = false;
+  } else {
+    label.textContent = "Ningún proyecto de nube cargado";
+    label.hidden = false;
+  }
+  const btnUpdate = $("btn-update-cloud");
+  if (btnUpdate) btnUpdate.disabled = !id;
+}
+
+async function syncLocalFromEditor() {
+  const btnLocal = $("btn-save");
+  if (btnLocal) btnLocal.click();
+  await new Promise((r) => setTimeout(r, 150));
+  return getEditorState();
+}
+
+async function saveToCloud({ asNew = false } = {}) {
   const user = getCurrentUser();
-  // Túnel IA sin cuenta: guarda en este dispositivo (no Firebase de usuarios)
   if (!user && hasValidAITunnelSession()) {
     const btnLocal = $("btn-save");
     if (btnLocal) btnLocal.click();
@@ -75,37 +119,60 @@ async function saveToCloud() {
     return;
   }
 
-  const state = getEditorState();
-  // Forzar sync: disparar Ctrl+S local primero si existe el botón
-  const btnLocal = $("btn-save");
-  if (btnLocal) btnLocal.click();
+  const fresh = await syncLocalFromEditor();
+  const langs = detectLanguages(fresh.files, fresh.activeTab);
+  let id = asNew ? null : getCurrentCloudId();
 
-  // Pequeña espera para que localStorage se actualice
-  await new Promise((r) => setTimeout(r, 150));
-  const fresh = getEditorState();
-
-  let name = $("cloud-project-name")?.value?.trim();
-  if (!name) {
-    name = prompt("Nombre del proyecto:", "Mi proyecto") || "Mi proyecto";
+  let name = $("cloud-project-name")?.value?.trim() || getCurrentCloudName();
+  if (!name || asNew) {
+    name = prompt(asNew ? "Nombre del proyecto nuevo:" : "Nombre del proyecto:", name || "Mi proyecto") || "";
   }
+  if (!name.trim()) {
+    setStatus("Guardado cancelado");
+    return;
+  }
+  name = name.trim();
 
   try {
-    setStatus("Guardando en la nube…");
-    const id = getCurrentCloudId();
+    setStatus(id ? "Actualizando proyecto en la nube…" : "Creando proyecto en la nube…");
     const projectId = await saveProjectToCloud(id, {
       name,
       files: fresh.files,
-      activeTab: fresh.activeTab
+      activeTab: fresh.activeTab,
+      languages: langs
     });
+    // saveProjectToCloud may not pass languages — update explicitly
+    try {
+      await updateProject(projectId, {
+        name,
+        files: fresh.files,
+        activeTab: fresh.activeTab,
+        languages: langs
+      });
+    } catch (_) {}
+
     localStorage.setItem(CLOUD_CURRENT_KEY, projectId);
+    localStorage.setItem(CLOUD_CURRENT_NAME, name);
     if ($("cloud-project-name")) $("cloud-project-name").value = name;
-    setStatus("Guardado en la nube ✓");
-    console.info("[CODEVERSE] Proyecto guardado en la nube:", projectId);
+    updateCurrentLabel();
+    setStatus(id ? "Proyecto actualizado en la nube ✓" : "Proyecto nuevo guardado en la nube ✓");
   } catch (err) {
     console.error(err);
     setStatus("Error al guardar en la nube");
     alert(err.message || "No se pudo guardar en la nube");
   }
+}
+
+function langBadges(langs) {
+  if (!langs || !langs.length) return '<span class="cloud-lang cloud-lang--unk">—</span>';
+  return langs
+    .map((l) => `<span class="cloud-lang cloud-lang--${String(l).toLowerCase()}">${escapeHtml(l)}</span>`)
+    .join(" ");
+}
+
+function langsFromProject(p) {
+  if (Array.isArray(p.languages) && p.languages.length) return p.languages;
+  return detectLanguages(p.files || {}, p.activeTab || "html");
 }
 
 async function refreshProjectList() {
@@ -115,19 +182,19 @@ async function refreshProjectList() {
   try {
     const projects = await listProjects();
     if (!projects.length) {
-      list.innerHTML = '<p class="cloud-empty">Aún no tienes proyectos en la nube. Pulsa «Nube» o «Nuevo».</p>';
+      list.innerHTML = '<p class="cloud-empty">Aún no tienes proyectos en la nube.</p>';
       return;
     }
     const current = getCurrentCloudId();
     list.innerHTML = projects
       .map((p) => {
         const active = p.id === current ? " is-active" : "";
-        const date = p.updatedAt?.toDate
-          ? p.updatedAt.toDate().toLocaleString()
-          : "";
+        const date = p.updatedAt?.toDate ? p.updatedAt.toDate().toLocaleString() : "";
+        const langs = langsFromProject(p);
         return `<div class="cloud-item${active}" data-id="${p.id}">
           <div class="cloud-item__main">
             <strong>${escapeHtml(p.name || "Sin título")}</strong>
+            <span class="cloud-item__langs">${langBadges(langs)}</span>
             <span class="cloud-item__date">${escapeHtml(date)}</span>
           </div>
           <div class="cloud-item__actions">
@@ -154,6 +221,9 @@ function openModal() {
   const modal = $("cloud-projects-modal");
   if (!modal) return;
   modal.hidden = false;
+  if ($("cloud-project-name") && getCurrentCloudName()) {
+    $("cloud-project-name").value = getCurrentCloudName();
+  }
   refreshProjectList();
 }
 
@@ -176,7 +246,11 @@ async function removeProject(id) {
   if (!confirm("¿Eliminar este proyecto de la nube? No se puede deshacer.")) return;
   try {
     await deleteProject(id);
-    if (getCurrentCloudId() === id) localStorage.removeItem(CLOUD_CURRENT_KEY);
+    if (getCurrentCloudId() === id) {
+      localStorage.removeItem(CLOUD_CURRENT_KEY);
+      localStorage.removeItem(CLOUD_CURRENT_NAME);
+      updateCurrentLabel();
+    }
     await refreshProjectList();
   } catch (err) {
     alert(err.message || "No se pudo eliminar");
@@ -184,36 +258,27 @@ async function removeProject(id) {
 }
 
 async function createNew() {
-  const user = getCurrentUser();
-  if (!user) {
-    alert("Inicia sesión para crear proyectos en la nube.");
-    return;
-  }
-  const name = $("cloud-project-name")?.value?.trim() || prompt("Nombre del proyecto:", "Nuevo proyecto");
-  if (!name) return;
-  const state = getEditorState();
-  try {
-    const created = await createProject({
-      name,
-      files: state.files,
-      activeTab: state.activeTab
-    });
-    localStorage.setItem(CLOUD_CURRENT_KEY, created.id);
-    if ($("cloud-project-name")) $("cloud-project-name").value = name;
-    await refreshProjectList();
-    setStatus("Proyecto creado en la nube");
-  } catch (err) {
-    alert(err.message || "No se pudo crear");
-  }
+  await saveToCloud({ asNew: true });
+  await refreshProjectList();
 }
 
 function bind() {
   const btnCloud = $("btn-save-cloud");
+  const btnUpdate = $("btn-update-cloud");
+  const btnSaveAs = $("btn-save-cloud-as");
   const btnMy = $("btn-my-projects");
   const btnNew = $("btn-cloud-new");
   const modal = $("cloud-projects-modal");
 
-  if (btnCloud) btnCloud.addEventListener("click", saveToCloud);
+  if (btnCloud) btnCloud.addEventListener("click", () => saveToCloud({ asNew: !getCurrentCloudId() }));
+  if (btnUpdate) btnUpdate.addEventListener("click", () => {
+    if (!getCurrentCloudId()) {
+      alert("No hay un proyecto de nube cargado. Ábrelo desde «Mis proyectos» o guárdalo como nuevo.");
+      return;
+    }
+    saveToCloud({ asNew: false });
+  });
+  if (btnSaveAs) btnSaveAs.addEventListener("click", () => saveToCloud({ asNew: true }));
   if (btnMy) {
     btnMy.addEventListener("click", () => {
       if (!getCurrentUser()) {
@@ -242,22 +307,22 @@ function bind() {
     });
   }
 
-  // Atajo: Ctrl+Shift+S = guardar en nube
   document.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "s") {
       e.preventDefault();
-      saveToCloud();
+      saveToCloud({ asNew: !getCurrentCloudId() });
     }
   });
+
+  updateCurrentLabel();
 }
 
-// Esperar a que el DOM y auth estén listos
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     bind();
-    onUserChanged(() => {});
+    onUserChanged(() => updateCurrentLabel());
   });
 } else {
   bind();
-  onUserChanged(() => {});
+  onUserChanged(() => updateCurrentLabel());
 }

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script src="js/cache-version.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="CODEVERSE LIVE — Editor y entorno de ejecución en el navegador." />
@@ -48,7 +50,10 @@
       <div class="live-toolbar__right">
         <span class="live-status" id="live-status">Cargando editor…</span>
         <button class="btn btn--sm btn--ghost" id="btn-save" title="Guardar en este dispositivo">Guardar local</button>
-        <button class="btn btn--sm btn--ghost" id="btn-save-cloud" title="Guardar en la nube">☁ Nube</button>
+        <span class="live-status" id="cloud-current-label" title="Proyecto de nube actual" style="max-width:12rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.85;font-size:.75rem"></span>
+        <button class="btn btn--sm btn--ghost" id="btn-update-cloud" title="Actualizar el proyecto cargado desde la nube" disabled>Actualizar nube</button>
+        <button class="btn btn--sm btn--ghost" id="btn-save-cloud" title="Guardar en la nube (nuevo o actual)">☁ Nube</button>
+        <button class="btn btn--sm btn--ghost" id="btn-save-cloud-as" title="Guardar como proyecto nuevo">Guardar como…</button>
         <button class="btn btn--sm btn--ghost" id="btn-my-projects" title="Mis proyectos en la nube">Mis proyectos</button>
         <button class="btn btn--sm btn--ghost" id="btn-download" title="Descargar proyecto">Descargar</button>
         <button class="btn btn--sm btn--ghost" id="btn-share" title="Compartir proyecto">Compartir</button>
@@ -119,7 +124,7 @@
       if (btnRun) btnRun.disabled = false;
 
       const script = document.createElement('script');
-      script.src = 'js/live.js';
+      script.src = 'js/live.js?v=' + (window.CODEVERSE_VERSION || Date.now());
       script.onerror = () => showError('No se pudo cargar js/live.js');
       document.body.appendChild(script);
     } catch (err) {

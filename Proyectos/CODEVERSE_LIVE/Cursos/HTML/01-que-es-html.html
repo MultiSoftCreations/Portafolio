@@ -47,27 +47,58 @@
         <h1 class="lesson__title">¿Qué es HTML?</h1>
         <div class="lesson__body">
 
-          <p>HTML significa <strong>HyperText Markup Language</strong> (lenguaje de marcado de hipertexto). No es un lenguaje de programación como Python o JavaScript: es un <strong>lenguaje de marcado</strong> que describe la estructura del contenido de una página web.</p>
-          <p>Cuando abres un sitio, el navegador lee el HTML y dibuja títulos, párrafos, imágenes y enlaces según las <strong>etiquetas</strong> que escribiste.</p>
-          <h2>Idea clave</h2>
+          <p>HTML significa <strong>HyperText Markup Language</strong>. No es un lenguaje de programación como Python: es un <strong>lenguaje de marcado</strong> que describe la estructura de una página.</p>
+
+          <h2>Piénsalo con cajas</h2>
+          <p>Imagina que una página web es una <strong>caja grande</strong> (la ventana del navegador). Dentro pones cajas más pequeñas: una para el título, otra para un párrafo, otra para una imagen. HTML es el papel donde escribes <em>qué caja es cada cosa</em>.</p>
           <ul>
-            <li><strong>HTML</strong> → estructura y contenido</li>
-            <li><strong>CSS</strong> → apariencia (colores, tamaños, diseño)</li>
-            <li><strong>JavaScript</strong> → comportamiento e interactividad</li>
+            <li><strong>HTML</strong> = qué hay (cajas y su contenido)</li>
+            <li><strong>CSS</strong> = cómo se ven (color, tamaño)</li>
+            <li><strong>JavaScript</strong> = qué hacen al interactuar</li>
           </ul>
-          <h2>Una etiqueta simple</h2>
+
+          <h2>Una etiqueta = una caja con etiqueta pegada</h2>
           <pre><code>&lt;p&gt;Hola, mundo&lt;/p&gt;</code></pre>
-          <p>La etiqueta <code>&lt;p&gt;</code> abre un párrafo y <code>&lt;/p&gt;</code> lo cierra. Casi todo en HTML funciona con apertura y cierre.</p>
-          <div class="lesson-callout">
-            <strong>Práctica en LIVE</strong>
-            <p>Abre CODEVERSE LIVE, pestaña HTML, y escribe un párrafo con tu nombre. Luego pulsa Ejecutar.</p>
+          <p><code>&lt;p&gt;</code> abre la caja “párrafo” y <code>&lt;/p&gt;</code> la cierra. Lo de adentro es el contenido.</p>
+
+          
+          <div class="lesson-quiz" data-lesson-quiz data-answer="b">
+            <p class="lesson-quiz__q"><strong>Pregunta rápida</strong></p>
+            <div class="lesson-quiz__choices">
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="a">HTML sirve para animar botones</button>
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="b">HTML describe la estructura del contenido</button>
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="c">HTML es lo mismo que Python</button>
+            </div>
+            <p class="lesson-quiz__feedback"></p>
+          </div>
+
+          <h2>Prueba tú</h2>
+          <p>Escribe un párrafo con tu nombre. Luego pulsa <strong>Ejecutar</strong>.</p>
+          
+          <div class="lesson-mini" data-lesson-mini>
+            <div class="lesson-mini__bar">
+              <span>Práctica aquí (HTML + vista previa)</span>
+              <div class="lesson-mini__bar-actions">
+                <button type="button" class="btn btn--sm btn--ghost lesson-mini__reset">Reiniciar</button>
+                <button type="button" class="btn btn--sm btn--primary lesson-mini__run">Ejecutar</button>
+              </div>
+            </div>
+            <div class="lesson-mini__grid">
+              <textarea class="lesson-mini__code" spellcheck="false"><!DOCTYPE html>
+<html>
+<body>
+  <p>Hola, me llamo Estudiante</p>
+</body>
+</html></textarea>
+              <iframe class="lesson-mini__preview" sandbox="allow-scripts" title="Vista previa"></iframe>
+            </div>
+            <p class="lesson-mini__hint">Cambia la palabra Estudiante por tu nombre y ejecuta.</p>
           </div>
 
         </div>
 
         <div class="lesson__actions">
           <a class="btn btn--ghost btn--sm" href="../../academy.html?course=html">Volver al curso</a>
-          <a class="btn btn--ghost btn--sm" href="../../live.html" target="_blank" rel="noopener">Abrir LIVE</a>
           <button type="button" class="btn btn--primary btn--sm" id="btn-complete">Marcar como completada y continuar</button>
         </div>
         <p class="lesson__hint" id="lesson-status"></p>
@@ -77,7 +108,8 @@
 
   <script src="../../js/main.js"></script>
   <script type="module">
-    import { guardLessonPage, completeLesson, loadCourse, isLessonCompleted } from "../../js/courses.js";
+    import { guardLessonPage, completeLesson, isLessonCompleted } from "../../js/courses.js";
+    import { initLessonInteractives } from "../../js/lesson-mini.js";
 
     const COURSE_ID = "html";
     const LESSON_ID = "01-que-es-html";
@@ -88,9 +120,10 @@
     const status = document.getElementById("lesson-status");
 
     try {
-      const { course, progress, lesson } = await guardLessonPage(COURSE_ID, LESSON_ID);
+      const { course, progress } = await guardLessonPage(COURSE_ID, LESSON_ID);
       gate.hidden = true;
       content.hidden = false;
+      initLessonInteractives(content);
 
       if (isLessonCompleted(progress, LESSON_ID)) {
         status.textContent = "Ya completaste esta lección. Puedes repasar o continuar.";
@@ -101,7 +134,7 @@
         btn.disabled = true;
         btn.textContent = "Guardando…";
         try {
-          const updated = await completeLesson(course, LESSON_ID);
+          await completeLesson(course, LESSON_ID);
           const idx = course.lessons.findIndex((l) => l.id === LESSON_ID);
           const next = course.lessons[idx + 1];
           if (next) {
@@ -113,15 +146,14 @@
           }
         } catch (err) {
           console.error(err);
-          status.textContent = err.message || "No se pudo guardar el progreso. ¿Iniciaste sesión?";
+          status.textContent = err.message || "No se pudo guardar el progreso.";
           btn.disabled = false;
           btn.textContent = "Reintentar";
         }
       });
     } catch (err) {
-      // redirecciones ya manejadas en guardLessonPage (login_required / lesson_locked)
       if (err && (err.message === "login_required" || err.message === "lesson_locked")) {
-        // no tocar el gate: la navegación ya fue solicitada
+        // redirección ya hecha
       } else {
         gate.textContent = "No se pudo abrir la lección. Intenta de nuevo desde Academia.";
         console.error(err);

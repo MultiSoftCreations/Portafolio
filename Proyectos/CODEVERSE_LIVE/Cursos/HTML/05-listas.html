@@ -47,35 +47,70 @@
         <h1 class="lesson__title">Listas</h1>
         <div class="lesson__body">
 
-          <p>Las listas organizan elementos. Hay tres tipos principales:</p>
-          <h2>Lista no ordenada</h2>
+          <p>Las listas sirven para enumerar ideas: ingredientes, pasos, tecnologías…</p>
+
+          <h2>Analogía: lista del súper vs pasos de una receta</h2>
+          <ul>
+            <li><code>&lt;ul&gt;</code> → lista del súper (viñetas, sin orden fijo)</li>
+            <li><code>&lt;ol&gt;</code> → receta (paso 1, 2, 3…)</li>
+            <li><code>&lt;dl&gt;</code> → glosario (término + definición)</li>
+          </ul>
+
           <pre><code>&lt;ul&gt;
   &lt;li&gt;HTML&lt;/li&gt;
   &lt;li&gt;CSS&lt;/li&gt;
-  &lt;li&gt;JavaScript&lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-          <h2>Lista ordenada</h2>
-          <pre><code>&lt;ol&gt;
+&lt;/ul&gt;
+
+&lt;ol&gt;
   &lt;li&gt;Abrir LIVE&lt;/li&gt;
-  &lt;li&gt;Escribir código&lt;/li&gt;
+  &lt;li&gt;Escribir&lt;/li&gt;
   &lt;li&gt;Ejecutar&lt;/li&gt;
 &lt;/ol&gt;</code></pre>
-          <h2>Lista de definición</h2>
-          <pre><code>&lt;dl&gt;
-  &lt;dt&gt;HTML&lt;/dt&gt;
-  &lt;dd&gt;Estructura de la página&lt;/dd&gt;
-&lt;/dl&gt;</code></pre>
-          <p>Con esto ya puedes armar páginas sencillas con título, texto, enlaces, imágenes y listas.</p>
-          <div class="lesson-callout">
-            <strong>Práctica final</strong>
-            <p>En LIVE, crea una página “Mi stack” con un <code>h1</code>, un párrafo y una lista de tecnologías que quieres aprender.</p>
+
+          
+          <div class="lesson-quiz" data-lesson-quiz data-answer="a">
+            <p class="lesson-quiz__q"><strong>Pregunta rápida</strong></p>
+            <div class="lesson-quiz__choices">
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="a">ol numera los pasos en orden</button>
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="b">ul siempre pone números</button>
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="c">No se pueden mezclar listas y párrafos</button>
+            </div>
+            <p class="lesson-quiz__feedback"></p>
+          </div>
+
+          <h2>Práctica final</h2>
+          <p>Crea tu página “Mi stack”: un título, un párrafo y una lista de cosas que quieres aprender.</p>
+          
+          <div class="lesson-mini" data-lesson-mini>
+            <div class="lesson-mini__bar">
+              <span>Práctica aquí (HTML + vista previa)</span>
+              <div class="lesson-mini__bar-actions">
+                <button type="button" class="btn btn--sm btn--ghost lesson-mini__reset">Reiniciar</button>
+                <button type="button" class="btn btn--sm btn--primary lesson-mini__run">Ejecutar</button>
+              </div>
+            </div>
+            <div class="lesson-mini__grid">
+              <textarea class="lesson-mini__code" spellcheck="false"><!DOCTYPE html>
+<html>
+<body>
+  <h1>Mi stack</h1>
+  <p>Quiero aprender:</p>
+  <ul>
+    <li>HTML</li>
+    <li>CSS</li>
+    <li>JavaScript</li>
+  </ul>
+</body>
+</html></textarea>
+              <iframe class="lesson-mini__preview" sandbox="allow-scripts" title="Vista previa"></iframe>
+            </div>
+            <p class="lesson-mini__hint">Añade un elemento más a la lista y ejecuta.</p>
           </div>
 
         </div>
 
         <div class="lesson__actions">
           <a class="btn btn--ghost btn--sm" href="../../academy.html?course=html">Volver al curso</a>
-          <a class="btn btn--ghost btn--sm" href="../../live.html" target="_blank" rel="noopener">Abrir LIVE</a>
           <button type="button" class="btn btn--primary btn--sm" id="btn-complete">Marcar como completada y continuar</button>
         </div>
         <p class="lesson__hint" id="lesson-status"></p>
@@ -85,7 +120,8 @@
 
   <script src="../../js/main.js"></script>
   <script type="module">
-    import { guardLessonPage, completeLesson, loadCourse, isLessonCompleted } from "../../js/courses.js";
+    import { guardLessonPage, completeLesson, isLessonCompleted } from "../../js/courses.js";
+    import { initLessonInteractives } from "../../js/lesson-mini.js";
 
     const COURSE_ID = "html";
     const LESSON_ID = "05-listas";
@@ -96,9 +132,10 @@
     const status = document.getElementById("lesson-status");
 
     try {
-      const { course, progress, lesson } = await guardLessonPage(COURSE_ID, LESSON_ID);
+      const { course, progress } = await guardLessonPage(COURSE_ID, LESSON_ID);
       gate.hidden = true;
       content.hidden = false;
+      initLessonInteractives(content);
 
       if (isLessonCompleted(progress, LESSON_ID)) {
         status.textContent = "Ya completaste esta lección. Puedes repasar o continuar.";
@@ -109,7 +146,7 @@
         btn.disabled = true;
         btn.textContent = "Guardando…";
         try {
-          const updated = await completeLesson(course, LESSON_ID);
+          await completeLesson(course, LESSON_ID);
           const idx = course.lessons.findIndex((l) => l.id === LESSON_ID);
           const next = course.lessons[idx + 1];
           if (next) {
@@ -121,15 +158,14 @@
           }
         } catch (err) {
           console.error(err);
-          status.textContent = err.message || "No se pudo guardar el progreso. ¿Iniciaste sesión?";
+          status.textContent = err.message || "No se pudo guardar el progreso.";
           btn.disabled = false;
           btn.textContent = "Reintentar";
         }
       });
     } catch (err) {
-      // redirecciones ya manejadas en guardLessonPage (login_required / lesson_locked)
       if (err && (err.message === "login_required" || err.message === "lesson_locked")) {
-        // no tocar el gate: la navegación ya fue solicitada
+        // redirección ya hecha
       } else {
         gate.textContent = "No se pudo abrir la lección. Intenta de nuevo desde Academia.";
         console.error(err);

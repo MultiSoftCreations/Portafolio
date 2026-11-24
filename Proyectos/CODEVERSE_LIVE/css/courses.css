@@ -173,3 +173,85 @@
   font-size: 0.9rem;
   color: #999;
 }
+
+/* Mini editor en lecciones */
+.lesson-mini {
+  margin: 1.25rem 0 1.5rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0d0d14;
+}
+.lesson-mini__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.82rem;
+  color: #aaa;
+}
+.lesson-mini__bar-actions { display: flex; gap: 0.35rem; }
+.lesson-mini__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 220px;
+}
+@media (max-width: 720px) {
+  .lesson-mini__grid { grid-template-columns: 1fr; }
+}
+.lesson-mini__code {
+  width: 100%;
+  min-height: 220px;
+  border: none;
+  resize: vertical;
+  padding: 0.75rem;
+  background: #0a0a10;
+  color: #e8e8f0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.lesson-mini__preview {
+  width: 100%;
+  min-height: 220px;
+  border: none;
+  background: #fff;
+}
+.lesson-mini__hint {
+  margin: 0;
+  padding: 0.45rem 0.75rem 0.65rem;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* Quiz */
+.lesson-quiz {
+  margin: 1.25rem 0;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+}
+.lesson-quiz__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+.lesson-quiz__choices .btn { justify-content: flex-start; text-align: left; }
+.lesson-quiz__choices .is-correct {
+  border-color: rgba(46, 204, 113, 0.55) !important;
+  background: rgba(46, 204, 113, 0.12) !important;
+}
+.lesson-quiz__choices .is-wrong {
+  border-color: rgba(231, 76, 60, 0.45) !important;
+  background: rgba(231, 76, 60, 0.1) !important;
+}
+.lesson-quiz__feedback { margin: 0.65rem 0 0; font-size: 0.9rem; color: #999; }
+.lesson-quiz__feedback.is-ok { color: #2ecc71; }
+.lesson-quiz__feedback.is-bad { color: #e74c3c; }

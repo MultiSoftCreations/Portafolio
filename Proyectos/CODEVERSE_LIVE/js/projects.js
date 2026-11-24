@@ -86,7 +86,7 @@ export async function deleteFolder(folderId) {
  * @param {object} data.files  { html, css, js, python }
  * @param {string} data.activeTab
  */
-export async function createProject({ name = "Sin título", folderId = null, files = {}, activeTab = "html" } = {}) {
+export async function createProject({ name = "Sin título", folderId = null, files = {}, activeTab = "html", languages = null } = {}) {
   const user = requireUser();
   const payload = {
     name: name.trim() || "Sin título",
@@ -98,6 +98,7 @@ export async function createProject({ name = "Sin título", folderId = null, fil
       python: files.python || ""
     },
     activeTab: activeTab || "html",
+    languages: Array.isArray(languages) ? languages : [],
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   };
@@ -108,12 +109,13 @@ export async function createProject({ name = "Sin título", folderId = null, fil
 /**
  * Actualiza un proyecto existente
  */
-export async function updateProject(projectId, { name, folderId, files, activeTab } = {}) {
+export async function updateProject(projectId, { name, folderId, files, activeTab, languages } = {}) {
   const user = requireUser();
   const data = { updatedAt: serverTimestamp() };
   if (name !== undefined) data.name = name.trim() || "Sin título";
   if (folderId !== undefined) data.folderId = folderId || null;
   if (activeTab !== undefined) data.activeTab = activeTab;
+  if (languages !== undefined) data.languages = Array.isArray(languages) ? languages : [];
   if (files !== undefined) {
     data.files = {
       html: files.html || "",

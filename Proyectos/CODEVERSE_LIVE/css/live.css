@@ -407,3 +407,18 @@ body.theme-light .cloud-item {
 body.theme-light .py-progress__bar {
   background: rgba(0,0,0,0.08);
 }
+
+/* Cloud language badges */
+.cloud-item__langs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; }
+.cloud-lang {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  color: #bbb;
+}
+.cloud-lang--html { background: rgba(227,76,38,0.2); color: #ff8a65; }
+.cloud-lang--css { background: rgba(38,77,228,0.2); color: #82b1ff; }
+.cloud-lang--js { background: rgba(247,223,30,0.18); color: #f0d000; }
+.cloud-lang--python { background: rgba(55,118,171,0.25); color: #64b5f6; }
