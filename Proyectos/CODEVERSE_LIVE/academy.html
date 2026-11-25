@@ -101,6 +101,7 @@
         course.lessons.some((l) => l.id === id)
       ).length;
 
+      const typeLabel = (t) => ({ lesson: "Lección", practice: "Práctica", exam: "Examen" }[t] || "Paso");
       const rows = course.lessons
         .map((lesson, index) => {
           const unlocked = isLessonUnlocked(course, progress, lesson.id);
@@ -110,15 +111,18 @@
           const cls = [
             "lesson-row",
             completed ? "is-done" : "",
-            !unlocked ? "is-locked" : ""
+            !unlocked ? "is-locked" : "",
+            lesson.type ? "lesson-row--" + lesson.type : ""
           ]
             .filter(Boolean)
             .join(" ");
 
           const tag = unlocked ? "a" : "div";
+          const kind = typeLabel(lesson.type);
+          const typeCls = escapeHtml(lesson.type || "lesson");
           return `<${tag} class="${cls}" ${unlocked ? `href="${href}"` : 'aria-disabled="true"'}">
             <div class="lesson-row__main">
-              <strong>${index + 1}. ${escapeHtml(lesson.title)}</strong>
+              <strong><span class="type-pill type-pill--${typeCls}">${kind}</span> ${index + 1}. ${escapeHtml(lesson.title)}</strong>
               <span>${escapeHtml(lesson.summary || "")}</span>
             </div>
             <span class="lesson-row__state">${state}</span>
@@ -131,7 +135,7 @@
           <span class="course-hero__badge">${escapeHtml(course.level)} · ${escapeHtml(course.language)}</span>
           <h2>${escapeHtml(course.title)}</h2>
           <p>${escapeHtml(course.description)}</p>
-          <p class="course-progress">Progreso: <strong>${done}</strong> de <strong>${total}</strong> lecciones
+          <p class="course-progress">Progreso: <strong>${done}</strong> de <strong>${total}</strong> pasos
             ${progress.source === "cloud" ? "· guardado en la nube" : progress.source === "ai_tunnel" ? "· progreso sesión IA (pruebas)" : "· inicia sesión para sincronizar"}
           </p>
         </section>

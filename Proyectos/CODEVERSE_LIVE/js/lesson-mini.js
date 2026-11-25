@@ -1,14 +1,6 @@
-// CODEVERSE — Mini editor HTML embebido en lecciones (solo código + vista previa)
+// CODEVERSE — Interactivos de lección: mini editor, quiz, examen
 // MultiSoftCreations
 
-/**
- * Monta un mini-LIVE en un contenedor.
- * HTML esperado:
- * <div class="lesson-mini" data-lesson-mini>
- *   <textarea class="lesson-mini__code">...</textarea>
- *   <iframe class="lesson-mini__preview" sandbox="allow-scripts"></iframe>
- * </div>
- */
 export function mountLessonMinis(root = document) {
   const nodes = root.querySelectorAll("[data-lesson-mini]");
   nodes.forEach((box) => {
@@ -22,9 +14,7 @@ export function mountLessonMinis(root = document) {
     const initial = code.value;
 
     function run() {
-      const html = code.value;
-      // Documento aislado en iframe
-      frame.srcdoc = html;
+      frame.srcdoc = code.value;
     }
 
     if (btnRun) btnRun.addEventListener("click", run);
@@ -46,12 +36,6 @@ export function mountLessonMinis(root = document) {
   });
 }
 
-/**
- * Monta quizzes simples:
- * <div data-lesson-quiz data-answer="b">
- *   <button data-choice="a">...</button>
- * </div>
- */
 export function mountLessonQuizzes(root = document) {
   root.querySelectorAll("[data-lesson-quiz]").forEach((quiz) => {
     if (quiz.dataset.ready === "1") return;
@@ -69,16 +53,91 @@ export function mountLessonQuizzes(root = document) {
         if (feedback) {
           feedback.textContent = ok
             ? "¡Correcto!"
-            : "No del todo. Revisa la explicación de arriba e inténtalo mentalmente otra vez.";
+            : "No del todo. Revisa la explicación e inténtalo de nuevo mentalmente.";
           feedback.className = "lesson-quiz__feedback " + (ok ? "is-ok" : "is-bad");
         }
+        quiz.dataset.answered = ok ? "1" : "0";
       });
     });
     quiz.dataset.ready = "1";
   });
 }
 
+/**
+ * Examen multi-pregunta.
+ * Contenedor: [data-lesson-exam data-pass="70"]
+ * Cada pregunta: [data-exam-q data-answer="b"]
+ * Resultado: .lesson-exam__result
+ * Habilita #btn-complete solo si aprueba.
+ */
+export function mountLessonExams(root = document) {
+  root.querySelectorAll("[data-lesson-exam]").forEach((exam) => {
+    if (exam.dataset.ready === "1") return;
+    const pass = Number(exam.dataset.pass || 70);
+    const result = exam.querySelector(".lesson-exam__result");
+    const btnGrade = exam.querySelector(".lesson-exam__grade");
+    const questions = Array.from(exam.querySelectorAll("[data-exam-q]"));
+
+    questions.forEach((q) => {
+      q.querySelectorAll("[data-choice]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          q.querySelectorAll("[data-choice]").forEach((b) => {
+            b.classList.remove("is-selected");
+          });
+          btn.classList.add("is-selected");
+          q.dataset.selected = (btn.getAttribute("data-choice") || "").toLowerCase();
+        });
+      });
+    });
+
+    function grade() {
+      let ok = 0;
+      questions.forEach((q) => {
+        const answer = (q.dataset.answer || "").toLowerCase();
+        const selected = (q.dataset.selected || "").toLowerCase();
+        const correct = selected && selected === answer;
+        if (correct) ok += 1;
+        q.querySelectorAll("[data-choice]").forEach((b) => {
+          const c = (b.getAttribute("data-choice") || "").toLowerCase();
+          b.classList.remove("is-correct", "is-wrong", "is-selected");
+          if (c === answer) b.classList.add("is-correct");
+          else if (c === selected && selected !== answer) b.classList.add("is-wrong");
+          b.disabled = true;
+        });
+      });
+      const total = questions.length || 1;
+      const pct = Math.round((ok / total) * 100);
+      const passed = pct >= pass;
+      if (result) {
+        result.textContent = passed
+          ? `Aprobaste: ${ok}/${total} (${pct}%). Ya puedes continuar.`
+          : `Obtuviste ${ok}/${total} (${pct}%). Necesitas al menos ${pass}% para continuar. Revisa el tema y reintenta recargando la página.`;
+        result.className = "lesson-exam__result " + (passed ? "is-ok" : "is-bad");
+      }
+      exam.dataset.passed = passed ? "1" : "0";
+      const completeBtn = document.getElementById("btn-complete");
+      if (completeBtn) {
+        completeBtn.disabled = !passed;
+        if (passed) completeBtn.textContent = "Marcar como completada y continuar";
+        else completeBtn.textContent = "Aprueba el examen para continuar";
+      }
+    }
+
+    if (btnGrade) btnGrade.addEventListener("click", grade);
+
+    // Por defecto bloquear completar hasta aprobar
+    const completeBtn = document.getElementById("btn-complete");
+    if (completeBtn) {
+      completeBtn.disabled = true;
+      completeBtn.textContent = "Aprueba el examen para continuar";
+    }
+
+    exam.dataset.ready = "1";
+  });
+}
+
 export function initLessonInteractives(root = document) {
   mountLessonMinis(root);
   mountLessonQuizzes(root);
+  mountLessonExams(root);
 }

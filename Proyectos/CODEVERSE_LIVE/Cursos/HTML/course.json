@@ -2,7 +2,7 @@
   "id": "html",
   "title": "Introducción a HTML",
   "shortTitle": "HTML",
-  "description": "Aprende la estructura básica de las páginas web: etiquetas, texto, enlaces, imágenes y listas. Ideal para empezar desde cero.",
+  "description": "Curso práctico de HTML desde cero: lecciones, prácticas en dos partes, mini editor y exámenes. Aprende haciendo, no solo leyendo.",
   "level": "Principiante",
   "language": "HTML",
   "lessons": [
@@ -10,31 +10,141 @@
       "id": "01-que-es-html",
       "file": "01-que-es-html.html",
       "title": "¿Qué es HTML?",
-      "summary": "Qué es HTML, para qué sirve y cómo se relaciona con el navegador."
+      "summary": "HTML como lenguaje de marcado y la idea de cajas.",
+      "type": "lesson"
     },
     {
-      "id": "02-estructura-basica",
-      "file": "02-estructura-basica.html",
-      "title": "Estructura básica de un documento",
-      "summary": "DOCTYPE, html, head, body y la primera página válida."
+      "id": "02-practica-primer-parrafo",
+      "file": "02-practica-primer-parrafo.html",
+      "title": "Práctica 1A · Tu primer párrafo",
+      "summary": "Escribe y visualiza un párrafo con tu nombre.",
+      "type": "practice"
     },
     {
-      "id": "03-titulos-y-parrafos",
-      "file": "03-titulos-y-parrafos.html",
+      "id": "03-practica-varias-cajas",
+      "file": "03-practica-varias-cajas.html",
+      "title": "Práctica 1B · Varias cajas de texto",
+      "summary": "Combina título y dos párrafos.",
+      "type": "practice"
+    },
+    {
+      "id": "04-estructura-basica",
+      "file": "04-estructura-basica.html",
+      "title": "Estructura básica del documento",
+      "summary": "DOCTYPE, html, head y body.",
+      "type": "lesson"
+    },
+    {
+      "id": "05-practica-esqueleto",
+      "file": "05-practica-esqueleto.html",
+      "title": "Práctica 2A · Esqueleto completo",
+      "summary": "Arma el documento mínimo HTML5.",
+      "type": "practice"
+    },
+    {
+      "id": "06-practica-titulo-pestana",
+      "file": "06-practica-titulo-pestana.html",
+      "title": "Práctica 2B · Título de pestaña y body",
+      "summary": "Diferencia title (pestaña) del contenido visible.",
+      "type": "practice"
+    },
+    {
+      "id": "07-titulos-y-parrafos",
+      "file": "07-titulos-y-parrafos.html",
       "title": "Títulos y párrafos",
-      "summary": "Encabezados h1–h6, párrafos y saltos de línea."
+      "summary": "Jerarquía h1–h6 y párrafos.",
+      "type": "lesson"
     },
     {
-      "id": "04-enlaces-e-imagenes",
-      "file": "04-enlaces-e-imagenes.html",
-      "title": "Enlaces e imágenes",
-      "summary": "Etiquetas a e img: conectar páginas y mostrar imágenes."
+      "id": "08-practica-jerarquia",
+      "file": "08-practica-jerarquia.html",
+      "title": "Práctica 3A · Jerarquía de títulos",
+      "summary": "Usa h1, h2 y un párrafo en orden lógico.",
+      "type": "practice"
     },
     {
-      "id": "05-listas",
-      "file": "05-listas.html",
+      "id": "09-practica-biografia",
+      "file": "09-practica-biografia.html",
+      "title": "Práctica 3B · Mini biografía",
+      "summary": "Página personal corta con títulos y párrafos.",
+      "type": "practice"
+    },
+    {
+      "id": "10-examen-parcial-1",
+      "file": "10-examen-parcial-1.html",
+      "title": "Examen parcial 1 · Fundamentos",
+      "summary": "Evalúa HTML básico, estructura y títulos. Mínimo 70%.",
+      "type": "exam"
+    },
+    {
+      "id": "11-enlaces",
+      "file": "11-enlaces.html",
+      "title": "Enlaces",
+      "summary": "La etiqueta a y el atributo href.",
+      "type": "lesson"
+    },
+    {
+      "id": "12-practica-enlaces",
+      "file": "12-practica-enlaces.html",
+      "title": "Práctica 4A · Tus enlaces",
+      "summary": "Crea al menos dos enlaces en una página.",
+      "type": "practice"
+    },
+    {
+      "id": "13-imagenes",
+      "file": "13-imagenes.html",
+      "title": "Imágenes",
+      "summary": "img, src y alt.",
+      "type": "lesson"
+    },
+    {
+      "id": "14-practica-imagenes",
+      "file": "14-practica-imagenes.html",
+      "title": "Práctica 4B · Imagen con descripción",
+      "summary": "Inserta una imagen con alt claro.",
+      "type": "practice"
+    },
+    {
+      "id": "15-listas",
+      "file": "15-listas.html",
       "title": "Listas",
-      "summary": "Listas ordenadas, no ordenadas y de definición."
+      "summary": "ul, ol y elementos li.",
+      "type": "lesson"
+    },
+    {
+      "id": "16-practica-listas",
+      "file": "16-practica-listas.html",
+      "title": "Práctica 5A · Listas ul y ol",
+      "summary": "Una lista con viñetas y otra numerada.",
+      "type": "practice"
+    },
+    {
+      "id": "17-practica-mi-stack",
+      "file": "17-practica-mi-stack.html",
+      "title": "Práctica 5B · Página Mi stack",
+      "summary": "Integra título, párrafo y lista.",
+      "type": "practice"
+    },
+    {
+      "id": "18-comentarios-y-orden",
+      "file": "18-comentarios-y-orden.html",
+      "title": "Comentarios y orden del código",
+      "summary": "Comentarios HTML y código legible.",
+      "type": "lesson"
+    },
+    {
+      "id": "19-practica-integradora",
+      "file": "19-practica-integradora.html",
+      "title": "Práctica integradora · Mini sitio personal",
+      "summary": "Une estructura, títulos, enlace, lista e imagen.",
+      "type": "practice"
+    },
+    {
+      "id": "20-examen-final",
+      "file": "20-examen-final.html",
+      "title": "Examen final · Introducción a HTML",
+      "summary": "Evaluación final del módulo. Mínimo 70%.",
+      "type": "exam"
     }
   ]
 }

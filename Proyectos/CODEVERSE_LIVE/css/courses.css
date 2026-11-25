@@ -255,3 +255,38 @@
 .lesson-quiz__feedback { margin: 0.65rem 0 0; font-size: 0.9rem; color: #999; }
 .lesson-quiz__feedback.is-ok { color: #2ecc71; }
 .lesson-quiz__feedback.is-bad { color: #e74c3c; }
+
+/* Tipos de paso */
+.type-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+  background: rgba(255,255,255,0.08);
+  color: #bbb;
+}
+.type-pill--lesson { background: rgba(108,92,231,0.2); color: #c4b5fd; }
+.type-pill--practice { background: rgba(46,204,113,0.15); color: #2ecc71; }
+.type-pill--exam { background: rgba(241,196,15,0.18); color: #f1c40f; }
+
+.lesson-exam {
+  margin: 1.25rem 0;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid rgba(241,196,15,0.25);
+  background: rgba(241,196,15,0.05);
+}
+.lesson-exam__q { margin: 1rem 0; }
+.lesson-exam__actions { margin-top: 1rem; }
+.lesson-exam__result { margin-top: 0.75rem; font-weight: 600; }
+.lesson-exam__result.is-ok { color: #2ecc71; }
+.lesson-exam__result.is-bad { color: #e74c3c; }
+.lesson-quiz__choices .is-selected {
+  border-color: rgba(108,92,231,0.55) !important;
+  background: rgba(108,92,231,0.12) !important;
+}
+.lesson-check { color: #2ecc71; font-size: 0.95rem; }
