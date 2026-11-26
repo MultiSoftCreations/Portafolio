@@ -67,15 +67,21 @@ export function mountLessonMinis(root = document) {
       ? box.dataset.starterCss
       : (codeCss ? codeCss.value : "");
 
-    // Load workspace for progressive projects (CSS course)
-    if (courseId && mode === "html-css" && !forceStarter) {
+    // Workspace progresivo: si ya hay trabajo guardado, NO pisarlo con la plantilla
+    // (data-force-starter solo aplica la primera vez, cuando el workspace está vacío)
+    let skipPersistOnLoad = false;
+    if (courseId && mode === "html-css") {
       const ws = loadCourseWorkspace(courseId);
-      if (code && ws.html) code.value = ws.html;
-      else if (code && !code.value) code.value = starterHtml;
-      if (codeCss) {
-        // CSS: si hay workspace, cargar lo que escribió el alumno (puede estar vacío al inicio)
-        if (ws.html || ws.css) codeCss.value = ws.css || "";
-        else codeCss.value = starterCss;
+      const hasWorkspace = !!(ws.html || ws.css);
+      const applyForce = forceStarter && !hasWorkspace;
+      if (!applyForce && hasWorkspace) {
+        if (code) code.value = ws.html || starterHtml || code.value;
+        if (codeCss) codeCss.value = ws.css || "";
+      } else {
+        if (code) code.value = starterHtml || code.value || "";
+        if (codeCss) codeCss.value = starterCss || "";
+        // Primera visita con plantilla: no guardar el CSS vacío sobre un futuro trabajo
+        skipPersistOnLoad = true;
       }
     } else {
       if (code && starterHtml && !code.value) code.value = starterHtml;
@@ -104,12 +110,12 @@ export function mountLessonMinis(root = document) {
       return codeCss ? codeCss.value : "";
     }
 
-    function run() {
+    function run(opts) {
+      const fromUser = !!(opts && opts.fromUser);
       if (!frame) return;
       const html = currentHtml();
       const css = currentCss();
       if (mode === "html-css") {
-        // Inyectar CSS en el documento
         let doc = html;
         const styleTag = "<style>\n" + css + "\n</style>";
         if (/<\/head>/i.test(doc)) {
@@ -123,36 +129,37 @@ export function mountLessonMinis(root = document) {
       } else {
         frame.srcdoc = html;
       }
-      if (persist && courseId && mode === "html-css") {
+      // Solo persistir por acción del usuario (Ejecutar / atajo / reiniciar),
+      // no al cargar la página (evita borrar workspace al repasar plantillas)
+      if (persist && courseId && mode === "html-css" && fromUser) {
         saveCourseWorkspace(courseId, currentHtml(), currentCss());
       }
     }
 
-    if (btnRun) btnRun.addEventListener("click", run);
+    if (btnRun) btnRun.addEventListener("click", () => run({ fromUser: true }));
     if (btnReset) {
       btnReset.addEventListener("click", () => {
         if (code) code.value = starterHtml;
         if (codeCss) codeCss.value = starterCss;
-        run();
+        run({ fromUser: true });
       });
     }
 
     const onKey = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
-        run();
+        run({ fromUser: true });
       }
     };
     if (code) code.addEventListener("keydown", onKey);
     if (codeCss) codeCss.addEventListener("keydown", onKey);
 
-    // API para el botón completar
     box.__getWorkspace = () => ({ html: currentHtml(), css: currentCss() });
     box.__saveWorkspace = () => {
       if (courseId) saveCourseWorkspace(courseId, currentHtml(), currentCss());
     };
 
-    run();
+    run({ fromUser: false });
     box.dataset.ready = "1";
   });
 }

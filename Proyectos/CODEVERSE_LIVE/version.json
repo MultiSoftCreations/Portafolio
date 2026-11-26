@@ -1,6 +1,6 @@
 {
-  "version": "1.5.0",
+  "version": "1.5.1",
   "name": "CODEVERSE LIVE",
   "updatedAt": "2026-11-26",
-  "notes": "Curso CSS 20 pasos: editor HTML+CSS, CSS vacío, workspace progresivo entre prácticas"
+  "notes": "fix: Actualizar nube da feedback en sesión IA; repasar práctica CSS no borra el workspace"
 }

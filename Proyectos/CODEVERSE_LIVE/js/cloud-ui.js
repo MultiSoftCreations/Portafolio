@@ -95,7 +95,14 @@ function updateCurrentLabel() {
     label.hidden = false;
   }
   const btnUpdate = $("btn-update-cloud");
-  if (btnUpdate) btnUpdate.disabled = !id;
+  if (btnUpdate) {
+    // En sesión IA no hay proyecto Firebase: el botón sigue clickeable para dar feedback
+    if (hasValidAITunnelSession() && !getCurrentUser()) {
+      btnUpdate.disabled = false;
+    } else {
+      btnUpdate.disabled = !id;
+    }
+  }
 }
 
 async function syncLocalFromEditor() {
@@ -272,8 +279,19 @@ function bind() {
 
   if (btnCloud) btnCloud.addEventListener("click", () => saveToCloud({ asNew: !getCurrentCloudId() }));
   if (btnUpdate) btnUpdate.addEventListener("click", () => {
+    if (!getCurrentUser() && hasValidAITunnelSession()) {
+      const btnLocal = $("btn-save");
+      if (btnLocal) btnLocal.click();
+      setStatus("Sesión IA: guardado local (la nube Firebase es solo para cuentas de usuario)");
+      return;
+    }
+    if (!getCurrentUser()) {
+      alert("Inicia sesión para actualizar el proyecto en la nube.");
+      window.location.href = "login.html?redirect=live.html";
+      return;
+    }
     if (!getCurrentCloudId()) {
-      alert("No hay un proyecto de nube cargado. Ábrelo desde «Mis proyectos» o guárdalo como nuevo.");
+      alert("No hay un proyecto de nube cargado. Ábrelo desde «Mis proyectos» o usa «Guardar como…».");
       return;
     }
     saveToCloud({ asNew: false });
