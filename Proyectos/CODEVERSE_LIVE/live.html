@@ -153,5 +153,13 @@
   </div>
   <script type="module" src="js/cloud-ui.js"></script>
 
+
+  <script type="module">
+    import { protectPage } from "./js/auth-guard.js";
+    import { gatePage } from "./js/site-access.js";
+    await protectPage({ allowAI: true, accessScope: "live" });
+    // protectPage already gates if accessScope set; double-safe:
+    await gatePage("live");
+  </script>
 </body>
 </html>

@@ -89,6 +89,8 @@ async function ensureUserProfile(user) {
       displayName: user.displayName || "",
       photoURL: user.photoURL || "",
       isAdmin: isAdmin(user),
+      status: "active",
+      blockReason: null,
       createdAt: serverTimestamp(),
       lastLogin: serverTimestamp()
     });

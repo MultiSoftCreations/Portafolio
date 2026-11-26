@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script src="js/cache-version.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="CODEVERSE — Plataforma para aprender programación desde cero. Cursos, entorno de desarrollo integrado y comunidad. Un producto de MultiSoftCreations." />
@@ -177,5 +179,10 @@ resultado = saludar(<span class="token string">"CODEVERSE"</span>)
     </div>
   </footer>
   <script src="js/main.js"></script>
+
+  <script type="module">
+    import { gatePage } from "./js/site-access.js";
+    await gatePage("global");
+  </script>
 </body>
 </html>

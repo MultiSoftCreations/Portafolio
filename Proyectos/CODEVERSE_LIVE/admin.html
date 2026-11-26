@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="js/cache-version.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Admin — CODEVERSE</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body class="admin-body">
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo">
+        <img src="assets/img/codeverse-logo.png" alt="CODEVERSE" class="logo__img" />
+        <span class="logo__text">CODEVERSE Admin</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav__link">Inicio</a>
+        <a href="academy.html" class="nav__link">Academia</a>
+        <a href="live.html" class="nav__link">LIVE</a>
+        <a href="admin.html" class="nav__link active">Admin</a>
+      </nav>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Menú"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="container admin-wrap">
+      <div id="admin-gate" class="admin-gate">
+        <h1>Panel de administración</h1>
+        <p id="admin-gate-msg">Comprobando permisos…</p>
+        <a class="btn btn--primary" href="login.html?redirect=admin.html">Iniciar sesión</a>
+      </div>
+
+      <div id="admin-app" hidden>
+        <div class="admin-top">
+          <div>
+            <p class="eyebrow">Control en la nube</p>
+            <h1>Panel de administración</h1>
+            <p class="muted">Sesión: <span id="admin-user"></span></p>
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" id="btn-admin-logout">Cerrar sesión</button>
+        </div>
+
+        <p id="admin-status" class="admin-status" aria-live="polite"></p>
+
+        <!-- Acceso / mantenimiento -->
+        <section class="admin-card">
+          <button type="button" class="admin-acc__btn" data-acc-btn="access" aria-expanded="true">
+            <span>1 · Bloqueos y mantenimiento</span>
+            <span class="chev">▾</span>
+          </button>
+          <div class="admin-acc__panel" data-acc-panel="access">
+            <p class="muted small">Estos bloqueos afectan a usuarios normales. El <strong>túnel IA no se bloquea</strong>.</p>
+            <p id="access-meta" class="muted small"></p>
+
+            <label class="admin-check">
+              <input type="checkbox" id="f-globalLock" />
+              <span><strong>Cierre total del sitio</strong> (inicio, cursos, editores, etc.)</span>
+            </label>
+            <label class="admin-field">
+              <span>Mensaje cierre total</span>
+              <textarea id="f-globalMessage" rows="2" placeholder="Estamos en mantenimiento. Vuelve pronto."></textarea>
+            </label>
+
+            <hr class="admin-hr" />
+
+            <label class="admin-check">
+              <input type="checkbox" id="f-lockCourses" />
+              <span><strong>Bloquear todos los cursos</strong></span>
+            </label>
+            <label class="admin-field">
+              <span>Mensaje de cursos</span>
+              <textarea id="f-lockCoursesMessage" rows="2" placeholder="Los cursos están temporalmente no disponibles."></textarea>
+            </label>
+            <label class="admin-field">
+              <span>Cursos concretos bloqueados (ids separados por coma)</span>
+              <input type="text" id="f-lockedCourseIds" placeholder="html, css" />
+            </label>
+            <label class="admin-field">
+              <span>Lecciones bloqueadas (JSON)</span>
+              <textarea id="f-lockedLessons" rows="2" placeholder='{"html":["20-examen-final"]}'></textarea>
+            </label>
+
+            <hr class="admin-hr" />
+
+            <label class="admin-check">
+              <input type="checkbox" id="f-lockMiniEditor" />
+              <span>Bloquear <strong>mini editor</strong> de lecciones</span>
+            </label>
+            <label class="admin-check">
+              <input type="checkbox" id="f-lockLiveEditor" />
+              <span>Bloquear <strong>editor LIVE</strong></span>
+            </label>
+            <label class="admin-field">
+              <span>Mensaje de editores</span>
+              <textarea id="f-editorsMessage" rows="2" placeholder="El editor está en mantenimiento."></textarea>
+            </label>
+
+            <div class="admin-actions">
+              <button type="button" class="btn btn--primary btn--sm" id="btn-save-access">Guardar bloqueos</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="btn-reload-access">Recargar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Códigos IA -->
+        <section class="admin-card">
+          <button type="button" class="admin-acc__btn" data-acc-btn="ai" aria-expanded="false">
+            <span>2 · Códigos túnel IA</span>
+            <span class="chev">▾</span>
+          </button>
+          <div class="admin-acc__panel" data-acc-panel="ai" hidden>
+            <p class="muted small">Códigos de 8 dígitos para revisiones automatizadas. No se ven afectados por los bloqueos de mantenimiento.</p>
+            <div class="admin-grid-2">
+              <label class="admin-field">
+                <span>Etiqueta</span>
+                <input type="text" id="ai-label" placeholder="Muse / revisión" maxlength="40" />
+              </label>
+              <label class="admin-field">
+                <span>Horas válido</span>
+                <input type="number" id="ai-hours" value="72" min="1" max="720" />
+              </label>
+            </div>
+            <div class="admin-actions">
+              <button type="button" class="btn btn--primary btn--sm" id="btn-ai-create">Generar código</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="btn-ai-refresh">Actualizar lista</button>
+            </div>
+            <p id="ai-last-code" class="mono"></p>
+            <div id="ai-codes-list" class="admin-list"></div>
+          </div>
+        </section>
+
+        <!-- Usuarios -->
+        <section class="admin-card">
+          <button type="button" class="admin-acc__btn" data-acc-btn="users" aria-expanded="false">
+            <span>3 · Usuarios (suspender / bloquear)</span>
+            <span class="chev">▾</span>
+          </button>
+          <div class="admin-acc__panel" data-acc-panel="users" hidden>
+            <p class="muted small">Busca por correo (el usuario debe haber iniciado sesión al menos una vez).</p>
+            <label class="admin-field">
+              <span>Correo</span>
+              <input type="email" id="user-email" placeholder="usuario@gmail.com" />
+            </label>
+            <label class="admin-field">
+              <span>Motivo (opcional)</span>
+              <input type="text" id="user-reason" placeholder="Motivo visible para el usuario" />
+            </label>
+            <div class="admin-actions">
+              <button type="button" class="btn btn--primary btn--sm" id="btn-user-find">Buscar</button>
+            </div>
+            <div id="user-result" class="admin-list"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/main.js"></script>
+  <script type="module" src="js/admin-panel.js"></script>
+</body>
+</html>

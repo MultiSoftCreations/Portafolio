@@ -78,8 +78,11 @@
   <script type="module">
     import { protectPage } from "./js/auth-guard.js";
     import { loadCourse, loadProgress, isLessonUnlocked, isLessonCompleted } from "./js/courses.js";
+    import { gatePage } from "./js/site-access.js";
 
     await protectPage({ allowAI: true });
+    const ok = await gatePage("courses");
+    if (!ok) return;
 
     const root = document.getElementById("courses-root");
     const params = new URLSearchParams(window.location.search);

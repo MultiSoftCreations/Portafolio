@@ -2,6 +2,7 @@
 // MultiSoftCreations
 
 import { onUserChanged, getCurrentUser, hasValidAITunnelSession, getAITunnelInfo } from "./auth.js";
+import { gatePage } from "./site-access.js";
 import { getCourseProgress, saveCourseProgress } from "./projects.js";
 
 
@@ -175,6 +176,12 @@ export async function completeLesson(course, lessonId) {
  * @returns {{ course, progress, lesson }}
  */
 export async function guardLessonPage(courseId, lessonId) {
+  const allowed = await gatePage("lesson", { courseId, lessonId });
+  if (!allowed) {
+    const err = new Error("access_blocked");
+    throw err;
+  }
+
   // Esperar auth (o null)
   const user = await new Promise((resolve) => {
     const unsub = onUserChanged((u) => {

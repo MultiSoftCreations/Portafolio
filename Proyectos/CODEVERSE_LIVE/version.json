@@ -1,6 +1,6 @@
 {
-  "version": "1.5.2",
+  "version": "1.6.0",
   "name": "CODEVERSE LIVE",
   "updatedAt": "2026-11-26",
-  "notes": "Parche UI móvil: menú con panel opaco; avisos legales actualizados (auth, cursos, nube, túnel)"
+  "notes": "Panel admin: bloqueos/mantenimiento en nube, códigos IA, usuarios; túnel IA exento"
 }

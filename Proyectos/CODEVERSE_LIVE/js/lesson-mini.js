@@ -1,3 +1,4 @@
+import { evaluateAccess, showAccessBlock } from "./site-access.js";
 // CODEVERSE — Interactivos de lección: mini editor HTML/CSS, quiz, examen, workspace
 // MultiSoftCreations
 
@@ -253,8 +254,15 @@ export function mountLessonExams(root = document) {
   });
 }
 
-export function initLessonInteractives(root = document) {
-  mountLessonMinis(root);
+export async function initLessonInteractives(root = document) {
+  const miniOk = await evaluateAccess("mini");
+  if (!miniOk.ok) {
+    root.querySelectorAll("[data-lesson-mini]").forEach((box) => {
+      box.innerHTML = `<div class="lesson-callout"><strong>${miniOk.title || "Mini editor no disponible"}</strong><p>${miniOk.message || ""}</p></div>`;
+    });
+  } else {
+    mountLessonMinis(root);
+  }
   mountLessonQuizzes(root);
   mountLessonExams(root);
 }
