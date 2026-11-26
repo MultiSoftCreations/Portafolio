@@ -1,6 +1,6 @@
 {
-  "version": "1.5.1",
+  "version": "1.5.2",
   "name": "CODEVERSE LIVE",
   "updatedAt": "2026-11-26",
-  "notes": "fix: Actualizar nube da feedback en sesión IA; repasar práctica CSS no borra el workspace"
+  "notes": "Parche UI móvil: menú con panel opaco; avisos legales actualizados (auth, cursos, nube, túnel)"
 }
