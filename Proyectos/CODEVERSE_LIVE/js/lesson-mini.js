@@ -1,35 +1,156 @@
-// CODEVERSE — Interactivos de lección: mini editor, quiz, examen
+// CODEVERSE — Interactivos de lección: mini editor HTML/CSS, quiz, examen, workspace
 // MultiSoftCreations
 
+function workspaceKey(courseId) {
+  return "codeverse_workspace_" + (courseId || "default");
+}
+
+export function loadCourseWorkspace(courseId) {
+  try {
+    const raw = localStorage.getItem(workspaceKey(courseId));
+    if (!raw) return { html: "", css: "" };
+    const data = JSON.parse(raw);
+    return {
+      html: typeof data.html === "string" ? data.html : "",
+      css: typeof data.css === "string" ? data.css : ""
+    };
+  } catch {
+    return { html: "", css: "" };
+  }
+}
+
+export function saveCourseWorkspace(courseId, html, css) {
+  const payload = {
+    html: html || "",
+    css: css || "",
+    updatedAt: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem(workspaceKey(courseId), JSON.stringify(payload));
+  } catch (err) {
+    console.warn("[CODEVERSE] No se pudo guardar workspace del curso", err);
+  }
+  return payload;
+}
+
+/**
+ * Mini editor.
+ * data-lesson-mini
+ * data-mode="html" | "html-css"  (default html)
+ * data-course="css"
+ * data-starter-html="..." (opcional; si hay workspace se prefiere el guardado salvo data-force-starter="1")
+ * data-starter-css="" 
+ * data-persist="1" guarda al ejecutar y expone API
+ */
 export function mountLessonMinis(root = document) {
   const nodes = root.querySelectorAll("[data-lesson-mini]");
   nodes.forEach((box) => {
     if (box.dataset.ready === "1") return;
-    const code = box.querySelector(".lesson-mini__code");
+
+    const mode = (box.dataset.mode || "html").toLowerCase();
+    const courseId = box.dataset.course || "";
+    const forceStarter = box.dataset.forceStarter === "1";
+    const persist = box.dataset.persist !== "0";
+
+    let code = box.querySelector(".lesson-mini__code");
+    let codeCss = box.querySelector(".lesson-mini__code-css");
     const frame = box.querySelector(".lesson-mini__preview");
     const btnRun = box.querySelector(".lesson-mini__run");
     const btnReset = box.querySelector(".lesson-mini__reset");
-    if (!code || !frame) return;
+    const tabs = box.querySelectorAll("[data-mini-tab]");
 
-    const initial = code.value;
+    // Starters from textarea initial values
+    const starterHtml = (box.dataset.starterHtml != null)
+      ? box.dataset.starterHtml
+      : (code ? code.value : "");
+    const starterCss = (box.dataset.starterCss != null)
+      ? box.dataset.starterCss
+      : (codeCss ? codeCss.value : "");
+
+    // Load workspace for progressive projects (CSS course)
+    if (courseId && mode === "html-css" && !forceStarter) {
+      const ws = loadCourseWorkspace(courseId);
+      if (code && ws.html) code.value = ws.html;
+      else if (code && !code.value) code.value = starterHtml;
+      if (codeCss) {
+        // CSS: si hay workspace, cargar lo que escribió el alumno (puede estar vacío al inicio)
+        if (ws.html || ws.css) codeCss.value = ws.css || "";
+        else codeCss.value = starterCss;
+      }
+    } else {
+      if (code && starterHtml && !code.value) code.value = starterHtml;
+      if (codeCss) codeCss.value = starterCss;
+    }
+
+    // Tabs HTML / CSS
+    if (tabs.length && code && codeCss) {
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const which = tab.getAttribute("data-mini-tab");
+          tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
+          code.hidden = which !== "html";
+          codeCss.hidden = which !== "css";
+        });
+      });
+      // default HTML tab
+      code.hidden = false;
+      codeCss.hidden = true;
+    }
+
+    function currentHtml() {
+      return code ? code.value : "";
+    }
+    function currentCss() {
+      return codeCss ? codeCss.value : "";
+    }
 
     function run() {
-      frame.srcdoc = code.value;
+      if (!frame) return;
+      const html = currentHtml();
+      const css = currentCss();
+      if (mode === "html-css") {
+        // Inyectar CSS en el documento
+        let doc = html;
+        const styleTag = "<style>\n" + css + "\n</style>";
+        if (/<\/head>/i.test(doc)) {
+          doc = doc.replace(/<\/head>/i, styleTag + "\n</head>");
+        } else if (/<body/i.test(doc)) {
+          doc = doc.replace(/<body/i, styleTag + "\n<body");
+        } else {
+          doc = styleTag + "\n" + doc;
+        }
+        frame.srcdoc = doc;
+      } else {
+        frame.srcdoc = html;
+      }
+      if (persist && courseId && mode === "html-css") {
+        saveCourseWorkspace(courseId, currentHtml(), currentCss());
+      }
     }
 
     if (btnRun) btnRun.addEventListener("click", run);
     if (btnReset) {
       btnReset.addEventListener("click", () => {
-        code.value = initial;
+        if (code) code.value = starterHtml;
+        if (codeCss) codeCss.value = starterCss;
         run();
       });
     }
-    code.addEventListener("keydown", (e) => {
+
+    const onKey = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
         run();
       }
-    });
+    };
+    if (code) code.addEventListener("keydown", onKey);
+    if (codeCss) codeCss.addEventListener("keydown", onKey);
+
+    // API para el botón completar
+    box.__getWorkspace = () => ({ html: currentHtml(), css: currentCss() });
+    box.__saveWorkspace = () => {
+      if (courseId) saveCourseWorkspace(courseId, currentHtml(), currentCss());
+    };
 
     run();
     box.dataset.ready = "1";
@@ -63,13 +184,6 @@ export function mountLessonQuizzes(root = document) {
   });
 }
 
-/**
- * Examen multi-pregunta.
- * Contenedor: [data-lesson-exam data-pass="70"]
- * Cada pregunta: [data-exam-q data-answer="b"]
- * Resultado: .lesson-exam__result
- * Habilita #btn-complete solo si aprueba.
- */
 export function mountLessonExams(root = document) {
   root.querySelectorAll("[data-lesson-exam]").forEach((exam) => {
     if (exam.dataset.ready === "1") return;
@@ -81,9 +195,7 @@ export function mountLessonExams(root = document) {
     questions.forEach((q) => {
       q.querySelectorAll("[data-choice]").forEach((btn) => {
         btn.addEventListener("click", () => {
-          q.querySelectorAll("[data-choice]").forEach((b) => {
-            b.classList.remove("is-selected");
-          });
+          q.querySelectorAll("[data-choice]").forEach((b) => b.classList.remove("is-selected"));
           btn.classList.add("is-selected");
           q.dataset.selected = (btn.getAttribute("data-choice") || "").toLowerCase();
         });
@@ -111,27 +223,25 @@ export function mountLessonExams(root = document) {
       if (result) {
         result.textContent = passed
           ? `Aprobaste: ${ok}/${total} (${pct}%). Ya puedes continuar.`
-          : `Obtuviste ${ok}/${total} (${pct}%). Necesitas al menos ${pass}% para continuar. Revisa el tema y reintenta recargando la página.`;
+          : `Obtuviste ${ok}/${total} (${pct}%). Necesitas al menos ${pass}%. Revisa y recarga para reintentar.`;
         result.className = "lesson-exam__result " + (passed ? "is-ok" : "is-bad");
       }
       exam.dataset.passed = passed ? "1" : "0";
       const completeBtn = document.getElementById("btn-complete");
       if (completeBtn) {
         completeBtn.disabled = !passed;
-        if (passed) completeBtn.textContent = "Marcar como completada y continuar";
-        else completeBtn.textContent = "Aprueba el examen para continuar";
+        completeBtn.textContent = passed
+          ? "Marcar como completada y continuar"
+          : "Aprueba el examen para continuar";
       }
     }
 
     if (btnGrade) btnGrade.addEventListener("click", grade);
-
-    // Por defecto bloquear completar hasta aprobar
     const completeBtn = document.getElementById("btn-complete");
     if (completeBtn) {
       completeBtn.disabled = true;
       completeBtn.textContent = "Aprueba el examen para continuar";
     }
-
     exam.dataset.ready = "1";
   });
 }
@@ -140,4 +250,11 @@ export function initLessonInteractives(root = document) {
   mountLessonMinis(root);
   mountLessonQuizzes(root);
   mountLessonExams(root);
+}
+
+/** Guarda todos los mini-editores persistentes del documento */
+export function persistAllWorkspaces(root = document) {
+  root.querySelectorAll("[data-lesson-mini]").forEach((box) => {
+    if (typeof box.__saveWorkspace === "function") box.__saveWorkspace();
+  });
 }

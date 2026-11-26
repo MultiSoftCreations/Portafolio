@@ -290,3 +290,42 @@
   background: rgba(108,92,231,0.12) !important;
 }
 .lesson-check { color: #2ecc71; font-size: 0.95rem; }
+
+
+/* Mini editor tabs HTML/CSS */
+.lesson-mini__tabs { display: flex; gap: 0.25rem; }
+.lesson-mini__tab {
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: #aaa;
+  border-radius: 8px;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.lesson-mini__tab.is-active {
+  background: rgba(108,92,231,0.25);
+  border-color: rgba(108,92,231,0.5);
+  color: #fff;
+}
+.lesson-mini__code-css {
+  width: 100%;
+  min-height: 220px;
+  border: none;
+  resize: vertical;
+  padding: 0.75rem;
+  background: #0a0a10;
+  color: #e8e8f0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.lesson-mini__grid {
+  grid-template-columns: 1fr 1fr;
+}
+.course-sep {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 2.5rem 0;
+}

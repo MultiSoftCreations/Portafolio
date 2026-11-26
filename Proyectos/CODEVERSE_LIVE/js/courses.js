@@ -31,7 +31,8 @@ export function liveUrl(rel) {
 export async function loadCourse(courseId, basePath = `Cursos/${courseId.toUpperCase()}`) {
   // Rutas siempre desde la raíz de CODEVERSE_LIVE (no relativas a la lección)
   const pathMap = {
-    html: "Cursos/HTML/course.json"
+    html: "Cursos/HTML/course.json",
+    css: "Cursos/CSS/course.json"
   };
   const rel = pathMap[courseId] || `${basePath}/course.json`;
   const url = liveUrl(rel) + "?t=" + Date.now();

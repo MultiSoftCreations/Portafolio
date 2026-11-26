@@ -83,7 +83,7 @@
 
     const root = document.getElementById("courses-root");
     const params = new URLSearchParams(window.location.search);
-    const focus = params.get("course") || "html";
+    const focus = (params.get("course") || "").toLowerCase();
 
     function escapeHtml(str) {
       return String(str)
@@ -93,34 +93,31 @@
         .replace(/"/g, "&quot;");
     }
 
-    try {
-      const course = await loadCourse("html");
-      const progress = await loadProgress("html");
+    const typeLabel = (t) => ({ lesson: "Lección", practice: "Práctica", exam: "Examen" }[t] || "Paso");
+
+    async function renderCourse(courseId) {
+      const course = await loadCourse(courseId);
+      const progress = await loadProgress(courseId);
       const total = course.lessons.length;
       const done = (progress.completedLessons || []).filter((id) =>
         course.lessons.some((l) => l.id === id)
       ).length;
 
-      const typeLabel = (t) => ({ lesson: "Lección", practice: "Práctica", exam: "Examen" }[t] || "Paso");
       const rows = course.lessons
         .map((lesson, index) => {
           const unlocked = isLessonUnlocked(course, progress, lesson.id);
           const completed = isLessonCompleted(progress, lesson.id);
-          const href = unlocked ? `Cursos/HTML/${lesson.file}` : "#";
+          const href = unlocked ? `Cursos/${courseId.toUpperCase()}/${lesson.file}` : "#";
           const state = completed ? "Completada" : unlocked ? "Disponible" : "Bloqueada";
           const cls = [
             "lesson-row",
             completed ? "is-done" : "",
-            !unlocked ? "is-locked" : "",
-            lesson.type ? "lesson-row--" + lesson.type : ""
-          ]
-            .filter(Boolean)
-            .join(" ");
-
+            !unlocked ? "is-locked" : ""
+          ].filter(Boolean).join(" ");
           const tag = unlocked ? "a" : "div";
           const kind = typeLabel(lesson.type);
           const typeCls = escapeHtml(lesson.type || "lesson");
-          return `<${tag} class="${cls}" ${unlocked ? `href="${href}"` : 'aria-disabled="true"'}">
+          return `<${tag} class="${cls}" ${unlocked ? `href="${href}"` : 'aria-disabled="true"'}>
             <div class="lesson-row__main">
               <strong><span class="type-pill type-pill--${typeCls}">${kind}</span> ${index + 1}. ${escapeHtml(lesson.title)}</strong>
               <span>${escapeHtml(lesson.summary || "")}</span>
@@ -130,22 +127,35 @@
         })
         .join("");
 
-      root.innerHTML = `
-        <section class="course-hero">
+      const src =
+        progress.source === "cloud"
+          ? "· guardado en la nube"
+          : progress.source === "ai_tunnel"
+            ? "· progreso sesión IA (pruebas)"
+            : "· inicia sesión para sincronizar";
+
+      return `
+        <section class="course-hero" id="course-${escapeHtml(courseId)}">
           <span class="course-hero__badge">${escapeHtml(course.level)} · ${escapeHtml(course.language)}</span>
           <h2>${escapeHtml(course.title)}</h2>
           <p>${escapeHtml(course.description)}</p>
-          <p class="course-progress">Progreso: <strong>${done}</strong> de <strong>${total}</strong> pasos
-            ${progress.source === "cloud" ? "· guardado en la nube" : progress.source === "ai_tunnel" ? "· progreso sesión IA (pruebas)" : "· inicia sesión para sincronizar"}
-          </p>
-        </section>
-        <div class="lessons-list">${rows}</div>
+          <p class="course-progress">Progreso: <strong>${done}</strong> de <strong>${total}</strong> pasos ${src}</p>
+          <div class="lessons-list">${rows}</div>
+        </section>`;
+    }
+
+    try {
+      const ids = ["html", "css"];
+      const blocks = [];
+      for (const id of ids) {
+        try {
+          blocks.push(await renderCourse(id));
+        } catch (err) {
+          blocks.push(`<section class="course-hero"><h2>${id.toUpperCase()}</h2><p class="meta">No disponible: ${escapeHtml(err.message || "")}</p></section>`);
+        }
+      }
+      root.innerHTML = blocks.join('<hr class="course-sep" />') + `
         <div class="cards-grid" style="margin-top:2.5rem">
-          <article class="card">
-            <span class="lang-card__tag">Próximamente</span>
-            <h3>CSS</h3>
-            <p>Selectores, colores, flexbox y diseño responsivo.</p>
-          </article>
           <article class="card">
             <span class="lang-card__tag">Próximamente</span>
             <h3>JavaScript</h3>
@@ -156,8 +166,12 @@
             <h3>Python</h3>
             <p>Lógica, control de flujo y ejercicios prácticos.</p>
           </article>
-        </div>
-      `;
+        </div>`;
+
+      if (focus === "html" || focus === "css") {
+        const el = document.getElementById("course-" + focus);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     } catch (err) {
       console.error(err);
       root.innerHTML = `<p class="meta">No se pudieron cargar los cursos. ${escapeHtml(err.message || "")}</p>`;

@@ -1,0 +1,150 @@
+{
+  "id": "css",
+  "title": "Introducción a CSS",
+  "shortTitle": "CSS",
+  "description": "Aprende a dar estilo al HTML: colores, selectores, clases, tipografía y cajas. Prácticas con editor HTML+CSS (CSS lo escribes tú) y tu página se guarda entre pasos.",
+  "level": "Principiante",
+  "language": "CSS",
+  "lessons": [
+    {
+      "id": "01-que-es-css",
+      "file": "01-que-es-css.html",
+      "title": "¿Qué es CSS?",
+      "summary": "CSS viste al HTML: colores, tamaños y estilo.",
+      "type": "lesson"
+    },
+    {
+      "id": "02-practica-primer-color",
+      "file": "02-practica-primer-color.html",
+      "title": "Práctica 1A · Tu primer color",
+      "summary": "Colorea el título. CSS vacío: tú escribes la regla.",
+      "type": "practice"
+    },
+    {
+      "id": "03-practica-fondo",
+      "file": "03-practica-fondo.html",
+      "title": "Práctica 1B · Color de fondo",
+      "summary": "Suma background-color al body o a un párrafo.",
+      "type": "practice"
+    },
+    {
+      "id": "04-selectores-elemento",
+      "file": "04-selectores-elemento.html",
+      "title": "Selectores de elemento",
+      "summary": "Cómo apuntar a h1, p, body…",
+      "type": "lesson"
+    },
+    {
+      "id": "05-practica-varios-elementos",
+      "file": "05-practica-varios-elementos.html",
+      "title": "Práctica 2A · Estilizar varios elementos",
+      "summary": "Aplica estilos distintos a h1, p y body.",
+      "type": "practice"
+    },
+    {
+      "id": "06-practica-hex",
+      "file": "06-practica-hex.html",
+      "title": "Práctica 2B · Colores hexadecimales",
+      "summary": "Prueba colores con #rrggbb.",
+      "type": "practice"
+    },
+    {
+      "id": "07-clases",
+      "file": "07-clases.html",
+      "title": "Clases en CSS",
+      "summary": "La clase permite estilizar solo algunos elementos.",
+      "type": "lesson"
+    },
+    {
+      "id": "08-practica-clases",
+      "file": "08-practica-clases.html",
+      "title": "Práctica 3A · Estilo con clases",
+      "summary": "Usa .intro (o crea otra clase) en tu página.",
+      "type": "practice"
+    },
+    {
+      "id": "09-practica-id",
+      "file": "09-practica-id.html",
+      "title": "Práctica 3B · Introduciendo id",
+      "summary": "Un id único con selector #.",
+      "type": "practice"
+    },
+    {
+      "id": "10-examen-parcial-1",
+      "file": "10-examen-parcial-1.html",
+      "title": "Examen parcial 1 · CSS básico",
+      "summary": "Colores, selectores y clases. Mínimo 70%.",
+      "type": "exam"
+    },
+    {
+      "id": "11-tipografia",
+      "file": "11-tipografia.html",
+      "title": "Tipografía básica",
+      "summary": "font-size, font-family, text-align.",
+      "type": "lesson"
+    },
+    {
+      "id": "12-practica-texto",
+      "file": "12-practica-texto.html",
+      "title": "Práctica 4A · Tamaño y alineación",
+      "summary": "Centra el título y ajusta tamaños.",
+      "type": "practice"
+    },
+    {
+      "id": "13-practica-tipografia-pagina",
+      "file": "13-practica-tipografia-pagina.html",
+      "title": "Práctica 4B · Tipografía de toda la página",
+      "summary": "Define una fuente base en body.",
+      "type": "practice"
+    },
+    {
+      "id": "14-caja-basica",
+      "file": "14-caja-basica.html",
+      "title": "Caja: margin, padding y border",
+      "summary": "El modelo de caja de forma simple.",
+      "type": "lesson"
+    },
+    {
+      "id": "15-practica-padding-margin",
+      "file": "15-practica-padding-margin.html",
+      "title": "Práctica 5A · Padding y margin",
+      "summary": "Da aire a un bloque de tu página.",
+      "type": "practice"
+    },
+    {
+      "id": "16-practica-borde",
+      "file": "16-practica-borde.html",
+      "title": "Práctica 5B · Bordes",
+      "summary": "Añade border y border-radius.",
+      "type": "practice"
+    },
+    {
+      "id": "17-centrado-simple",
+      "file": "17-centrado-simple.html",
+      "title": "Centrar de forma simple",
+      "summary": "text-align y margin auto en bloques con ancho.",
+      "type": "lesson"
+    },
+    {
+      "id": "18-practica-centrar",
+      "file": "18-practica-centrar.html",
+      "title": "Práctica 6A · Centrar elementos",
+      "summary": "Centra el título y/o una caja de contenido.",
+      "type": "practice"
+    },
+    {
+      "id": "19-practica-integradora",
+      "file": "19-practica-integradora.html",
+      "title": "Práctica integradora · Tu página con estilo",
+      "summary": "Deja tu página personal con colores, tipografía y cajas.",
+      "type": "practice"
+    },
+    {
+      "id": "20-examen-final",
+      "file": "20-examen-final.html",
+      "title": "Examen final · Introducción a CSS",
+      "summary": "Evaluación final del módulo CSS. Mínimo 70%.",
+      "type": "exam"
+    }
+  ]
+}
