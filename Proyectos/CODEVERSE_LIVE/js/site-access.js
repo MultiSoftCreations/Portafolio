@@ -32,7 +32,11 @@ export async function fetchSiteAccess(force = false) {
   const now = Date.now();
   if (!force && cache && now - cacheAt < CACHE_MS) return cache;
   try {
-    const snap = await getDoc(doc(db, "config", "siteAccess"));
+    const ref = doc(db, "config", "siteAccess");
+    const snap = await Promise.race([
+      getDoc(ref),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout siteAccess")), 8000))
+    ]);
     if (!snap.exists()) {
       cache = defaultSiteAccess();
     } else {

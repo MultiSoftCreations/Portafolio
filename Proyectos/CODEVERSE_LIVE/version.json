@@ -1,6 +1,6 @@
 {
-  "version": "1.6.0",
+  "version": "1.6.1",
   "name": "CODEVERSE LIVE",
-  "updatedAt": "2026-11-26",
-  "notes": "Panel admin: bloqueos/mantenimiento en nube, códigos IA, usuarios; túnel IA exento"
+  "updatedAt": "2026-11-27",
+  "notes": "URGENT: arregla return roto en Academia que impedía listar cursos; bloqueo de cursos sin dejar Cargando"
 }

@@ -78,13 +78,20 @@
   <script type="module">
     import { protectPage } from "./js/auth-guard.js";
     import { loadCourse, loadProgress, isLessonUnlocked, isLessonCompleted } from "./js/courses.js";
-    import { gatePage } from "./js/site-access.js";
+    import { gatePage, evaluateAccess, showAccessBlock } from "./js/site-access.js";
 
     await protectPage({ allowAI: true });
-    const ok = await gatePage("courses");
-    if (!ok) return;
 
     const root = document.getElementById("courses-root");
+    // Comprobar acceso a cursos SIN cortar el módulo a ciegas:
+    // si está bloqueado, mostramos el aviso y un mensaje claro (no "Cargando…").
+    const access = await evaluateAccess("courses");
+    if (!access.ok) {
+      showAccessBlock({ title: access.title, message: access.message });
+      if (root) {
+        root.innerHTML = `<div class="course-hero"><h2>${access.title || "Cursos no disponibles"}</h2><p class="meta">${access.message || ""}</p></div>`;
+      }
+    } else {
     const params = new URLSearchParams(window.location.search);
     const focus = (params.get("course") || "").toLowerCase();
 
@@ -120,7 +127,7 @@
           const tag = unlocked ? "a" : "div";
           const kind = typeLabel(lesson.type);
           const typeCls = escapeHtml(lesson.type || "lesson");
-          return `<${tag} class="${cls}" ${unlocked ? `href="${href}"` : 'aria-disabled="true"'}>
+          return `<${tag} class="${cls}" ${unlocked ? `href="${href}"` : `aria-disabled="true"`}>
             <div class="lesson-row__main">
               <strong><span class="type-pill type-pill--${typeCls}">${kind}</span> ${index + 1}. ${escapeHtml(lesson.title)}</strong>
               <span>${escapeHtml(lesson.summary || "")}</span>
@@ -179,6 +186,7 @@
       console.error(err);
       root.innerHTML = `<p class="meta">No se pudieron cargar los cursos. ${escapeHtml(err.message || "")}</p>`;
     }
+    } // fin acceso permitido
   </script>
   <script src="js/main.js"></script>
 </body>
