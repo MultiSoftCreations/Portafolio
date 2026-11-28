@@ -6,7 +6,7 @@
   "status": "early_access",
   "visibility": "public",
   "featured": true,
-  "description": "Shooter espacial web (beta 3.3.3). Modos Infinito y Aventura, tienda de naves y mejoras, habilidades EMP/Overdrive/Nova, ranking y login con Google. Código de Ricardo Torres; diseño visual de naves con Fantasmita; nave R.P.D. Leon con Leon016.",
+  "description": "Shooter espacial web (v3.3.11). Modos Infinito y Aventura, tienda de naves y mejoras, habilidades EMP/Overdrive/Nova, ranking online y login con Google. Código de Ricardo Torres; diseño visual de naves con Fantasmita; nave R.P.D. Leon con Leon016.",
   "image": "img/portada.webp",
   "technologies": [
     "HTML5",

@@ -6,13 +6,14 @@
   "status": "early_access",
   "visibility": "public",
   "featured": true,
-  "description": "Plataforma educativa de programación (Academia + LIVE + Comunidad). Primera versión con editor LIVE real, cursos y panel. Producto principal de MultiSoftCreations.",
-  "image": "",
+  "description": "Plataforma educativa de programación (v1.6.1). Academia con cursos de HTML/CSS, editor LIVE real (HTML, CSS, JS y Python con Pyodide), login con Google, progreso en la nube, túnel IA y panel de administración. Producto principal de MultiSoftCreations.",
+  "image": "img/portada.png",
   "technologies": [
     "HTML5",
     "CSS3",
     "JavaScript",
-    "Python"
+    "Python",
+    "Firebase"
   ],
   "links": {
     "demo": "Proyectos/CODEVERSE_LIVE/index.html",
