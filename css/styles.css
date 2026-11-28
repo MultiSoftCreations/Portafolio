@@ -93,7 +93,7 @@ button {
   background: rgba(10, 10, 12, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  overflow: hidden;
+  /* overflow no longer hidden: was clipping the mobile drawer (.main-nav is fixed inside header) */
 }
 
 .header-inner {
@@ -178,6 +178,34 @@ button {
   border-radius: 1px;
   transition: transform var(--transition), opacity var(--transition);
 }
+
+/* Nav lives outside .site-header (avoids backdrop-filter + overflow clipping the mobile drawer).
+   On desktop it is pinned to the header bar on the right. */
+@media (min-width: 769px) {
+  .main-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-h);
+    z-index: 101;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    pointer-events: none;
+    background: transparent;
+    border: none;
+    transform: none;
+    width: auto;
+    padding: 0;
+    overflow: visible;
+  }
+  .main-nav ul {
+    pointer-events: auto;
+    margin-right: max(1rem, calc((100vw - min(100% - 2rem, var(--container))) / 2));
+  }
+}
+
 
 /* ---------- Buttons ---------- */
 .btn {
