@@ -24,6 +24,29 @@ export function liveUrl(rel) {
 }
 
 
+/** Carpeta real del curso en el servidor (sensible a mayúsculas en Linux/GitHub Pages). */
+export function courseFolder(courseId) {
+  const map = {
+    html: "HTML",
+    css: "CSS",
+    js: "JS",
+    python: "Python"
+  };
+  const id = String(courseId || "").toLowerCase();
+  return map[id] || String(courseId || "").toUpperCase();
+}
+
+export function courseManifestPath(courseId, basePath) {
+  const id = String(courseId || "").toLowerCase();
+  const folder = courseFolder(id);
+  if (basePath && basePath !== `Cursos/${String(courseId).toUpperCase()}`) {
+    return `${basePath.replace(/\/+$/, "")}/course.json`;
+  }
+  return `Cursos/${folder}/course.json`;
+}
+
+
+
 /**
  * Carga el manifiesto de un curso.
  * @param {string} courseId ej. "html"
@@ -31,13 +54,7 @@ export function liveUrl(rel) {
  */
 export async function loadCourse(courseId, basePath = `Cursos/${courseId.toUpperCase()}`) {
   // Rutas siempre desde la raíz de CODEVERSE_LIVE (no relativas a la lección)
-  const pathMap = {
-    html: "Cursos/HTML/course.json",
-    css: "Cursos/CSS/course.json",
-    js: "Cursos/JS/course.json",
-    python: "Cursos/Python/course.json"
-  };
-  const rel = pathMap[courseId] || `${basePath}/course.json`;
+  const rel = courseManifestPath(courseId, basePath);
   const url = liveUrl(rel) + "?t=" + Date.now();
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error("No se pudo cargar el curso: " + courseId + " (" + url + ")");

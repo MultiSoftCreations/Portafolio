@@ -1,6 +1,6 @@
 {
-  "version": "1.7.0",
+  "version": "1.7.1",
   "name": "CODEVERSE LIVE",
   "updatedAt": "2026-11-28",
-  "notes": "Cursos JS y Python (20 pasos): mini-editor propio, workspace progresivo, exámenes"
+  "notes": "Fix H1: enlaces Python en Academia usan Cursos/Python; analogías en lecciones JS/Python"
 }

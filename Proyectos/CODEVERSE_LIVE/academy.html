@@ -77,7 +77,7 @@
 
   <script type="module">
     import { protectPage } from "./js/auth-guard.js";
-    import { loadCourse, loadProgress, isLessonUnlocked, isLessonCompleted } from "./js/courses.js";
+    import { loadCourse, loadProgress, isLessonUnlocked, isLessonCompleted, courseFolder } from "./js/courses.js";
     import { gatePage, evaluateAccess, showAccessBlock } from "./js/site-access.js";
 
     await protectPage({ allowAI: true });
@@ -117,7 +117,7 @@
         .map((lesson, index) => {
           const unlocked = isLessonUnlocked(course, progress, lesson.id);
           const completed = isLessonCompleted(progress, lesson.id);
-          const href = unlocked ? `Cursos/${courseId.toUpperCase()}/${lesson.file}` : "#";
+          const href = unlocked ? `Cursos/${courseFolder(courseId)}/${lesson.file}` : "#";
           const state = completed ? "Completada" : unlocked ? "Disponible" : "Bloqueada";
           const cls = [
             "lesson-row",
