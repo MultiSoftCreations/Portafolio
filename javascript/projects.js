@@ -299,7 +299,7 @@
           card.appendChild(createEl("p", null, s.description));
         }
         const contactUrl =
-          "https://wa.me/525624944382?text=" +
+          "https://wa.me/525562260337?text=" +
           encodeURIComponent(
             "Hola, Ricardo. Me interesa solicitar información sobre el servicio: " + safeText(s.name)
           );
