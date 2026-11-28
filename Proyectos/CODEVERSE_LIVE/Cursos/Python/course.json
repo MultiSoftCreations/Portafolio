@@ -1,0 +1,150 @@
+{
+  "id": "python",
+  "title": "Introducción a Python",
+  "shortTitle": "Python",
+  "description": "Lógica con Python: print, variables, condiciones, bucles, listas y funciones. Prácticas con editor (tú escribes el código) y se guarda entre pasos.",
+  "level": "Principiante",
+  "language": "Python",
+  "lessons": [
+    {
+      "id": "01-que-es-python",
+      "file": "01-que-es-python.html",
+      "title": "¿Qué es Python?",
+      "summary": "Lenguaje claro para lógica, datos y automatizar ideas.",
+      "type": "lesson"
+    },
+    {
+      "id": "02-practica-print",
+      "file": "02-practica-print.html",
+      "title": "Práctica 1A · Tu primer print",
+      "summary": "Escribe un print. Código vacío: tú lo escribes.",
+      "type": "practice"
+    },
+    {
+      "id": "03-practica-varios-print",
+      "file": "03-practica-varios-print.html",
+      "title": "Práctica 1B · Varios mensajes",
+      "summary": "Varios print seguidos.",
+      "type": "practice"
+    },
+    {
+      "id": "04-variables",
+      "file": "04-variables.html",
+      "title": "Variables y tipos",
+      "summary": "Nombres que guardan valores.",
+      "type": "lesson"
+    },
+    {
+      "id": "05-practica-variables",
+      "file": "05-practica-variables.html",
+      "title": "Práctica 2A · Tus variables",
+      "summary": "Crea variables y muéstralas con print.",
+      "type": "practice"
+    },
+    {
+      "id": "06-practica-operaciones",
+      "file": "06-practica-operaciones.html",
+      "title": "Práctica 2B · Operaciones",
+      "summary": "Suma, resta o texto compuesto.",
+      "type": "practice"
+    },
+    {
+      "id": "07-condiciones",
+      "file": "07-condiciones.html",
+      "title": "Condiciones if / else",
+      "summary": "Decidir según una condición.",
+      "type": "lesson"
+    },
+    {
+      "id": "08-practica-if",
+      "file": "08-practica-if.html",
+      "title": "Práctica 3A · Tu if",
+      "summary": "Mensajes distintos según una condición.",
+      "type": "practice"
+    },
+    {
+      "id": "09-practica-if-elif",
+      "file": "09-practica-if-elif.html",
+      "title": "Práctica 3B · if / elif / else",
+      "summary": "Tres caminos posibles.",
+      "type": "practice"
+    },
+    {
+      "id": "10-examen-parcial-1",
+      "file": "10-examen-parcial-1.html",
+      "title": "Examen parcial 1 · Python básico",
+      "summary": "print, variables y condiciones. Mínimo 70%.",
+      "type": "exam"
+    },
+    {
+      "id": "11-bucles",
+      "file": "11-bucles.html",
+      "title": "Bucles for",
+      "summary": "Repetir acciones de forma controlada.",
+      "type": "lesson"
+    },
+    {
+      "id": "12-practica-for",
+      "file": "12-practica-for.html",
+      "title": "Práctica 4A · Tu for",
+      "summary": "Repite un mensaje N veces.",
+      "type": "practice"
+    },
+    {
+      "id": "13-practica-for-suma",
+      "file": "13-practica-for-suma.html",
+      "title": "Práctica 4B · Acumulador",
+      "summary": "Suma números en un bucle.",
+      "type": "practice"
+    },
+    {
+      "id": "14-listas",
+      "file": "14-listas.html",
+      "title": "Listas",
+      "summary": "Colecciones ordenadas de elementos.",
+      "type": "lesson"
+    },
+    {
+      "id": "15-practica-listas",
+      "file": "15-practica-listas.html",
+      "title": "Práctica 5A · Tu lista",
+      "summary": "Crea una lista y recórrela.",
+      "type": "practice"
+    },
+    {
+      "id": "16-practica-lista-len",
+      "file": "16-practica-lista-len.html",
+      "title": "Práctica 5B · Largo de lista",
+      "summary": "Usa len y muestra un resumen.",
+      "type": "practice"
+    },
+    {
+      "id": "17-funciones",
+      "file": "17-funciones.html",
+      "title": "Funciones en Python",
+      "summary": "def para reutilizar lógica.",
+      "type": "lesson"
+    },
+    {
+      "id": "18-practica-funcion",
+      "file": "18-practica-funcion.html",
+      "title": "Práctica 6A · Tu función",
+      "summary": "Define y llama una función.",
+      "type": "practice"
+    },
+    {
+      "id": "19-practica-integradora",
+      "file": "19-practica-integradora.html",
+      "title": "Práctica integradora · Mini programa",
+      "summary": "Variables + if o for + función o lista.",
+      "type": "practice"
+    },
+    {
+      "id": "20-examen-final",
+      "file": "20-examen-final.html",
+      "title": "Examen final · Introducción a Python",
+      "summary": "Evaluación final del módulo Python. Mínimo 70%.",
+      "type": "exam"
+    }
+  ]
+}

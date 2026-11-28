@@ -1,6 +1,6 @@
 {
-  "version": "1.6.1",
+  "version": "1.7.0",
   "name": "CODEVERSE LIVE",
-  "updatedAt": "2026-11-27",
-  "notes": "URGENT: arregla return roto en Academia que impedía listar cursos; bloqueo de cursos sin dejar Cargando"
+  "updatedAt": "2026-11-28",
+  "notes": "Cursos JS y Python (20 pasos): mini-editor propio, workspace progresivo, exámenes"
 }

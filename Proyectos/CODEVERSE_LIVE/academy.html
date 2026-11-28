@@ -155,7 +155,7 @@
     }
 
     try {
-      const ids = ["html", "css"];
+      const ids = ["html", "css", "js", "python"];
       const blocks = [];
       for (const id of ids) {
         try {
@@ -164,21 +164,9 @@
           blocks.push(`<section class="course-hero"><h2>${id.toUpperCase()}</h2><p class="meta">No disponible: ${escapeHtml(err.message || "")}</p></section>`);
         }
       }
-      root.innerHTML = blocks.join('<hr class="course-sep" />') + `
-        <div class="cards-grid" style="margin-top:2.5rem">
-          <article class="card">
-            <span class="lang-card__tag">Próximamente</span>
-            <h3>JavaScript</h3>
-            <p>Variables, funciones y DOM desde cero.</p>
-          </article>
-          <article class="card">
-            <span class="lang-card__tag">Próximamente</span>
-            <h3>Python</h3>
-            <p>Lógica, control de flujo y ejercicios prácticos.</p>
-          </article>
-        </div>`;
+      root.innerHTML = blocks.join('<hr class="course-sep" />');
 
-      if (focus === "html" || focus === "css") {
+      if (["html", "css", "js", "python"].includes(focus)) {
         const el = document.getElementById("course-" + focus);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
       }

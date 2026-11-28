@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="../../js/cache-version.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Variables y tipos — Introducción a Python · CODEVERSE</title>
+  <link rel="icon" href="../../favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../../css/styles.css" />
+  <link rel="stylesheet" href="../../css/courses.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body class="course-page">
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="../../index.html" class="logo">
+        <img src="../../assets/img/codeverse-logo.png" alt="CODEVERSE" class="logo__img" />
+        <span class="logo__text">CODEVERSE</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="../../index.html" class="nav__link">Inicio</a>
+        <a href="../../academy.html" class="nav__link active">Academia</a>
+        <a href="../../live.html" class="nav__link">LIVE</a>
+        <a href="../../dashboard.html" class="nav__link">Dashboard</a>
+      </nav>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Menú"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <main class="lesson">
+    <div class="container lesson__wrap">
+      <div class="lesson__crumb">
+        <a href="../../academy.html">Academia</a><span>/</span>
+        <a href="../../academy.html?course=python">Introducción a Python</a><span>/</span>
+        <span>Lección 4</span>
+      </div>
+      <div id="lesson-gate" class="lesson-gate">Comprobando acceso…</div>
+      <article id="lesson-content" class="lesson__content" hidden>
+        <p class="lesson__meta"><span class="type-pill type-pill--lesson">Lección</span> · 4 de 20 · Principiante</p>
+        <h1 class="lesson__title">Variables y tipos</h1>
+        <div class="lesson__body">
+
+          <pre><code>nombre = "Ana"
+edad = 20
+altura = 1.65
+activo = True
+print(nombre, edad)</code></pre>
+          
+          <div class="lesson-quiz" data-lesson-quiz data-answer="b">
+            <p class="lesson-quiz__q"><strong>Pregunta rápida</strong></p>
+            <div class="lesson-quiz__choices">
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="a">Las variables no pueden ser texto</button>
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="b">Una variable guarda un valor con un nombre</button>
+            <button type="button" class="btn btn--sm btn--ghost" data-choice="c">print crea variables</button>
+            </div>
+            <p class="lesson-quiz__feedback"></p>
+          </div>
+
+        </div>
+        <div class="lesson__actions">
+          <a class="btn btn--ghost btn--sm" href="../../academy.html?course=python">Volver al curso</a>
+          <button type="button" class="btn btn--primary btn--sm" id="btn-complete">Marcar como completada y continuar</button>
+        </div>
+        <p class="lesson__hint" id="lesson-status"></p>
+      </article>
+    </div>
+  </main>
+  <script src="../../js/main.js"></script>
+  <script type="module">
+    import { guardLessonPage, completeLesson, isLessonCompleted } from "../../js/courses.js";
+    import { initLessonInteractives, persistAllWorkspaces } from "../../js/lesson-mini.js";
+    const COURSE_ID = "python";
+    const LESSON_ID = "04-variables";
+    const gate = document.getElementById("lesson-gate");
+    const content = document.getElementById("lesson-content");
+    const btn = document.getElementById("btn-complete");
+    const status = document.getElementById("lesson-status");
+    try {
+      const { course, progress } = await guardLessonPage(COURSE_ID, LESSON_ID);
+      gate.hidden = true;
+      content.hidden = false;
+      await initLessonInteractives(content);
+      if (isLessonCompleted(progress, LESSON_ID)) {
+        status.textContent = "Ya completaste este paso. Puedes repasar o continuar.";
+        btn.textContent = "Continuar";
+        btn.disabled = false;
+      }
+      btn.addEventListener("click", async () => {
+        const exam = content.querySelector("[data-lesson-exam]");
+        if (exam && exam.dataset.passed !== "1" && !isLessonCompleted(progress, LESSON_ID)) {
+          status.textContent = "Primero califica el examen y aprueba para continuar.";
+          return;
+        }
+        persistAllWorkspaces(content);
+        btn.disabled = true;
+        btn.textContent = "Guardando…";
+        try {
+          await completeLesson(course, LESSON_ID);
+          const idx = course.lessons.findIndex((l) => l.id === LESSON_ID);
+          const next = course.lessons[idx + 1];
+          if (next) window.location.href = next.file;
+          else {
+            status.textContent = "¡Curso completado!";
+            setTimeout(() => { window.location.href = "../../academy.html?course=python"; }, 1000);
+          }
+        } catch (err) {
+          status.textContent = err.message || "Error al guardar";
+          btn.disabled = false;
+          btn.textContent = "Reintentar";
+        }
+      });
+    } catch (err) {
+      if (!(err && (err.message === "login_required" || err.message === "lesson_locked" || err.message === "access_blocked"))) {
+        gate.textContent = "No se pudo abrir. Vuelve a Academia.";
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

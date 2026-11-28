@@ -1,5 +1,5 @@
-import { evaluateAccess, showAccessBlock } from "./site-access.js";
-// CODEVERSE — Interactivos de lección: mini editor HTML/CSS, quiz, examen, workspace
+import { evaluateAccess } from "./site-access.js";
+// CODEVERSE — Mini editor de lecciones: HTML, HTML+CSS, HTML+JS, Python
 // MultiSoftCreations
 
 function workspaceKey(courseId) {
@@ -9,21 +9,26 @@ function workspaceKey(courseId) {
 export function loadCourseWorkspace(courseId) {
   try {
     const raw = localStorage.getItem(workspaceKey(courseId));
-    if (!raw) return { html: "", css: "" };
+    if (!raw) return { html: "", css: "", js: "", python: "" };
     const data = JSON.parse(raw);
     return {
       html: typeof data.html === "string" ? data.html : "",
-      css: typeof data.css === "string" ? data.css : ""
+      css: typeof data.css === "string" ? data.css : "",
+      js: typeof data.js === "string" ? data.js : "",
+      python: typeof data.python === "string" ? data.python : ""
     };
   } catch {
-    return { html: "", css: "" };
+    return { html: "", css: "", js: "", python: "" };
   }
 }
 
-export function saveCourseWorkspace(courseId, html, css) {
+export function saveCourseWorkspace(courseId, data) {
+  const prev = loadCourseWorkspace(courseId);
   const payload = {
-    html: html || "",
-    css: css || "",
+    html: data.html != null ? data.html : prev.html,
+    css: data.css != null ? data.css : prev.css,
+    js: data.js != null ? data.js : prev.js,
+    python: data.python != null ? data.python : prev.python,
     updatedAt: new Date().toISOString()
   };
   try {
@@ -34,14 +39,40 @@ export function saveCourseWorkspace(courseId, html, css) {
   return payload;
 }
 
+let pyodidePromise = null;
+async function getPyodide() {
+  if (window.loadPyodide) {
+    if (!pyodidePromise) {
+      pyodidePromise = window.loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
+      });
+    }
+    return pyodidePromise;
+  }
+  // Cargar script una vez
+  if (!document.getElementById("cv-pyodide-script")) {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.id = "cv-pyodide-script";
+      s.src = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";
+      s.onload = resolve;
+      s.onerror = () => reject(new Error("No se pudo cargar Pyodide"));
+      document.head.appendChild(s);
+    });
+  }
+  if (!pyodidePromise) {
+    pyodidePromise = window.loadPyodide({
+      indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
+    });
+  }
+  return pyodidePromise;
+}
+
 /**
- * Mini editor.
- * data-lesson-mini
- * data-mode="html" | "html-css"  (default html)
- * data-course="css"
- * data-starter-html="..." (opcional; si hay workspace se prefiere el guardado salvo data-force-starter="1")
- * data-starter-css="" 
- * data-persist="1" guarda al ejecutar y expone API
+ * data-mode: html | html-css | html-js | python
+ * data-course: html|css|js|python
+ * data-force-starter="1" solo aplica si no hay workspace
+ * data-persist="1"
  */
 export function mountLessonMinis(root = document) {
   const nodes = root.querySelectorAll("[data-lesson-mini]");
@@ -53,95 +84,131 @@ export function mountLessonMinis(root = document) {
     const forceStarter = box.dataset.forceStarter === "1";
     const persist = box.dataset.persist !== "0";
 
-    let code = box.querySelector(".lesson-mini__code");
-    let codeCss = box.querySelector(".lesson-mini__code-css");
+    const codeHtml = box.querySelector(".lesson-mini__code");
+    const codeCss = box.querySelector(".lesson-mini__code-css");
+    const codeJs = box.querySelector(".lesson-mini__code-js");
+    const codePy = box.querySelector(".lesson-mini__code-python");
     const frame = box.querySelector(".lesson-mini__preview");
+    const consoleEl = box.querySelector(".lesson-mini__console");
     const btnRun = box.querySelector(".lesson-mini__run");
     const btnReset = box.querySelector(".lesson-mini__reset");
     const tabs = box.querySelectorAll("[data-mini-tab]");
 
-    // Starters from textarea initial values
-    const starterHtml = (box.dataset.starterHtml != null)
-      ? box.dataset.starterHtml
-      : (code ? code.value : "");
-    const starterCss = (box.dataset.starterCss != null)
-      ? box.dataset.starterCss
-      : (codeCss ? codeCss.value : "");
+    const starterHtml = codeHtml ? codeHtml.value : "";
+    const starterCss = codeCss ? codeCss.value : "";
+    const starterJs = codeJs ? codeJs.value : "";
+    const starterPy = codePy ? codePy.value : "";
 
-    // Workspace progresivo: si ya hay trabajo guardado, NO pisarlo con la plantilla
-    // (data-force-starter solo aplica la primera vez, cuando el workspace está vacío)
-    let skipPersistOnLoad = false;
-    if (courseId && mode === "html-css") {
-      const ws = loadCourseWorkspace(courseId);
-      const hasWorkspace = !!(ws.html || ws.css);
-      const applyForce = forceStarter && !hasWorkspace;
-      if (!applyForce && hasWorkspace) {
-        if (code) code.value = ws.html || starterHtml || code.value;
-        if (codeCss) codeCss.value = ws.css || "";
-      } else {
-        if (code) code.value = starterHtml || code.value || "";
-        if (codeCss) codeCss.value = starterCss || "";
-        // Primera visita con plantilla: no guardar el CSS vacío sobre un futuro trabajo
-        skipPersistOnLoad = true;
-      }
+    const ws = courseId ? loadCourseWorkspace(courseId) : { html: "", css: "", js: "", python: "" };
+    const hasWorkspace = !!(ws.html || ws.css || ws.js || ws.python);
+    const applyForce = forceStarter && !hasWorkspace;
+
+    if (!applyForce && hasWorkspace) {
+      if (codeHtml && (ws.html || mode.startsWith("html"))) codeHtml.value = ws.html || codeHtml.value;
+      if (codeCss) codeCss.value = ws.css || "";
+      if (codeJs) codeJs.value = ws.js || "";
+      if (codePy) codePy.value = ws.python || "";
     } else {
-      if (code && starterHtml && !code.value) code.value = starterHtml;
+      if (codeHtml) codeHtml.value = starterHtml;
       if (codeCss) codeCss.value = starterCss;
+      if (codeJs) codeJs.value = starterJs;
+      if (codePy) codePy.value = starterPy;
     }
 
-    // Tabs HTML / CSS
-    if (tabs.length && code && codeCss) {
+    // Tabs
+    if (tabs.length) {
+      const map = {
+        html: codeHtml,
+        css: codeCss,
+        js: codeJs,
+        python: codePy
+      };
       tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           const which = tab.getAttribute("data-mini-tab");
           tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
-          code.hidden = which !== "html";
-          codeCss.hidden = which !== "css";
+          Object.keys(map).forEach((k) => {
+            if (map[k]) map[k].hidden = k !== which;
+          });
         });
       });
-      // default HTML tab
-      code.hidden = false;
-      codeCss.hidden = true;
+      // default first visible
+      const first = tabs[0]?.getAttribute("data-mini-tab");
+      Object.keys(map).forEach((k) => {
+        if (map[k]) map[k].hidden = k !== first;
+      });
     }
 
-    function currentHtml() {
-      return code ? code.value : "";
-    }
-    function currentCss() {
-      return codeCss ? codeCss.value : "";
+    function val(el) {
+      return el ? el.value : "";
     }
 
-    function run(opts) {
+    function persistNow() {
+      if (!persist || !courseId) return;
+      saveCourseWorkspace(courseId, {
+        html: val(codeHtml),
+        css: val(codeCss),
+        js: val(codeJs),
+        python: val(codePy)
+      });
+    }
+
+    async function run(opts) {
       const fromUser = !!(opts && opts.fromUser);
-      if (!frame) return;
-      const html = currentHtml();
-      const css = currentCss();
-      if (mode === "html-css") {
-        let doc = html;
-        const styleTag = "<style>\n" + css + "\n</style>";
-        if (/<\/head>/i.test(doc)) {
-          doc = doc.replace(/<\/head>/i, styleTag + "\n</head>");
-        } else if (/<body/i.test(doc)) {
-          doc = doc.replace(/<body/i, styleTag + "\n<body");
+      try {
+        if (mode === "python") {
+          if (consoleEl) {
+            consoleEl.textContent = "Ejecutando Python…";
+          }
+          const py = await getPyodide();
+          let stdout = "";
+          py.setStdout({ batched: (s) => { stdout += s + "\n"; } });
+          py.setStderr({ batched: (s) => { stdout += s + "\n"; } });
+          try {
+            await py.runPythonAsync(val(codePy));
+            if (consoleEl) consoleEl.textContent = stdout.trim() || "(sin salida)";
+          } catch (err) {
+            if (consoleEl) consoleEl.textContent = String(err);
+          }
+        } else if (mode === "html-js") {
+          if (!frame) return;
+          let doc = val(codeHtml) || "<!DOCTYPE html><html><body></body></html>";
+          const js = val(codeJs);
+          const scriptTag = "<script>\ntry {\n" + js + "\n} catch(e){ document.body.insertAdjacentHTML('beforeend', '<pre style=color:red>'+e+'</pre>'); }\n<\/script>";
+          if (/<\/body>/i.test(doc)) {
+            doc = doc.replace(/<\/body>/i, scriptTag + "\n</body>");
+          } else {
+            doc = doc + scriptTag;
+          }
+          frame.srcdoc = doc;
+        } else if (mode === "html-css") {
+          if (!frame) return;
+          let doc = val(codeHtml);
+          const css = val(codeCss);
+          const styleTag = "<style>\n" + css + "\n</style>";
+          if (/<\/head>/i.test(doc)) {
+            doc = doc.replace(/<\/head>/i, styleTag + "\n</head>");
+          } else if (/<body/i.test(doc)) {
+            doc = doc.replace(/<body/i, styleTag + "\n<body");
+          } else {
+            doc = styleTag + "\n" + doc;
+          }
+          frame.srcdoc = doc;
         } else {
-          doc = styleTag + "\n" + doc;
+          if (frame) frame.srcdoc = val(codeHtml);
         }
-        frame.srcdoc = doc;
-      } else {
-        frame.srcdoc = html;
-      }
-      // Solo persistir por acción del usuario (Ejecutar / atajo / reiniciar),
-      // no al cargar la página (evita borrar workspace al repasar plantillas)
-      if (persist && courseId && mode === "html-css" && fromUser) {
-        saveCourseWorkspace(courseId, currentHtml(), currentCss());
+      } finally {
+        if (fromUser) persistNow();
       }
     }
 
     if (btnRun) btnRun.addEventListener("click", () => run({ fromUser: true }));
     if (btnReset) {
       btnReset.addEventListener("click", () => {
-        if (code) code.value = starterHtml;
+        if (codeHtml) codeHtml.value = starterHtml;
         if (codeCss) codeCss.value = starterCss;
+        if (codeJs) codeJs.value = starterJs;
+        if (codePy) codePy.value = starterPy;
         run({ fromUser: true });
       });
     }
@@ -152,13 +219,17 @@ export function mountLessonMinis(root = document) {
         run({ fromUser: true });
       }
     };
-    if (code) code.addEventListener("keydown", onKey);
-    if (codeCss) codeCss.addEventListener("keydown", onKey);
+    [codeHtml, codeCss, codeJs, codePy].forEach((el) => {
+      if (el) el.addEventListener("keydown", onKey);
+    });
 
-    box.__getWorkspace = () => ({ html: currentHtml(), css: currentCss() });
-    box.__saveWorkspace = () => {
-      if (courseId) saveCourseWorkspace(courseId, currentHtml(), currentCss());
-    };
+    box.__getWorkspace = () => ({
+      html: val(codeHtml),
+      css: val(codeCss),
+      js: val(codeJs),
+      python: val(codePy)
+    });
+    box.__saveWorkspace = () => persistNow();
 
     run({ fromUser: false });
     box.dataset.ready = "1";
@@ -185,7 +256,6 @@ export function mountLessonQuizzes(root = document) {
             : "No del todo. Revisa la explicación e inténtalo de nuevo mentalmente.";
           feedback.className = "lesson-quiz__feedback " + (ok ? "is-ok" : "is-bad");
         }
-        quiz.dataset.answered = ok ? "1" : "0";
       });
     });
     quiz.dataset.ready = "1";
@@ -215,8 +285,7 @@ export function mountLessonExams(root = document) {
       questions.forEach((q) => {
         const answer = (q.dataset.answer || "").toLowerCase();
         const selected = (q.dataset.selected || "").toLowerCase();
-        const correct = selected && selected === answer;
-        if (correct) ok += 1;
+        if (selected && selected === answer) ok += 1;
         q.querySelectorAll("[data-choice]").forEach((b) => {
           const c = (b.getAttribute("data-choice") || "").toLowerCase();
           b.classList.remove("is-correct", "is-wrong", "is-selected");
@@ -267,7 +336,6 @@ export async function initLessonInteractives(root = document) {
   mountLessonExams(root);
 }
 
-/** Guarda todos los mini-editores persistentes del documento */
 export function persistAllWorkspaces(root = document) {
   root.querySelectorAll("[data-lesson-mini]").forEach((box) => {
     if (typeof box.__saveWorkspace === "function") box.__saveWorkspace();
